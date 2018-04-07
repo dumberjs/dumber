@@ -1,0 +1,41 @@
+{
+  "name": "amd_",
+  "version": "0.0.1",
+  "description": "Humble little code tracer+packer, build your app to AMD format bundle",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "lint": "eslint index.js spec",
+    "preversion": "npm test",
+    "version": "standard-changelog && git add CHANGELOG.md",
+    "postversion": "git push && git push --tags && npm publish",
+    "pretest": "npm run lint",
+    "test": "tape 'spec/*.spec.js' | tap-dot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huochunpeng/amd_.git"
+  },
+  "keywords": [
+    "bundle",
+    "browser",
+    "amd",
+    "requirejs"
+  ],
+  "author": "Chunpeng Huo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/huochunpeng/amd_/issues"
+  },
+  "homepage": "https://github.com/huochunpeng/amd_#readme",
+  "dependencies": {
+    "ast-matcher": "^0.1.5",
+    "esprima": "^4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "standard-changelog": "^1.0.18",
+    "tap-dot": "^1.0.5",
+    "tape": "^4.9.0"
+  }
+}
