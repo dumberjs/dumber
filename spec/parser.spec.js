@@ -1,9 +1,5 @@
 'use strict';
 const test = require('tape');
-const astMatcher = require('ast-matcher');
-const esprima = require('esprima');
-astMatcher.setParser(esprima.parse);
-
 const parser = require('../parser');
 const usesCommonJs = parser.usesCommonJs;
 
