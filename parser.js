@@ -58,9 +58,11 @@ const findCjsRequireIdentifiers = function (code) {
   if (requireIdendifers.length) return requireIdendifers;
 };
 
-function usesCommonJs (code) {
+function usesCommonJs (code, globals) {
   let ast = ensureParsed(code);
-  let globals = globalIndentifiers(ast);
+  if (!globals) {
+    globals = globalIndentifiers(ast);
+  }
   let usage = {};
 
   if (globals['require'] && hasOne(globals['require'], findCjsRequireIdentifiers(ast))) {
@@ -114,9 +116,11 @@ const findAmdRequireConfigIdentifiers = function (code) {
   if (requireIdendifers.length) return requireIdendifers;
 };
 
-function usesAmdOrRequireJs (code) {
+function usesAmdOrRequireJs (code, globals) {
   let ast = ensureParsed(code);
-  let globals = globalIndentifiers(ast);
+  if (!globals) {
+    globals = globalIndentifiers(ast);
+  }
   let usage = {};
 
   if (globals['requirejs']) usage.requirejs = true;

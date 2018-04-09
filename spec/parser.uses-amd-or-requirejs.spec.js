@@ -94,6 +94,7 @@ test('usesAmdOrRequireJs catpures define with es6 arrow func and cjs wrapper', t
   t.end();
 });
 
+// in addition, check behind function scope
 test('usesAmdOrRequireJs catpures amd require with es6 arrow func, behind function scope', t => {
   t.deepEqual(
     usesAmdOrRequireJs("(() => require(['a'], (a) => { console.log(a); }))()"),
