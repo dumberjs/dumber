@@ -6,7 +6,7 @@ const ensureParsed = astMatcher.ensureParsed;
 
 function globalRefs (code) {
   let ast = ensureParsed(code);
-  let scopeManager = escope.analyze(ast);
+  let scopeManager = escope.analyze(ast, {ecmaVersion: 6});
   let globalScope = scopeManager.acquire(ast);
 
   let globalRefs = {};

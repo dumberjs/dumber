@@ -16,12 +16,6 @@ test('usesCommonJs captures exports.foo =', t => {
   t.end();
 });
 
-// https://github.com/requirejs/r.js/issues/980
-test('usesCommonJs captures exports.foo = in inner expression', t => {
-  t.deepEqual(usesCommonJs("LogLevel = exports.LogLevel || (exports.LogLevel = {})"), {exports: true});
-  t.end();
-});
-
 test('usesCommonJs captures module.exports =', t => {
   t.deepEqual(usesCommonJs("(function () { module.exports = function () {}; }());"), {moduleExports: true});
   t.end();
@@ -79,3 +73,17 @@ test('usesCommonJs ignores local exports assignment', t => {
   t.equal(usesCommonJs("var exports = function () {};"), undefined);
   t.end();
 });
+
+// https://github.com/requirejs/r.js/issues/980
+test('usesCommonJs captures exports.foo = in inner expression', t => {
+  t.deepEqual(usesCommonJs("LogLevel = exports.LogLevel || (exports.LogLevel = {})"), {exports: true});
+  t.end();
+});
+
+// original r.js parse cannot cover this.
+// we can, because of scope analysis.
+test('usesCommonJs ignores local exports only in scope', t => {
+  t.deepEqual(usesCommonJs("const t = () => {let exports; exports.foo = 'bar';};\nexports.bar = 1;"), {exports: true});
+  t.end();
+});
+
