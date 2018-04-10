@@ -3,6 +3,11 @@ require('./ensure-parser-set');
 const escope = require('escope');
 const astMatcher = require('ast-matcher');
 const ensureParsed = astMatcher.ensureParsed;
+const compilePattern = astMatcher.compilePattern;
+const extract = astMatcher.extract;
+
+// https://github.com/jrburke/amdefine
+const amdefinePattern = compilePattern('var define = require("amdefine")(__anl)').declarations[0];
 
 function globalIndentifiers (code) {
   let ast = ensureParsed(code);
@@ -13,10 +18,11 @@ function globalIndentifiers (code) {
 
   globalScope.through.forEach(function (ref) {
     let name = ref.identifier.name;
-      // console('name: ' + name);
     // user defined the variable in global scope
-    if (globalScope.set.get(name)) {
-      // console.log(globalScope.set.get(name));
+    let variable = globalScope.set.get(name);
+    // amdefine will be ignored in browser,
+    // don't remove 'define' from the list.
+    if (variable && !(name === 'define' && extract(amdefinePattern, variable.defs[0].node))) {
       return;
     }
 

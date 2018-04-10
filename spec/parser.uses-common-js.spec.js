@@ -87,3 +87,8 @@ test('usesCommonJs ignores local exports only in scope', t => {
   t.end();
 });
 
+test('usesCommonJs understands amdefine', t => {
+  t.deepEqual(usesCommonJs("if (typeof define !== 'function') { var define = require('amdefine')(module); }\ndefine(function(require) {})"), {require: true, moduleExports: true});
+  t.end();
+});
+

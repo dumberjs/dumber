@@ -118,6 +118,11 @@ test('usesAmdOrRequireJs ignores local definition of define', t => {
   t.end();
 });
 
+test('usesAmdOrRequireJs understands amdefine', t => {
+  t.deepEqual(usesAmdOrRequireJs("if (typeof define !== 'function') { var define = require('amdefine')(module); }\ndefine(function(require) {})"), {define: true});
+  t.end();
+});
+
 // declaresDefine and defineAmd are not implemented.
 /*
 function parseUsesAmdOrRequireJs(t) {
