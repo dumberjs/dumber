@@ -365,3 +365,78 @@ test('defines ignores shim settings if source code already defined amd module', 
   t.equal(r.contents, goodExpected1);
   t.end();
 });
+
+test('defines get requirejs deps', t => {
+  t.deepEqual(
+    defines('demo', 'require(["a", "./b"]);'),
+    {
+      defined: null,
+      deps: ['a', './b'],
+      contents: 'require(["a", "./b"]);'
+    }
+  );
+
+  t.deepEqual(
+    defines('demo', 'require(["a", "./b"], function(){});'),
+    {
+      defined: null,
+      deps: ['a', './b'],
+      contents: 'require(["a", "./b"], function(){});'
+    }
+  );
+
+  t.deepEqual(
+    defines('demo', 'require({}, ["a", "./b"]);'),
+    {
+      defined: null,
+      deps: ['a', './b'],
+      contents: 'require({}, ["a", "./b"]);'
+    }
+  );
+
+  t.deepEqual(
+    defines('demo', 'require({}, ["a", "./b"], function(){});'),
+    {
+      defined: null,
+      deps: ['a', './b'],
+      contents: 'require({}, ["a", "./b"], function(){});'
+    }
+  );
+
+  t.deepEqual(
+    defines('demo', 'requirejs(["a", "./b"]);'),
+    {
+      defined: null,
+      deps: ['a', './b'],
+      contents: 'requirejs(["a", "./b"]);'
+    }
+  );
+
+  t.deepEqual(
+    defines('demo', 'requirejs(["a", "./b"], function(){});'),
+    {
+      defined: null,
+      deps: ['a', './b'],
+      contents: 'requirejs(["a", "./b"], function(){});'
+    }
+  );
+
+  t.deepEqual(
+    defines('demo', 'requirejs({}, ["a", "./b"]);'),
+    {
+      defined: null,
+      deps: ['a', './b'],
+      contents: 'requirejs({}, ["a", "./b"]);'
+    }
+  );
+
+  t.deepEqual(
+    defines('demo', 'requirejs({}, ["a", "./b"], function(){});'),
+    {
+      defined: null,
+      deps: ['a', './b'],
+      contents: 'requirejs({}, ["a", "./b"], function(){});'
+    }
+  );
+  t.end();
+});
