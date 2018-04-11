@@ -312,6 +312,7 @@ test('defines wrapShim', t => {
                        '}(this));\n';
   const r = defines('shim', shim, {deps: ['bar'], 'exports': 'Foo', wrapShim: true});
   t.equal(r.defined, 'shim');
+  t.equal(r.headLines, 3);
   t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.end();
@@ -329,6 +330,7 @@ test('defines wrapShim without deps', t => {
                        '}(this));\n';
   const r = defines('shim', shim, {'exports': 'Foo', wrapShim: true});
   t.equal(r.defined, 'shim');
+  t.equal(r.headLines, 3);
   t.equal(r.deps.length, 0);
   t.equal(r.contents, shimExpected);
   t.end();
@@ -346,6 +348,7 @@ test('defines wrapShim without exports', t => {
                        '}(this));\n';
   const r = defines('shim', shim, {deps: ['bar'], wrapShim: true});
   t.equal(r.defined, 'shim');
+  t.equal(r.headLines, 3);
   t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.end();
