@@ -9,6 +9,7 @@ test('defines ignores non-global define', t => {
   const bad1 = 'this.define(field, value, {_resolve: false});';
   const r = defines('bad/1', bad1);
   t.equal(r.defined, null);
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, bad1);
   t.end();
 });
@@ -17,6 +18,7 @@ test('defines ignores xdefine', t => {
   const bad2 = 'xdefine(fields, callback);';
   const r = defines('bad/2', bad2);
   t.equal(r.defined, null);
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, bad2);
   t.end();
 });
@@ -25,6 +27,7 @@ test('defines ignores non-global define case2', t => {
   const bad3 = 'this.define(function () {});';
   const r = defines('bad/3', bad3);
   t.equal(r.defined, null);
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, bad3);
   t.end();
 });
@@ -33,6 +36,7 @@ test('defines ignores dynamic deps', t => {
   const bad4 = 'define(fields, callback);';
   const r = defines('bad/4', bad4);
   t.equal(r.defined, null);
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, bad4);
   t.end();
 });
@@ -41,6 +45,7 @@ test('defines ignores dynamic name or factory', t => {
   const bad5 = 'define(a[0]);';
   const r = defines('bad/5', bad5);
   t.equal(r.defined, null);
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, bad5);
   t.end();
 });
@@ -69,6 +74,7 @@ test('defines ignores multiple defines', t => {
 
   const r = defines('bad/6', bad6);
   t.equal(r.defined, null);
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, bad6);
   t.end();
 });
@@ -83,6 +89,7 @@ test('defines fills up module name', t => {
                         '}';
   const r = defines('good/1', good1);
   t.equal(r.defined, 'good/1');
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, goodExpected1);
   t.end();
 });
@@ -96,6 +103,7 @@ test('defines fills up module name', t => {
 
   const r = defines('good/2', good2);
   t.equal(r.defined, 'good/2');
+  t.deepEqual(r.deps, ['foo']);
   t.equal(r.contents, goodExpected2);
   t.end();
 });
@@ -105,6 +113,7 @@ test('defines ignores multiple defines case 2', t => {
                 'define("bar", function (require) { var foo = require("foo"); });\n';
   const r = defines('multi', multi);
   t.deepEqual(r.defined, ['foo', 'bar']);
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, multi);
   t.end();
 });
@@ -142,6 +151,7 @@ test('defines wrapps multi anonymous define', t => {
 
   const r = defines('multiAnonWrapped', multiAnonWrapped);
   t.equal(r.defined, 'multiAnonWrapped');
+  t.deepEqual(r.deps, ['b']);
   t.equal(r.contents, multiAnonWrappedExpected);
   t.end();
 });
@@ -161,6 +171,7 @@ test('defines inserts correctly for define across multiple lines', t => {
 
   const r = defines('good/3', good3);
   t.equal(r.defined, 'good/3');
+  t.deepEqual(r.deps, ['some/dep']);
   t.equal(r.contents, goodExpected3);
   t.end();
 });
@@ -170,6 +181,7 @@ test('defines inserts correctly for factory define', t => {
   const goodExpected4 = 'define(\'good/4\',this.key)';
   const r = defines('good/4', good4);
   t.equal(r.defined, 'good/4');
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, goodExpected4);
   t.end();
 });
@@ -194,6 +206,7 @@ test('defines inserts correctly for cjs wrapper define', t => {
                         '}';
   const r = defines('good/5', good5);
   t.equal(r.defined, 'good/5');
+  t.deepEqual(r.deps, ['./six']);
   t.equal(r.contents, goodExpected5);
   t.end();
 });
@@ -217,6 +230,7 @@ test('defines inserts correctly for cjs wrapper define case 2', t => {
                         '}';
   const r = defines('good/5', good5);
   t.equal(r.defined, 'good/5');
+  t.deepEqual(r.deps, ['./six']);
   t.equal(r.contents, goodExpected5);
   t.end();
 });
@@ -240,6 +254,7 @@ test('defines inserts correctly for cjs wrapper define case 3', t => {
                         '}';
   const r = defines('good/5', good5);
   t.equal(r.defined, 'good/5');
+  t.deepEqual(r.deps, ['./six']);
   t.equal(r.contents, goodExpected5);
   t.end();
 });
@@ -254,6 +269,7 @@ test('defines shim', t => {
                        '}(this)));\n';
   const r = defines('shim', shim, {deps: ['bar'], 'exports': 'Foo'});
   t.equal(r.defined, 'shim');
+  t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.end();
 });
@@ -268,6 +284,7 @@ test('defines shim without deps', t => {
                        '}(this)));\n';
   const r = defines('shim', shim, {'exports': 'Foo'});
   t.equal(r.defined, 'shim');
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, shimExpected);
   t.end();
 });
@@ -278,6 +295,7 @@ test('defines shim without exports', t => {
                        'define("shim", [\'bar\'], function(){});\n';
   const r = defines('shim', shim, {deps: ['bar']});
   t.equal(r.defined, 'shim');
+  t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.end();
 });
@@ -294,6 +312,7 @@ test('defines wrapShim', t => {
                        '}(this));\n';
   const r = defines('shim', shim, {deps: ['bar'], 'exports': 'Foo', wrapShim: true});
   t.equal(r.defined, 'shim');
+  t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.end();
 });
@@ -310,6 +329,7 @@ test('defines wrapShim without deps', t => {
                        '}(this));\n';
   const r = defines('shim', shim, {'exports': 'Foo', wrapShim: true});
   t.equal(r.defined, 'shim');
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, shimExpected);
   t.end();
 });
@@ -326,6 +346,7 @@ test('defines wrapShim without exports', t => {
                        '}(this));\n';
   const r = defines('shim', shim, {deps: ['bar'], wrapShim: true});
   t.equal(r.defined, 'shim');
+  t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.end();
 });
@@ -340,6 +361,7 @@ test('defines ignores shim settings if source code already defined amd module', 
                         '}';
   const r = defines('good/1', good1, {deps: ['bar'], 'exports': 'Foo', wrapShim: true});
   t.equal(r.defined, 'good/1');
+  t.equal(r.deps.length, 0);
   t.equal(r.contents, goodExpected1);
   t.end();
 });
