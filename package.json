@@ -37,6 +37,7 @@
   "devDependencies": {
     "eslint": "^4.19.1",
     "mock-fs": "^4.4.2",
+    "node-fetch": "^2.1.2",
     "standard-changelog": "^1.0.18",
     "tap-dot": "^1.0.5",
     "tape": "^4.9.0"
