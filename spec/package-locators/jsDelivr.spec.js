@@ -22,8 +22,10 @@ test('jsDelivrNpmPackageLocator returns fileRead func for existing package', t =
     fileRead => {
       return fileRead('package.json')
       .then(
-        contents => {
-          const info = JSON.parse(contents);
+        file => {
+          t.ok(file.path.startsWith('//cdn.jsdelivr.net/npm/lodash@'));
+          t.ok(file.path.endsWith('/package.json'));
+          const info = JSON.parse(file.contents);
           t.equal(info.name, 'lodash');
         },
         err => t.fail(err.message)
@@ -39,8 +41,9 @@ test('jsDelivrNpmPackageLocator returns fileRead func for fixed package version'
     fileRead => {
       return fileRead('package.json')
       .then(
-        contents => {
-          const info = JSON.parse(contents);
+        file => {
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/jquery@2.2.4/package.json');
+          const info = JSON.parse(file.contents);
           t.equal(info.name, 'jquery');
           t.equal(info.version, '2.2.4');
         },
@@ -71,8 +74,10 @@ test('jsDelivrNpmPackageLocator returns fileRead func for existing scoped packag
     fileRead => {
       return fileRead('package.json')
       .then(
-        contents => {
-          const info = JSON.parse(contents);
+        file => {
+          t.ok(file.path.startsWith('//cdn.jsdelivr.net/npm/@babel/types@'));
+          t.ok(file.path.endsWith('/package.json'));
+          const info = JSON.parse(file.contents);
           t.equal(info.name, '@babel/types');
         },
         err => t.fail(err.message)

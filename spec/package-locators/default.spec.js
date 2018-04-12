@@ -27,7 +27,10 @@ test('defaultNpmPackageLocator returns fileRead func for existing package', t =>
     fileRead => {
       return fileRead('package.json')
       .then(
-        contents => t.equal(contents.toString(), 'lorem'),
+        file => {
+          t.ok(file.path.endsWith('node_modules/foo/package.json'));
+          t.equal(file.contents, 'lorem');
+        },
         err => t.fail(err.message)
       );
     },
@@ -71,7 +74,10 @@ test('defaultNpmPackageLocator returns fileRead func for existing scoped package
     fileRead => {
       return fileRead('package.json')
       .then(
-        contents => t.equal(contents.toString(), 'lorem'),
+        file => {
+          t.ok(file.path.endsWith('node_modules/@bar/foo/package.json'));
+          t.equal(file.contents, 'lorem');
+        },
         err => t.fail(err.message)
       );
     },
