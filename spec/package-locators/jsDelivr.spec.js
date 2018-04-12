@@ -1,6 +1,6 @@
 'use strict';
 const test = require('tape');
-const jsDelivrLocator = require('../lib/jsDelivr-npm-package-locator');
+const jsDelivrLocator = require('../../lib/package-locators/jsDelivr');
 const fetch = require('node-fetch');
 
 const locator = jsDelivrLocator({jquery: '2.2.4'}, function(url) {

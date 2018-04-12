@@ -1,6 +1,6 @@
 'use strict';
 const test = require('tape');
-const defaultLocator = require('../lib/default-npm-package-locator');
+const defaultLocator = require('../../lib/package-locators/default');
 const mock = require('mock-fs');
 
 test('defaultNpmPackageLocator rejects missing package', t => {

@@ -10,7 +10,7 @@
     "version": "standard-changelog && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
-    "test": "tape 'spec/*.spec.js' | tap-dot"
+    "test": "tape 'spec/**/*.spec.js' | tap-dot"
   },
   "repository": {
     "type": "git",
