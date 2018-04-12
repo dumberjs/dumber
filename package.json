@@ -31,8 +31,7 @@
   "dependencies": {
     "ast-matcher": "^0.1.6",
     "escope": "^3.6.0",
-    "esprima": "^4.0.0",
-    "gulplog": "^1.0.0"
+    "esprima": "^4.0.0"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
