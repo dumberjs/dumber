@@ -44,9 +44,9 @@ test('resolveModuleId returns resolved relative id', t => {
 });
 
 test('resolveModuleId returns resolved relative id ..', t => {
-  t.throws(() => resolveModuleId('base', '../foo'));
+  t.equal(resolveModuleId('base', '../foo'), '../foo');
   t.equal(resolveModuleId('base/lo', '../foo'), 'foo');
-  t.throws(() => resolveModuleId('base', '../foo/bar'));
+  t.equal(resolveModuleId('base', '../foo/bar'), '../foo/bar');
   t.equal(resolveModuleId('base/lo', '.././foo/bar'), 'foo/bar');
   t.end();
 });
@@ -60,9 +60,9 @@ test('resolveModuleId returns resolved relative id for scoped package', t => {
 });
 
 test('resolveModuleId returns resolved relative id .. for scoped package', t => {
-  t.throws(() => resolveModuleId('@scope/base', '../foo'));
+  t.equal(resolveModuleId('@scope/base', '../foo'), '../foo');
   t.equal(resolveModuleId('@scope/base/lo', '../foo'), 'foo');
-  t.throws(() => resolveModuleId('@scope/base', '../foo/bar'));
+  t.equal(resolveModuleId('@scope/base', '../foo/bar'), '../foo/bar');
   t.equal(resolveModuleId('@scope/base/lo', '.././foo/bar'), 'foo/bar');
   t.end();
 });
@@ -84,9 +84,9 @@ test('resolveModuleId returns resolved relative id with prefix', t => {
 });
 
 test('resolveModuleId returns resolved relative id .. with prefix', t => {
-  t.throws(() => resolveModuleId('base', 'text!../foo'));
+  t.equal(resolveModuleId('base', 'text!../foo'), 'text!../foo');
   t.equal(resolveModuleId('base/lo', 'text!../foo'), 'text!foo');
-  t.throws(() => resolveModuleId('text!base', 'text!../foo/bar'));
+  t.equal(resolveModuleId('text!base', 'text!../foo/bar'), 'text!../foo/bar');
   t.equal(resolveModuleId('text!base/lo', 'text!.././foo/bar'), 'text!foo/bar');
   t.end();
 });
@@ -100,9 +100,9 @@ test('resolveModuleId returns resolved relative id for scoped package with prefi
 });
 
 test('resolveModuleId returns resolved relative id .. for scoped package with prefix', t => {
-  t.throws(() => resolveModuleId('@scope/base', 'text!../foo'));
+  t.equal(resolveModuleId('@scope/base', 'text!../foo'), 'text!../foo');
   t.equal(resolveModuleId('@scope/base/lo', 'text!../foo'), 'text!foo');
-  t.throws(() => resolveModuleId('text!@scope/base', 'text!../foo/bar'));
+  t.equal(resolveModuleId('text!@scope/base', 'text!../foo/bar'), 'text!../foo/bar');
   t.equal(resolveModuleId('text!@scope/base/lo', 'text!.././foo/bar'), 'text!foo/bar');
   t.end();
 });
@@ -114,6 +114,8 @@ test('resolveModuleId returns clean id', t => {
   t.equal(resolveModuleId('base/bar', '../foo.html'), 'foo.html');
   t.equal(resolveModuleId('@scope/base', 'foo.js'), 'foo');
   t.equal(resolveModuleId('@scope/base', 'foo.json'), 'foo.json');
+  t.equal(resolveModuleId('@scope/base', 'text!./foo.js'), 'text!foo');
+  t.equal(resolveModuleId('@scope/base', 'text!../foo.html'), 'text!../foo.html');
   t.equal(resolveModuleId('@scope/base/bar', 'text!./foo.js'), 'text!@scope/base/foo');
   t.equal(resolveModuleId('@scope/base/bar', 'text!../foo.html'), 'text!foo.html');
   t.end();
