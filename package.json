@@ -34,6 +34,8 @@
     "esprima": "^4.0.0",
     "gulp": "^4.0.0",
     "gulp-util": "^3.0.8",
+    "requirejs": "^2.3.5",
+    "text": "requirejs/text",
     "through2": "^2.0.3"
   },
   "devDependencies": {
