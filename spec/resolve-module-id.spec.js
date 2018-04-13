@@ -41,3 +41,43 @@ test('resolveModuleId returns resolved relative id .. for scoped package', t => 
   t.equal(resolve('@scope/base/lo', '.././foo/bar'), 'foo/bar');
   t.end();
 });
+
+test('resolveModuleId returns non-relative id with prefix', t => {
+  t.equal(resolve('base', 'text!foo'), 'text!foo');
+  t.equal(resolve('base/lo', 'text!foo'), 'text!foo');
+  t.equal(resolve('text!base', 'text!foo/bar'), 'text!foo/bar');
+  t.equal(resolve('text!base/lo', 'text!foo/bar'), 'text!foo/bar');
+  t.end();
+});
+
+test('resolveModuleId returns resolved relative id with prefix', t => {
+  t.equal(resolve('base', 'text!./foo'), 'text!foo');
+  t.equal(resolve('base/lo', 'text!./foo'), 'text!base/foo');
+  t.equal(resolve('text!base', 'text!./foo/bar'), 'text!foo/bar');
+  t.equal(resolve('text!base/lo', 'text!././foo/bar'), 'text!base/foo/bar');
+  t.end();
+});
+
+test('resolveModuleId returns resolved relative id .. with prefix', t => {
+  t.throws(() => resolve('base', 'text!../foo'));
+  t.equal(resolve('base/lo', 'text!../foo'), 'text!foo');
+  t.throws(() => resolve('text!base', 'text!../foo/bar'));
+  t.equal(resolve('text!base/lo', 'text!.././foo/bar'), 'text!foo/bar');
+  t.end();
+});
+
+test('resolveModuleId returns resolved relative id for scoped package with prefix', t => {
+  t.equal(resolve('@scope/base', 'text!./foo'), 'text!foo');
+  t.equal(resolve('@scope/base/lo', 'text!./foo'), 'text!@scope/base/foo');
+  t.equal(resolve('text!@scope/base', 'text!./foo/bar'), 'text!foo/bar');
+  t.equal(resolve('text!@scope/base/lo', 'text!././foo/bar'), 'text!@scope/base/foo/bar');
+  t.end();
+});
+
+test('resolveModuleId returns resolved relative id .. for scoped package with prefix', t => {
+  t.throws(() => resolve('@scope/base', 'text!../foo'));
+  t.equal(resolve('@scope/base/lo', 'text!../foo'), 'text!foo');
+  t.throws(() => resolve('text!@scope/base', 'text!../foo/bar'));
+  t.equal(resolve('text!@scope/base/lo', 'text!.././foo/bar'), 'text!foo/bar');
+  t.end();
+});
