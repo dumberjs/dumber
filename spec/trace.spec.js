@@ -27,7 +27,7 @@ test('trace traces js', t => {
     sourceMap: undefined,
     moduleId: 'foo/bar',
     defined: 'foo/bar',
-    deps: ['a', 'text!foo/b.css'],
+    deps: ['a', 'foo/b.css'],
     packageName: undefined,
     shim: undefined
   })
