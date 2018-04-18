@@ -29,7 +29,7 @@ test('trace traces js', t => {
     defined: 'foo/bar',
     deps: ['a', 'foo/b.css'],
     packageName: undefined,
-    shim: undefined
+    shimed: undefined
   })
   t.end();
 });
@@ -52,7 +52,7 @@ test('trace traces js and update sourceMap', t => {
     defined: 'foo/bar',
     deps: ['foo/a'],
     packageName: undefined,
-    shim: undefined
+    shimed: undefined
   })
   t.end();
 });
@@ -81,7 +81,31 @@ test('trace traces shimed js and update sourceMap', t => {
     defined: 'bar/bar',
     deps: ['foo'],
     packageName: 'bar',
-    shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true}
+    shimed: true
+  })
+  t.end();
+});
+
+test('trace forces shim on old js and update sourceMap', t => {
+  const unit = {
+    path: 'node_modules/bar/bar.js',
+    contents: "var Bar = 1;",
+    sourceMap: {mappings: ";TEST;"},
+    moduleId: 'bar/bar',
+    packageName: 'bar'
+  }
+
+  const traced = trace(unit);
+  t.deepEqual(traced, {
+    path: 'node_modules/bar/bar.js',
+    contents: 'var Bar = 1;\n' +
+              'define("bar/bar", function(){});\n',
+    sourceMap: {mappings: ";TEST;"},
+    moduleId: 'bar/bar',
+    defined: 'bar/bar',
+    deps: [],
+    packageName: 'bar',
+    shimed: true
   })
   t.end();
 });
@@ -103,7 +127,7 @@ test('trace transforms json', t => {
     defined: ['text!foo/bar.json', 'foo/bar.json'],
     deps: [],
     packageName: undefined,
-    shim: undefined
+    shimed: undefined
   })
   t.end();
 });
@@ -125,7 +149,7 @@ test('trace transforms text file', t => {
     defined: ['text!foo/bar.html', 'foo/bar.html'],
     deps: [],
     packageName: undefined,
-    shim: undefined
+    shimed: undefined
   })
   t.end();
 });
