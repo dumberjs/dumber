@@ -121,10 +121,11 @@ test('trace transforms json', t => {
   t.deepEqual(traced, {
     path: 'src/foo/bar.json',
     contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});\n" +
-              "define('foo/bar.json',['text!foo/bar.json'],function(m){return JSON.parse(m);});\n",
+              "define('foo/bar.json',['text!foo/bar.json'],function(m){return JSON.parse(m);});\n" +
+              "define('json!foo/bar.json',['foo/bar.json'],function(m){return m;});\n",
     sourceMap: undefined,
     moduleId: 'foo/bar.json',
-    defined: ['text!foo/bar.json', 'foo/bar.json'],
+    defined: ['text!foo/bar.json', 'foo/bar.json', 'json!foo/bar.json'],
     deps: [],
     packageName: undefined,
     shimed: undefined
