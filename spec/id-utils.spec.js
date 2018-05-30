@@ -19,6 +19,7 @@ test('ext finds known extname of id', t => {
 test('parse parses id', t => {
   t.deepEqual(parse('a/b'), {prefix: '', bareId: 'a/b', parts: ['a', 'b'], ext: ''});
   t.deepEqual(parse('a/b.js'), {prefix: '', bareId: 'a/b', parts: ['a', 'b'], ext: ''});
+  t.deepEqual(parse('a/b.min.js'), {prefix: '', bareId: 'a/b.min', parts: ['a', 'b.min'], ext: ''});
   t.deepEqual(parse('a/b.json'), {prefix: '', bareId: 'a/b.json', parts: ['a', 'b.json'], ext: '.json'});
   t.deepEqual(parse('a/b.svg'), {prefix: '', bareId: 'a/b.svg', parts: ['a', 'b.svg'], ext: '.svg'});
   t.deepEqual(parse('../a/b.svg'), {prefix: '', bareId: '../a/b.svg', parts: ['..', 'a', 'b.svg'], ext: '.svg'});
@@ -28,6 +29,7 @@ test('parse parses id', t => {
 test('parse parses id with plugin prefix', t => {
   t.deepEqual(parse('text!a/b'), {prefix: 'text!', bareId: 'a/b', parts: ['a', 'b'], ext: ''});
   t.deepEqual(parse('text!a/b.js'), {prefix: 'text!', bareId: 'a/b', parts: ['a', 'b'], ext: ''});
+  t.deepEqual(parse('text!a/b.min.js'), {prefix: 'text!', bareId: 'a/b.min', parts: ['a', 'b.min'], ext: ''});
   t.deepEqual(parse('text!a/b.json'), {prefix: 'text!', bareId: 'a/b.json', parts: ['a', 'b.json'], ext: '.json'});
   t.deepEqual(parse('text!a/b.svg'), {prefix: 'text!', bareId: 'a/b.svg', parts: ['a', 'b.svg'], ext: '.svg'});
   t.deepEqual(parse('text!../a/b.svg'), {prefix: 'text!', bareId: '../a/b.svg', parts: ['..', 'a', 'b.svg'], ext: '.svg'});
@@ -37,6 +39,7 @@ test('parse parses id with plugin prefix', t => {
 test('parse parses id with scope', t => {
   t.deepEqual(parse('@s/a/b'), {prefix: '', bareId: '@s/a/b', parts: ['@s/a', 'b'], ext: ''});
   t.deepEqual(parse('@s/a/b.js'), {prefix: '', bareId: '@s/a/b', parts: ['@s/a', 'b'], ext: ''});
+  t.deepEqual(parse('@s/a/b.min.js'), {prefix: '', bareId: '@s/a/b.min', parts: ['@s/a', 'b.min'], ext: ''});
   t.deepEqual(parse('text!@s/a/b.json'), {prefix: 'text!', bareId: '@s/a/b.json', parts: ['@s/a', 'b.json'], ext: '.json'});
   t.end();
 });
