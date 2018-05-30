@@ -9,8 +9,10 @@ test('trace rejects not-matching packageName and moduleId', t => {
     moduleId: 'x/bar',
     packageName: 'foo'
   }
-  t.throws(() => trace(unit));
-  t.end();
+  trace(unit).catch(err => {
+    t.ok(err);
+    t.end();
+  })
 });
 
 test('trace traces js', t => {
@@ -20,18 +22,19 @@ test('trace traces js', t => {
     moduleId: 'foo/bar'
   }
 
-  const traced = trace(unit);
-  t.deepEqual(traced, {
-    path: 'src/foo/bar.js',
-    contents: "define('foo/bar',['a','text!./b.css'],function() {});",
-    sourceMap: undefined,
-    moduleId: 'foo/bar',
-    defined: 'foo/bar',
-    deps: ['a', 'foo/b.css'],
-    packageName: undefined,
-    shimed: undefined
-  })
-  t.end();
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'src/foo/bar.js',
+      contents: "define('foo/bar',['a','text!./b.css'],function() {});",
+      sourceMap: undefined,
+      moduleId: 'foo/bar',
+      defined: 'foo/bar',
+      deps: ['a', 'foo/b.css'],
+      packageName: undefined,
+      shimed: undefined
+    })
+    t.end();
+  });
 });
 
 test('trace traces js and update sourceMap', t => {
@@ -42,19 +45,20 @@ test('trace traces js and update sourceMap', t => {
     moduleId: 'foo/bar'
   }
 
-  const traced = trace(unit);
-  t.deepEqual(traced, {
-    path: 'src/foo/bar.js',
-    contents: "define('foo/bar',['require','exports','module','./a'],function (require, exports, module) {\n" +
-              "exports.bar = require('./a');\n});\n",
-    sourceMap: {mappings: ";;TEST;"},
-    moduleId: 'foo/bar',
-    defined: 'foo/bar',
-    deps: ['foo/a'],
-    packageName: undefined,
-    shimed: undefined
-  })
-  t.end();
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'src/foo/bar.js',
+      contents: "define('foo/bar',['require','exports','module','./a'],function (require, exports, module) {\n" +
+                "exports.bar = require('./a');\n});\n",
+      sourceMap: {mappings: ";;TEST;"},
+      moduleId: 'foo/bar',
+      defined: 'foo/bar',
+      deps: ['foo/a'],
+      packageName: undefined,
+      shimed: undefined
+    })
+    t.end();
+  });
 });
 
 test('trace traces shimed js and update sourceMap', t => {
@@ -67,23 +71,24 @@ test('trace traces shimed js and update sourceMap', t => {
     shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true}
   }
 
-  const traced = trace(unit);
-  t.deepEqual(traced, {
-    path: 'node_modules/bar/bar.js',
-    contents: '(function(root) {\n' +
-              'define("bar/bar", [\'foo\'], function() {\n' +
-              '  return (function() {\n' +
-              'var Bar = 1;\n' +
-              'return root.Bar = Bar;\n' +
-              '  }).apply(root, arguments);\n});\n}(this));\n',
-    sourceMap: {mappings: ";;;;TEST;"},
-    moduleId: 'bar/bar',
-    defined: 'bar/bar',
-    deps: ['foo'],
-    packageName: 'bar',
-    shimed: true
-  })
-  t.end();
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/bar/bar.js',
+      contents: '(function(root) {\n' +
+                'define("bar/bar", [\'foo\'], function() {\n' +
+                '  return (function() {\n' +
+                'var Bar = 1;\n' +
+                'return root.Bar = Bar;\n' +
+                '  }).apply(root, arguments);\n});\n}(this));\n',
+      sourceMap: {mappings: ";;;;TEST;"},
+      moduleId: 'bar/bar',
+      defined: 'bar/bar',
+      deps: ['foo'],
+      packageName: 'bar',
+      shimed: true
+    })
+    t.end();
+  });
 });
 
 test('trace forces shim on old js and update sourceMap', t => {
@@ -95,19 +100,20 @@ test('trace forces shim on old js and update sourceMap', t => {
     packageName: 'bar'
   }
 
-  const traced = trace(unit);
-  t.deepEqual(traced, {
-    path: 'node_modules/bar/bar.js',
-    contents: 'var Bar = 1;\n' +
-              'define("bar/bar", function(){});\n',
-    sourceMap: {mappings: ";TEST;"},
-    moduleId: 'bar/bar',
-    defined: 'bar/bar',
-    deps: [],
-    packageName: 'bar',
-    shimed: true
-  })
-  t.end();
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/bar/bar.js',
+      contents: 'var Bar = 1;\n' +
+                'define("bar/bar", function(){});\n',
+      sourceMap: {mappings: ";TEST;"},
+      moduleId: 'bar/bar',
+      defined: 'bar/bar',
+      deps: [],
+      packageName: 'bar',
+      shimed: true
+    })
+    t.end();
+  });
 });
 
 test('trace transforms json', t => {
@@ -117,20 +123,21 @@ test('trace transforms json', t => {
     moduleId: 'foo/bar.json'
   }
 
-  const traced = trace(unit);
-  t.deepEqual(traced, {
-    path: 'src/foo/bar.json',
-    contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});\n" +
-              "define('foo/bar.json',['text!foo/bar.json'],function(m){return JSON.parse(m);});\n" +
-              "define('json!foo/bar.json',['foo/bar.json'],function(m){return m;});\n",
-    sourceMap: undefined,
-    moduleId: 'foo/bar.json',
-    defined: ['text!foo/bar.json', 'foo/bar.json', 'json!foo/bar.json'],
-    deps: [],
-    packageName: undefined,
-    shimed: undefined
-  })
-  t.end();
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'src/foo/bar.json',
+      contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});\n" +
+                "define('foo/bar.json',['text!foo/bar.json'],function(m){return JSON.parse(m);});\n" +
+                "define('json!foo/bar.json',['foo/bar.json'],function(m){return m;});\n",
+      sourceMap: undefined,
+      moduleId: 'foo/bar.json',
+      defined: ['text!foo/bar.json', 'foo/bar.json', 'json!foo/bar.json'],
+      deps: [],
+      packageName: undefined,
+      shimed: undefined
+    })
+    t.end();
+  });
 });
 
 test('trace transforms text file', t => {
@@ -140,22 +147,23 @@ test('trace transforms text file', t => {
     moduleId: 'foo/bar.html'
   }
 
-  const traced = trace(unit);
-  t.deepEqual(traced, {
-    path: 'src/foo/bar.html',
-    contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});\n" +
-              "define('foo/bar.html',['text!foo/bar.html'],function(m){return m;});\n",
-    sourceMap: undefined,
-    moduleId: 'foo/bar.html',
-    defined: ['text!foo/bar.html', 'foo/bar.html'],
-    deps: [],
-    packageName: undefined,
-    shimed: undefined
-  })
-  t.end();
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'src/foo/bar.html',
+      contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});\n" +
+                "define('foo/bar.html',['text!foo/bar.html'],function(m){return m;});\n",
+      sourceMap: undefined,
+      moduleId: 'foo/bar.html',
+      defined: ['text!foo/bar.html', 'foo/bar.html'],
+      deps: [],
+      packageName: undefined,
+      shimed: undefined
+    })
+    t.end();
+  });
 });
 
-test('trace supports optional depsFinder', t => {
+test('trace supports optional depsFinder returns deps directly', t => {
   const depsFinder = function (path, contents) {
     if (path.endsWith('.js')) return ['./x'];
     if (path.endsWith('.html')) {
@@ -166,21 +174,55 @@ test('trace supports optional depsFinder', t => {
     return [];
   }
 
-  let traced = trace({
-    path: 'src/foo/bar.js',
-    contents: 'require("./b");',
-    moduleId: 'foo/bar'
-  }, depsFinder);
+  Promise.all([
+    trace({
+      path: 'src/foo/bar.js',
+      contents: 'require("./b");',
+      moduleId: 'foo/bar'
+    }, depsFinder),
+    trace({
+      path: 'src/foo/bar.html',
+      contents: '<require from="lorem"></require>',
+      moduleId: 'foo/bar.html'
+    }, depsFinder)
+  ])
+  .then(result => {
+    const [traced1, traced2] = result;
+    t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
+    t.deepEqual(traced2.deps, ['lorem']);
+    t.end();
+  });
+});
 
-  t.deepEqual(traced.deps, ['foo/b', 'foo/x']);
+test('trace supports optional depsFinder returns deps in promise', t => {
+  const depsFinder = function (path, contents) {
+    return new Promise(resolve => {
+      if (path.endsWith('.js')) return resolve(['./x']);
+      if (path.endsWith('.html')) {
+        let m = contents.match(/<require from="(\w+)"><\/require>/i);
+        if (m) return resolve([m[1]]);
+        return resolve([]);
+      }
+      return resolve([]);
+    });
+  }
 
-  traced = trace({
-    path: 'src/foo/bar.html',
-    contents: '<require from="lorem"></require>',
-    moduleId: 'foo/bar.html'
-  }, depsFinder);
-
-  t.deepEqual(traced.deps, ['lorem']);
-
-  t.end();
+  Promise.all([
+    trace({
+      path: 'src/foo/bar.js',
+      contents: 'require("./b");',
+      moduleId: 'foo/bar'
+    }, depsFinder),
+    trace({
+      path: 'src/foo/bar.html',
+      contents: '<require from="lorem"></require>',
+      moduleId: 'foo/bar.html'
+    }, depsFinder)
+  ])
+  .then(result => {
+    const [traced1, traced2] = result;
+    t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
+    t.deepEqual(traced2.deps, ['lorem']);
+    t.end();
+  });
 });
