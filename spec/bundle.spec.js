@@ -18,10 +18,12 @@ test('bundle builds bundle with name, prepends and dependencies', t => {
     name: 'b',
     prepends: ['c', 'd'],
     dependencies: ['foo', 'bar']
+  }, {
+    Package: function (name) { return {name: name}; }
   });
   t.equal(b.name, 'b');
   t.deepEqual(b.prepends, ['c', 'd']);
-  t.deepEqual(b.dependencies, ['foo', 'bar']);
+  t.deepEqual(b.dependencies, [{name: 'foo'}, {name: 'bar'}]);
   t.end();
 });
 
