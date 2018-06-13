@@ -80,7 +80,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
     'packages/foo/package.json': 'lorem'
   });
 
-  defaultLocator({name: 'foo', path: 'packages/foo'})
+  defaultLocator({name: 'foo', location: 'packages/foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -105,7 +105,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
     'packages/foo/package.json': '{"name":"foo","main":"index.js"}'
   });
 
-  defaultLocator({name: 'foo', path: 'packages/foo', main: 'lib/main'})
+  defaultLocator({name: 'foo', location: 'packages/foo', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
