@@ -9,7 +9,7 @@ function mkResponse (text) {
   }
 }
 
-const locator = jsDelivrLocator({bar: '2.0.0-rc1'}, function(url) {
+function mockFetch (url) {
   return new Promise((resolve) => {
     setTimeout(() => {
       if (url.endsWith('foo/package.json') ||
@@ -31,10 +31,14 @@ const locator = jsDelivrLocator({bar: '2.0.0-rc1'}, function(url) {
       resolve({statusText: 'Not Found'});
     }, 10);
   });
-});
+}
+
+const locator = function (packageConfig) {
+  return jsDelivrLocator(packageConfig, {fetch: mockFetch});
+}
 
 test('jsDelivrNpmPackageLocator rejects missing package', t => {
-  locator('nope')
+  locator({name: 'nope'})
   .then(
     () => t.fail('should not pass'),
     () => t.pass('reject missing package')
@@ -42,7 +46,7 @@ test('jsDelivrNpmPackageLocator rejects missing package', t => {
 });
 
 test('jsDelivrNpmPackageLocator returns fileRead func for existing package', t => {
-  locator('foo')
+  locator({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -61,7 +65,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func for existing package', t =
 });
 
 test('jsDelivrNpmPackageLocator returns fileRead func for fixed package version', t => {
-  locator('bar')
+  locator({name: 'bar', version: '2.0.0-rc1'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -80,7 +84,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func for fixed package version'
 });
 
 test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for existing package', t => {
-  locator('foo')
+  locator({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('nope.js')
@@ -94,7 +98,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for e
 });
 
 test('jsDelivrNpmPackageLocator returns fileRead func for existing scoped package', t => {
-  locator('@scoped/pkg')
+  locator({name: '@scoped/pkg'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -113,7 +117,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func for existing scoped packag
 });
 
 test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for existing scoped package', t => {
-  locator('@scoped/pkg')
+  locator({name: '@scoped/pkg'})
   .then(
     fileRead => {
       return fileRead('nope.js')
