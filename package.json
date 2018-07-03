@@ -2,15 +2,20 @@
   "name": "amd_",
   "version": "0.0.1",
   "description": "Humble little code tracer+packer, build your app to AMD format bundle",
-  "main": "index.js",
+  "main": "dist/index.js",
   "types": "index.d.ts",
+  "files": [
+    "index.d.ts",
+    "dist"
+  ],
   "scripts": {
-    "lint": "eslint index.js spec",
+    "lint": "eslint src spec",
     "preversion": "npm test",
     "version": "standard-changelog && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
-    "test": "tape 'spec/**/*.spec.js' | tap-dot"
+    "prepare": "babel src -d dist",
+    "test": "tape -r babel-register 'spec/**/*.spec.js' | tap-dot"
   },
   "repository": {
     "type": "git",
@@ -39,6 +44,10 @@
     "through2": "^2.0.3"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-1": "^6.24.1",
+    "babel-register": "^6.26.0",
     "eslint": "^4.19.1",
     "mock-fs": "^4.4.2",
     "standard-changelog": "^1.0.18",

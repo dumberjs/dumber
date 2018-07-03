@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const trace = require('../lib/trace');
+import test from 'tape';
+import trace from '../src/trace';
 
 test('trace rejects not-matching packageName and moduleId', t => {
   const unit = {

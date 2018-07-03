@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const defines = require('../../lib/transformers/defines');
+import test from 'tape';
+import defines from '../../src/transformers/defines';
 
 // copied from r.js/build/tests/buildUtils.js
 // for toTransport

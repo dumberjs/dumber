@@ -1,9 +1,6 @@
 'use strict';
-const test = require('tape');
-const idUtils = require('../lib/id-utils');
-const resolveModuleId = idUtils.resolveModuleId;
-const ext = idUtils.ext;
-const parse = idUtils.parse;
+import test from 'tape';
+import {resolveModuleId, ext, parse} from '../src/id-utils';
 
 test('ext finds known extname of id', t => {
   t.equal(ext('a.js'), '.js');

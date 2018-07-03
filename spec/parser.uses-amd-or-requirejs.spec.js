@@ -1,7 +1,5 @@
-'use strict';
-const test = require('tape');
-const parser = require('../lib/parser');
-const usesAmdOrRequireJs = parser.usesAmdOrRequireJs;
+import test from 'tape';
+import {usesAmdOrRequireJs} from '../src/parser';
 
 // copied from r.js/build/tests/parse.js
 // for usesAmdOrRequireJs

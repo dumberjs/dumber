@@ -1,7 +1,5 @@
-'use strict';
-
 // wrap html/svg/css into amd
-module.exports = function (moduleId, contents) {
+export default function (moduleId, contents) {
   return {
     defined: ['text!' + moduleId, moduleId],
     contents:'define(\'text!' + moduleId + '\',function(){return ' +
@@ -9,4 +7,4 @@ module.exports = function (moduleId, contents) {
              'define(\'' + moduleId + '\',[\'text!' + moduleId +
              '\'],function(m){return m;});\n'
   };
-};
+}

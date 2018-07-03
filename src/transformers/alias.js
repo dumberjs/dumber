@@ -1,15 +1,14 @@
-'use strict';
-const idUtils = require('../id-utils');
+import {parse} from '../id-utils';
 
 // wrap html/svg/css into amd
-module.exports = function (fromId, toId) {
+export default function (fromId, toId) {
   // fromId, toId, are clean id without .js extname, without text! prefix
 
-  const parsedFromId = idUtils.parse(fromId);
-  const parsedToId = idUtils.parse(toId);
+  const parsedFromId = parse(fromId);
+  const parsedToId = parse(toId);
 
   if (parsedFromId.ext !== parsedToId.ext) {
-    throw new Error('cannot create alias between ids with different extname: "' + fromId + '", "' + toId + '"');
+    throw new Error(`cannot create alias between ids with different extname: "${fromId}", "${toId}"`);
   }
 
   // if got ext, then ext is not .js, we need wrapper
@@ -37,5 +36,4 @@ module.exports = function (fromId, toId) {
                 "'],function(m){return m;});\n"
     };
   }
-
-};
+}

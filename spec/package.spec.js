@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const Package = require('../lib/package');
+import test from 'tape';
+import Package from '../src/package';
 
 test('package rejects invalid options', t => {
   t.throws(() => new Package());

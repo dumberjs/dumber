@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const jsDelivrLocator = require('../../lib/package-locators/jsDelivr');
+import test from 'tape';
+import jsDelivrLocator from '../../src/package-locators/jsDelivr';
 
 function mkResponse (text) {
   return {

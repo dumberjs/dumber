@@ -1,17 +1,14 @@
-/* eslint no-console: 0 */
-// TODO need a logger implementation to remove usage of console
-'use strict';
-const parser = require('../parser');
-const astMatcher = require('ast-matcher');
+import {globalIndentifiers, usesCommonJs, usesAmdOrRequireJs} from '../parser';
+import astMatcher from 'ast-matcher';
 const ensureParsed = astMatcher.ensureParsed;
 
 // wrap cjs into amd if needed
-module.exports = function (contents, forceWrap) {
+export default function (contents, forceWrap) {
   let ast = ensureParsed(contents);
-  let globalIds = parser.globalIndentifiers(ast);
+  let globalIds = globalIndentifiers(ast);
 
-  let cjsUsage = parser.usesCommonJs(ast, globalIds);
-  let amdUsage = parser.usesAmdOrRequireJs(ast, globalIds);
+  let cjsUsage = usesCommonJs(ast, globalIds);
+  let amdUsage = usesAmdOrRequireJs(ast, globalIds);
 
   if (!forceWrap && (amdUsage || !cjsUsage)) {
     // skip wrapping
@@ -30,4 +27,4 @@ module.exports = function (contents, forceWrap) {
     contents: 'define(function (require, exports, module) {' + pre + '\n' +
                contents + '\n});\n'
   };
-};
+}

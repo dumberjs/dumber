@@ -1,9 +1,7 @@
-'use strict';
-
 const KNOWN_EXTS = ['.js', '.json', '.html', '.htm', '.svg', '.css'];
 const idWithPlugin = /^(\w+!)(.+)$/;
 
-function ext (id) {
+export function ext (id) {
   const parts = id.split('/');
   const last = parts.pop();
   const dotPos = last.lastIndexOf('.');
@@ -14,7 +12,7 @@ function ext (id) {
   return '';
 }
 
-function parse (id) {
+export function parse (id) {
   let prefix = '';
   let bareId = id;
   let m = id.match(idWithPlugin);
@@ -42,7 +40,7 @@ function parse (id) {
   }
 }
 
-function resolveModuleId (baseId, relativeId) {
+export function resolveModuleId (baseId, relativeId) {
   let parsedBaseId = parse(baseId);
   let parsed = parse(relativeId);
   if (parsed.bareId[0] !== '.') return parsed.bareId;
@@ -66,7 +64,3 @@ function resolveModuleId (baseId, relativeId) {
 
   return parts.join('/');
 }
-
-exports.ext = ext;
-exports.parse = parse;
-exports.resolveModuleId = resolveModuleId;

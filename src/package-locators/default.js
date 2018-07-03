@@ -1,13 +1,12 @@
-'use strict';
-const util = require('util');
-const fs = require('fs');
-const path = require('path');
+import util from 'util';
+import fs from 'fs';
+import path from 'path';
 
 const fsStat = util.promisify(fs.stat);
 const fsReadFile = util.promisify(fs.readFile);
 
 // default locator using nodejs to resolve package
-module.exports = function (packageConfig, mock) {
+export default function (packageConfig, mock) {
   let name = packageConfig.name;
   // decoupling for testing
   let _resolve = (mock && mock.resolve) || require.resolve;
@@ -48,4 +47,4 @@ module.exports = function (packageConfig, mock) {
       }
     }
   );
-};
+}

@@ -1,15 +1,14 @@
 'use strict';
-const json = require('./transformers/json');
-const text = require('./transformers/text');
-const cjs = require('./transformers/cjs');
-const defines = require('./transformers/defines');
-const idUtils = require('./id-utils');
-const resolveModuleId = idUtils.resolveModuleId;
+import json from './transformers/json';
+import text from './transformers/text';
+import cjs from './transformers/cjs';
+import defines from './transformers/defines';
+import {resolveModuleId} from './id-utils';
 
 const text_exts = ['.html', '.htm', '.svg', '.css'];
 
 // depsFinder is optional
-module.exports = function (unit, depsFinder) {
+export default function (unit, depsFinder) {
   const path = unit.path;
   let contents = unit.contents;
   let sourceMap = unit.sourceMap;
@@ -47,7 +46,7 @@ module.exports = function (unit, depsFinder) {
     }
 
     if (defResult.deps) {
-      defResult.deps.forEach(function (d) { deps.add(resolveModuleId(moduleId, d)); });
+      defResult.deps.forEach(d => deps.add(resolveModuleId(moduleId, d)));
     }
 
     contents = defResult.contents;
@@ -58,7 +57,7 @@ module.exports = function (unit, depsFinder) {
     let jsonResult = json(moduleId, contents);
     contents = jsonResult.contents;
     defined = jsonResult.defined;
-  } else if (text_exts.findIndex(function (t) { return path.endsWith(t); }) !== -1) {
+  } else if (text_exts.findIndex(t => path.endsWith(t)) !== -1) {
     sourceMap = undefined;
     let textResult = text(moduleId, contents);
     contents = textResult.contents;
@@ -72,7 +71,7 @@ module.exports = function (unit, depsFinder) {
     p = p.then(() => depsFinder(path, unit.contents))
     .then(newDeps => {
       if (newDeps && newDeps.length) {
-        newDeps.forEach(function (d) { deps.add(resolveModuleId(moduleId, d)); });
+        newDeps.forEach(d => deps.add(resolveModuleId(moduleId, d)));
       }
     });
   }
@@ -87,4 +86,4 @@ module.exports = function (unit, depsFinder) {
     packageName: packageName,
     shimed: shimed
   }));
-};
+}

@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const Bundle = require('../lib/bundle');
+import test from 'tape';
+import Bundle from '../src/bundle';
 
 test('bundle rejects missing bundle name', t => {
   t.throws(() => new Bundle());

@@ -1,12 +1,10 @@
-'use strict';
-/* eslint no-console: 0 */
+import {globalIndentifiers} from '../parser';
+import astMatcher from 'ast-matcher';
+const ensureParsed = astMatcher.ensureParsed;
+
 const warn = function (message) {
   console.warn('[amd_] WARN: ' + message);
 }
-
-const parser = require('../parser');
-const astMatcher = require('ast-matcher');
-const ensureParsed = astMatcher.ensureParsed;
 
 const defineCallFinder = astMatcher('define(__anl_args)');
 const cjsDepFinder = astMatcher.depFinder('require(__dep)');
@@ -21,7 +19,7 @@ const amdRequireDepFinder = astMatcher.depFinder(
   'requirejs(__any, [__deps], __any)'
 );
 
-module.exports = function(moduleId, amdContents, shim) {
+export default function(moduleId, amdContents, shim) {
   let result = ensureNamedDefine(moduleId, amdContents);
 
   let reqDeps = amdRequireDepFinder(result.contents);
@@ -99,7 +97,7 @@ function ensureNamedDefine (moduleId, amdContents) {
     }
   }
 
-  let definesIdentifiers = parser.globalIndentifiers(ast).define;
+  let definesIdentifiers = globalIndentifiers(ast).define;
 
   defineCalls = defineCalls.filter(function (match)  {
     return definesIdentifiers.indexOf(match.node.callee) !== -1;

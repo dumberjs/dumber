@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const cjs = require('../../lib/transformers/cjs');
+import test from 'tape';
+import cjs from '../../src/transformers/cjs';
 
 // copied from r.js/build/tests/convert.js
 // for commonJs.convert

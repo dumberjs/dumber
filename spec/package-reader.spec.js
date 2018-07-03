@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const PackageReader = require('../lib/package-reader');
+import test from 'tape';
+import PackageReader from '../src/package-reader';
 
 function mockLocator(name, filesMap) {
   return function (filePath) {

@@ -1,17 +1,13 @@
-'use strict';
-require('./ensure-parser-set');
-const escope = require('escope');
-const astMatcher = require('ast-matcher');
-const ensureParsed = astMatcher.ensureParsed;
-const compilePattern = astMatcher.compilePattern;
-const extract = astMatcher.extract;
+import {analyze} from 'escope';
+import astMatcher, {ensureParsed, compilePattern, extract} from 'ast-matcher';
+import './ensure-parser-set';
 
 // https://github.com/jrburke/amdefine
 const amdefinePattern = compilePattern('var define = require("amdefine")(__anl)').declarations[0];
 
-function globalIndentifiers (code) {
+export function globalIndentifiers (code) {
   let ast = ensureParsed(code);
-  let scopeManager = escope.analyze(ast, {ecmaVersion: 6});
+  let scopeManager = analyze(ast, {ecmaVersion: 6});
   let globalScope = scopeManager.acquire(ast);
 
   let globalIndentifiers = {};
@@ -64,7 +60,7 @@ const findCjsRequireIdentifiers = function (code) {
   if (requireIdendifers.length) return requireIdendifers;
 };
 
-function usesCommonJs (code, globals) {
+export function usesCommonJs (code, globals) {
   let ast = ensureParsed(code);
   if (!globals) {
     globals = globalIndentifiers(ast);
@@ -122,7 +118,7 @@ const findAmdRequireConfigIdentifiers = function (code) {
   if (requireIdendifers.length) return requireIdendifers;
 };
 
-function usesAmdOrRequireJs (code, globals) {
+export function usesAmdOrRequireJs (code, globals) {
   let ast = ensureParsed(code);
   if (!globals) {
     globals = globalIndentifiers(ast);
@@ -152,8 +148,3 @@ function usesAmdOrRequireJs (code, globals) {
     return usage;
   }
 }
-
-exports.globalIndentifiers = globalIndentifiers;
-exports.usesCommonJs = usesCommonJs;
-exports.usesAmdOrRequireJs = usesAmdOrRequireJs;
-

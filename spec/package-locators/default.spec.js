@@ -1,7 +1,6 @@
-'use strict';
-const test = require('tape');
-const _defaultLocator = require('../../lib/package-locators/default');
-const mock = require('mock-fs');
+import test from 'tape';
+import _defaultLocator from '../../src/package-locators/default';
+import mock from 'mock-fs';
 
 function resolveMock(path) {
   return 'node_modules/' + path;

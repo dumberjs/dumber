@@ -1,7 +1,5 @@
-'use strict';
-
 // wrap json into amd
-module.exports = function (moduleId, contents) {
+export default function (moduleId, contents) {
   return {
     defined: ['text!' + moduleId, moduleId, 'json!' + moduleId],
     contents:'define(\'text!' + moduleId + '\',function(){return ' +
@@ -11,4 +9,4 @@ module.exports = function (moduleId, contents) {
              'define(\'json!' + moduleId + '\',[\'' + moduleId +
              '\'],function(m){return m;});\n'
   };
-};
+}

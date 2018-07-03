@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const alias = require('../../lib/transformers/alias');
+import test from 'tape';
+import alias from '../../src/transformers/alias';
 
 test('alias creates aliases for js module', t => {
   t.deepEqual(alias('from/id', 'to/id'), {

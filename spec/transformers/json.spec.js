@@ -1,6 +1,5 @@
-'use strict';
-const test = require('tape');
-const json = require('../../lib/transformers/json');
+import test from 'tape';
+import json from '../../src/transformers/json';
 
 test('json wraps json into amd module', t => {
   const source = '{"a":1}';

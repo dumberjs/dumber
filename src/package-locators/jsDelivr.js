@@ -1,5 +1,4 @@
 /* global fetch */
-'use strict';
 // use in browser only
 let prefix = '//cdn.jsdelivr.net/npm/';
 
@@ -20,7 +19,7 @@ function fetchJson(fetchApi, url) {
 }
 
 // use jsDelivr to find npm package files
-module.exports = function (packageConfig, mock) {
+export default function (packageConfig, mock) {
   // decoupling for testing
   let _fetch = mock && mock.fetch;
 

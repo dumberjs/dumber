@@ -1,7 +1,6 @@
 'use strict';
-const test = require('tape');
-const parser = require('../lib/parser');
-const usesCommonJs = parser.usesCommonJs;
+import test from 'tape';
+import {usesCommonJs} from '../src/parser';
 
 // copied from r.js/build/tests/parse.js
 // for usesCommonJs
