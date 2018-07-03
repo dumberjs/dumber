@@ -92,13 +92,7 @@ export class Tracer {
   }
 
   bundleOf(unit) {
-    const bLen = this.bundles.length;
-
-    for (let b = 0; b < bLen; b += 1) {
-      const bundle = this.bundles[b];
-      // always match the last entryBundle
-      if (b === bLen - 1 || bundle.match(unit)) return bundle;
-    }
+    return this.bundles.find(b => b.match(unit)) || this.entryBundle;
   }
 
   unitOfModuleId(moduleId) {
