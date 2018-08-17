@@ -273,6 +273,35 @@ test('defines inserts correctly for cjs wrapper define case 3', t => {
   t.end();
 });
 
+test('defines inserts correctly for cjs wrapper define case 4, keep deps order', t => {
+  const good5 = 'if ("function" === typeof define && define.amd) {\n' +
+                '    define(function (require, exports, module) {\n' +
+                '        return {\n' +
+                '            name: "five",\n' +
+                '            c: require("./c"),\n' +
+                '            a: require("./a"),\n' +
+                '            b: require("./b")\n' +
+                '        };\n' +
+                '    });\n' +
+                '}';
+  const goodExpected5 = 'if ("function" === typeof define && define.amd) {\n' +
+                        '    define(\'good/5\',[\'require\',\'exports\',\'module\',\'./c\',\'./a\',\'./b\'],function (require, exports, module) {\n' +
+                        '        return {\n' +
+                        '            name: "five",\n' +
+                        '            c: require("./c"),\n' +
+                        '            a: require("./a"),\n' +
+                        '            b: require("./b")\n' +
+                        '        };\n' +
+                        '    });\n' +
+                        '}';
+  const r = defines('good/5', good5);
+  t.equal(r.defined, 'good/5');
+  t.notOk(r.shimed);
+  t.deepEqual(r.deps, ['./c', './a', './b']);
+  t.equal(r.contents, goodExpected5);
+  t.end();
+});
+
 test('defines shim', t => {
   const shim = 'var Foo = "Foo";';
   const shimExpected = 'var Foo = "Foo";\n' +
