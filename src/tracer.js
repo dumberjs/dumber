@@ -148,9 +148,30 @@ export class Tracer {
     return tracedUnit;
   }
 
-  // TODO before resolve first time run, resolve all explicit dependencies first
+  _resolveExplicitDepsIfNeeded() {
+    if (this.isExplicitDepsResolved) return Promise.resolve();
+
+    const bLen = this.bundles.length;
+    let works = [];
+
+    for (let b = 0; b < bLen; b += 1) {
+      const dependencies = this.bundles[b].dependencies;
+      const len = dependencies.length;
+
+      for (let i = 0; i < len; i += 1) {
+        const pkg = dependencies[i];
+        works.push(this.packageReaderFor(pkg).then(reader => {
+          // TODO
+          return reader;
+        }));
+      }
+    }
+  }
+
   // TODO loop resolve to resolve all
   resolve() {
+    this._resolveExplicitDepsIfNeeded();
+
     let todo = [];
 
     this.moduleIdTodo.forEach(id => {
