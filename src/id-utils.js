@@ -1,5 +1,5 @@
 const KNOWN_EXTS = ['.js', '.json', '.html', '.htm', '.svg', '.css'];
-const idWithPlugin = /^(\w+!)(.+)$/;
+const idWithPlugin = /^(\w+!)(.+?)\/?$/;
 
 export function ext (id) {
   const parts = id.split('/');
