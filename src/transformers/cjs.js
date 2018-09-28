@@ -17,7 +17,7 @@ export default function (contents, forceWrap) {
 
   let pre = '';
   if (cjsUsage && (cjsUsage.dirname || cjsUsage.filename)) {
-    pre = 'var __filename = module.uri || \'\', ' +
+    pre = 'var __filename = module.filename || \'\', ' +
           '__dirname = ' +
           '__filename.substring(0, __filename.lastIndexOf(\'/\') + 1);';
   }
