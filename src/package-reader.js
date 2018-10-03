@@ -1,4 +1,5 @@
-import {ext, parse} from './id-utils';
+import {parse, nodejsIds} from 'dumber-module-loader/dist/id-utils';
+import {stripJsExtension} from './shared';
 
 export default class PackageReader {
   constructor(locator) {
@@ -20,24 +21,32 @@ export default class PackageReader {
       return this._targetPath(main);
     }).then(mainPath => {
       this.mainPath = mainPath;
-      this.parsedMainId = parse(mainPath);
+      this.parsedMainId = parse(stripJsExtension(mainPath));
     });
   }
 
   _targetPath(id) {
-    if (ext(id)) {
-      return Promise.resolve(id);
-    } else {
-      const fileRef = id + '.js';
-      const folderRef = id + '/index.js';
-      // when main is "lib", it could means lib.js or lib/index.js
-      return this.locator(fileRef).then(
-        () => fileRef,
-        () => {
-          return this.locator(folderRef).then(() => folderRef);
-        }
-      );
+    const ids = nodejsIds(id);
+    let i = 0;
+    let len = ids.length;
+
+    const resolve = () => {
+      if (i < len) {
+        const _id = ids[i];
+        i += 1;
+        return this.locator(_id)
+        .then(
+          () => _id,
+          () => {
+          return resolve();
+          }
+        );
+      } else {
+        return Promise.reject(new Error(`no available file found for ${id}`));
+      }
     }
+
+    return resolve();
   }
 
   readMain() {
@@ -82,7 +91,7 @@ export default class PackageReader {
     return this.locator(filePath).then(file => ({
       path: file.path,
       contents: file.contents,
-      moduleId: this.name + '/' + parse(filePath).bareId,
+      moduleId: this.name + '/' + parse(stripJsExtension(filePath)).bareId,
       packageName: this.name
     }));
   }

@@ -3,7 +3,7 @@ import json from './transformers/json';
 import text from './transformers/text';
 import cjs from './transformers/cjs';
 import defines from './transformers/defines';
-import {resolveModuleId} from './id-utils';
+import {resolveModuleId} from 'dumber-module-loader/dist/id-utils';
 
 const text_exts = ['.html', '.htm', '.svg', '.css'];
 

@@ -1,7 +1,7 @@
 {
-  "name": "amd_",
+  "name": "dumber",
   "version": "0.0.1",
-  "description": "Humble little code tracer+packer, build your app to AMD format bundle",
+  "description": "A dumb bundler for building JavasScript Single Page Application, dumber than you and me",
   "main": "dist/index.js",
   "types": "index.d.ts",
   "files": [
@@ -12,46 +12,42 @@
     "lint": "eslint src spec",
     "preversion": "npm test",
     "version": "standard-changelog && git add CHANGELOG.md",
-    "postversion": "git push && git push --tags && npm publish",
+    "postversion": "git push && git push --tags",
     "pretest": "npm run lint",
     "prepare": "babel src -d dist",
-    "test": "tape -r babel-register 'spec/**/*.spec.js' | tap-dot"
+    "test": "tape -r @babel/register 'spec/**/*.spec.js' | tap-dot"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/huochunpeng/amd_.git"
+    "url": "git+https://github.com/huochunpeng/dumber.git"
   },
   "keywords": [
     "bundle",
     "browser",
-    "amd",
-    "requirejs"
+    "amd"
   ],
   "author": "Chunpeng Huo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/huochunpeng/amd_/issues"
+    "url": "https://github.com/huochunpeng/dumber/issues"
   },
-  "homepage": "https://github.com/huochunpeng/amd_#readme",
+  "homepage": "https://github.com/huochunpeng/dumber#readme",
   "dependencies": {
     "ast-matcher": "^0.1.6",
+    "dumber-module-loader": "bitbucket:huochunpeng/dumber-module-loader#v0.2.0",
     "escope": "^3.6.0",
-    "esprima": "^4.0.0",
-    "gulp": "^4.0.0",
-    "gulp-util": "^3.0.8",
-    "requirejs": "^2.3.5",
-    "text": "requirejs/text",
-    "through2": "^2.0.3"
+    "esprima": "^4.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-stage-1": "^6.24.1",
-    "babel-register": "^6.26.0",
-    "eslint": "^4.19.1",
-    "mock-fs": "^4.4.2",
-    "standard-changelog": "^1.0.18",
-    "tap-dot": "^1.0.5",
-    "tape": "^4.9.0"
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/register": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.6.1",
+    "mock-fs": "^4.7.0",
+    "standard-changelog": "^2.0.1",
+    "tap-dot": "^2.0.0",
+    "tape": "^4.9.1"
   }
 }

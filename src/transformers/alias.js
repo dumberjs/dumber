@@ -1,11 +1,11 @@
-import {parse} from '../id-utils';
+import {parse} from 'dumber-module-loader/dist/id-utils';
+import {stripJsExtension} from '../shared';
 
-// wrap html/svg/css into amd
 export default function (fromId, toId) {
   // fromId, toId, are clean id without .js extname, without text! prefix
 
-  const parsedFromId = parse(fromId);
-  const parsedToId = parse(toId);
+  const parsedFromId = parse(stripJsExtension(fromId));
+  const parsedToId = parse(stripJsExtension(toId));
 
   if (parsedFromId.ext !== parsedToId.ext) {
     throw new Error(`cannot create alias between ids with different extname: "${fromId}", "${toId}"`);

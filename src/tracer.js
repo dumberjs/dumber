@@ -1,6 +1,6 @@
 import Bundle from './bundle';
 import trace from './trace';
-import {parse, ext} from './id-utils';
+import {parse, ext} from 'dumber-module-loader/dist/id-utils';
 import alias from './transformers/alias';
 import defaultPackageLocator from './package-locators/default';
 import PackageReader from './package-reader';

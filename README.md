@@ -1,3 +1,4 @@
-# amd_
+# dumber
 
-Humble little code tracer+packer, build your app to AMD format bundles.
+A dumb bundler for building JavasScript Single Page Application, dumber than you and me.
+
