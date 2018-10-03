@@ -15,7 +15,9 @@
     "postversion": "git push && git push --tags",
     "pretest": "npm run lint",
     "prepare": "babel src -d dist",
-    "test": "tape -r @babel/register 'spec/**/*.spec.js' | tap-dot"
+    "nodejs-test": "tape -r @babel/register 'spec/**/*.spec.js' | tap-dot",
+    "browser-test": "browserify -t babelify spec/all-browser-spec.js | tape-run | tap-dot",
+    "test": "npm run nodejs-test && npm run browser-test"
   },
   "repository": {
     "type": "git",
@@ -44,10 +46,13 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/register": "^7.0.0",
     "babel-eslint": "^10.0.1",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
     "eslint": "^5.6.1",
     "mock-fs": "^4.7.0",
     "standard-changelog": "^2.0.1",
     "tap-dot": "^2.0.0",
-    "tape": "^4.9.1"
+    "tape": "^4.9.1",
+    "tape-run": "^4.0.0"
   }
 }
