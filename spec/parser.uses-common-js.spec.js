@@ -91,3 +91,7 @@ test('usesCommonJs understands amdefine', t => {
   t.end();
 });
 
+test('usesCommonJs ignores es2015 module', t => {
+  t.equal(usesCommonJs("export const foo = 'bar';"), undefined);
+  t.end();
+});

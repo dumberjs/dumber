@@ -6,6 +6,7 @@ require('./package-reader.spec.js');
 require('./package.spec.js');
 require('./parser.uses-amd-or-requirejs.spec.js');
 require('./parser.uses-common-js.spec.js');
+require('./parser.uses-esm.spec.js');
 require('./trace.spec.js');
 require('./transformers/alias.spec.js');
 require('./transformers/cjs.spec.js');

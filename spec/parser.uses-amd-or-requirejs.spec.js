@@ -121,6 +121,11 @@ test('usesAmdOrRequireJs understands amdefine', t => {
   t.end();
 });
 
+test('usesAmdOrRequireJs ignores es2015 module', t => {
+  t.equal(usesAmdOrRequireJs("export const foo = 'bar';"), undefined);
+  t.end();
+});
+
 // declaresDefine and defineAmd are not implemented.
 /*
 function parseUsesAmdOrRequireJs(t) {

@@ -1,5 +1,5 @@
 import {analyze} from 'escope';
-import astMatcher, {ensureParsed, compilePattern, extract} from 'ast-matcher';
+import astMatcher, {ensureParsed, compilePattern, extract, traverse, STOP} from 'ast-matcher';
 import './ensure-parser-set';
 
 // https://github.com/jrburke/amdefine
@@ -32,7 +32,7 @@ export function globalIndentifiers (code) {
   return globalIndentifiers;
 }
 
-function hasOne(list, interested) {
+function some(list, interested) {
   if (interested) {
     let len = interested.length
     for (let i = 0; i < len; i += 1) {
@@ -67,7 +67,7 @@ export function usesCommonJs (code, globals) {
   }
   let usage = {};
 
-  if (globals['require'] && hasOne(globals['require'], findCjsRequireIdentifiers(ast))) {
+  if (globals['require'] && some(globals['require'], findCjsRequireIdentifiers(ast))) {
     usage.require = true;
   }
 
@@ -129,11 +129,11 @@ export function usesAmdOrRequireJs (code, globals) {
 
   if (globals['require']) {
     let list = globals['require'];
-    if (hasOne(list, findAmdRequireIdentifiers(ast))) {
+    if (some(list, findAmdRequireIdentifiers(ast))) {
       usage.require = true;
     }
 
-    if (hasOne(list, findAmdRequireConfigIdentifiers(ast))) {
+    if (some(list, findAmdRequireConfigIdentifiers(ast))) {
       usage.requireConfig = true;
     }
   }
@@ -147,4 +147,19 @@ export function usesAmdOrRequireJs (code, globals) {
   if (Object.keys(usage).length) {
     return usage;
   }
+}
+
+export function usesEsm(code) {
+  let ast = ensureParsed(code);
+  let isEsm = false;
+  traverse(ast, node => {
+    if (node.type === 'ImportDeclaration' ||
+        node.type === 'ExportAllDeclaration' ||
+        node.type === 'ExportDefaultDeclaration' ||
+        node.type === 'ExportNamedDeclaration') {
+      isEsm = true;
+      return STOP;
+    }
+  });
+  return isEsm;
 }
