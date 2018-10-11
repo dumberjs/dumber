@@ -3,7 +3,7 @@ import astMatcher from 'ast-matcher';
 const ensureParsed = astMatcher.ensureParsed;
 
 const warn = function (message) {
-  console.warn('[amd_] WARN: ' + message);
+  console.warn('[dumber] WARN: ' + message);
 }
 
 const defineCallFinder = astMatcher('define(__anl_args)');

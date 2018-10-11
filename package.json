@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/huochunpeng/dumber#readme",
   "dependencies": {
+    "@babel/plugin-transform-modules-amd": "^7.1.0",
     "ast-matcher": "^1.0.1",
     "dumber-module-loader": "bitbucket:huochunpeng/dumber-module-loader#v0.10.0",
     "escope": "^3.6.0",

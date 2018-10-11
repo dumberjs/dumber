@@ -125,12 +125,10 @@ test('trace transforms json', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.json',
-      contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});\n" +
-                "define('foo/bar.json',['text!foo/bar.json'],function(m){return JSON.parse(m);});\n" +
-                "define('json!foo/bar.json',['foo/bar.json'],function(m){return m;});\n",
+      contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});\n",
       sourceMap: undefined,
       moduleId: 'foo/bar.json',
-      defined: ['text!foo/bar.json', 'foo/bar.json', 'json!foo/bar.json'],
+      defined: ['text!foo/bar.json'],
       deps: [],
       packageName: undefined,
       shimed: undefined
@@ -149,11 +147,10 @@ test('trace transforms text file', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.html',
-      contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});\n" +
-                "define('foo/bar.html',['text!foo/bar.html'],function(m){return m;});\n",
+      contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});\n",
       sourceMap: undefined,
       moduleId: 'foo/bar.html',
-      defined: ['text!foo/bar.html', 'foo/bar.html'],
+      defined: ['text!foo/bar.html'],
       deps: [],
       packageName: undefined,
       shimed: undefined

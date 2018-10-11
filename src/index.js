@@ -3,7 +3,7 @@ const through = require('through2');
 const gutil = require('gulp-util');
 const PluginError = gutil.PluginError;
 
-const PLUGIN_NAME = 'amd_trace';
+const PLUGIN_NAME = 'dumber';
 
 /*
 Optional options:

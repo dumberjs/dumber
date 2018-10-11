@@ -1,11 +1,8 @@
 'use strict';
-import json from './transformers/json';
 import text from './transformers/text';
-import cjs from './transformers/cjs';
+import cjsEs from './transformers/cjs-es';
 import defines from './transformers/defines';
-import {resolveModuleId} from 'dumber-module-loader/dist/id-utils';
-
-const text_exts = ['.html', '.htm', '.svg', '.css'];
+import {ext, resolveModuleId} from 'dumber-module-loader/dist/id-utils';
 
 // depsFinder is optional
 export default function (unit, depsFinder) {
@@ -23,22 +20,22 @@ export default function (unit, depsFinder) {
 
   let deps = new Set();
   let defined;
-
-  if (path.endsWith('.js')) {
+  let extname = ext(path);
+  if (extname === '.js') {
     const forceCjsWrap = !!path.match(/\/(cjs|commonjs)\//i);
-    let cjsResult = cjs(contents, forceCjsWrap);
+    let cjsEsResult = cjsEs(contents, forceCjsWrap);
 
     // mimic requirejs runtime behaviour,
     // if no module defined, add an empty shim
-    if (!shim && !forceCjsWrap && cjsResult.contents === contents) {
+    if (!shim && !forceCjsWrap && cjsEsResult.contents === contents) {
       // when defines transformer did make a named define,
       // this shim placeholder will be ignore by the transformer.
       shim = { deps: [] };
     }
 
-    let defResult = defines(moduleId, cjsResult.contents, shim);
+    let defResult = defines(moduleId, cjsEsResult.contents, shim);
 
-    let headLines = (cjsResult.headLines || 0) + (defResult.headLines || 0);
+    let headLines = (cjsEsResult.headLines || 0) + (defResult.headLines || 0);
     if (headLines && sourceMap) {
       let prefix = '';
       for (let i = 0; i < headLines; i += 1) prefix += ';';
@@ -52,12 +49,8 @@ export default function (unit, depsFinder) {
     contents = defResult.contents;
     defined = defResult.defined;
     shimed = defResult.shimed;
-  } else if (path.endsWith('.json')) {
-    sourceMap = undefined;
-    let jsonResult = json(moduleId, contents);
-    contents = jsonResult.contents;
-    defined = jsonResult.defined;
-  } else if (text_exts.findIndex(t => path.endsWith(t)) !== -1) {
+  } else if (extname !== '.wasm') {
+    // use text! for everything else including unknown extname
     sourceMap = undefined;
     let textResult = text(moduleId, contents);
     contents = textResult.contents;
