@@ -2,7 +2,6 @@ import util from 'util';
 import fs from 'fs';
 import path from 'path';
 
-const fsStat = util.promisify(fs.stat);
 const fsReadFile = util.promisify(fs.readFile);
 
 // default locator using nodejs to resolve package
@@ -10,6 +9,7 @@ export default function (packageConfig, mock) {
   let name = packageConfig.name;
   // decoupling for testing
   let _resolve = (mock && mock.resolve) || require.resolve;
+  let _readFile = (mock && mock.readFile) || fsReadFile;
   let packagePath;
   let hardCodedMain = packageConfig.main;
 
@@ -24,27 +24,22 @@ export default function (packageConfig, mock) {
     }
   }
 
+  return Promise.resolve(filePath => {
+    const fp = path.join(packagePath, filePath);
 
-  return fsStat(packagePath).then(
-    function () {
-      return function (filePath) {
-        const fp = path.join(packagePath, filePath);
-
-        if (hardCodedMain && (filePath === 'package.json' || filePath === './package.json')) {
-          return Promise.resolve({
-            path: path.resolve(fp),
-            contents: JSON.stringify({name: name, main: hardCodedMain})
-          });
-        }
-
-        return fsReadFile(fp)
-        .then(function (buffer) {
-          return {
-            path: path.resolve(fp),
-            contents: buffer.toString()
-          };
-        });
-      }
+    if (hardCodedMain && (filePath === 'package.json' || filePath === './package.json')) {
+      return Promise.resolve({
+        path: path.resolve(fp),
+        contents: JSON.stringify({name: name, main: hardCodedMain})
+      });
     }
-  );
+
+    return _readFile(fp)
+    .then(buffer => {
+      return {
+        path: path.resolve(fp),
+        contents: buffer.toString()
+      };
+    });
+  });
 }

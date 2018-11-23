@@ -1,136 +1,41 @@
 import test from 'tape';
 import _defaultLocator from '../../src/package-locators/default';
-import mock from 'mock-fs';
 
-function resolveMock(path) {
+function resolve(path) {
   return 'node_modules/' + path;
 }
 
-function defaultLocator(packageConfig) {
-  return _defaultLocator(packageConfig, {resolve: resolveMock});
+function buildReadFile(fakeFs) {
+  return path => {
+    if (fakeFs[path]) return Promise.resolve(fakeFs[path]);
+    return Promise.reject('no file at ' + path);
+  };
 }
 
-test('defaultNpmPackageLocator rejects missing package', t => {
-  mock();
+function defaultLocator(packageConfig, fakeFs = {}) {
+  return _defaultLocator(packageConfig, {resolve, readFile: buildReadFile(fakeFs)});
+}
 
+test('defaultNpmPackageLocator rejects missing package.json', t => {
   defaultLocator({name: 'foo'})
   .then(
-    () => t.fail('should not pass'),
-    () => t.pass('reject missing package')
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        () => t.fail('should not pass'),
+        e => t.pass(e.message)
+      );
+    },
+    err => t.fail(err.message)
   )
   .then(() => {
-    mock.restore();
     t.end();
   });
 });
 
 test('defaultNpmPackageLocator returns fileRead func for existing package', t => {
-  mock({
+  defaultLocator({name: 'foo'}, {
     'node_modules/foo/package.json': 'lorem'
-  });
-
-  defaultLocator({name: 'foo'})
-  .then(
-    fileRead => {
-      return fileRead('package.json')
-      .then(
-        file => {
-          t.ok(file.path.endsWith('node_modules/foo/package.json'));
-          t.equal(file.contents, 'lorem');
-        },
-        err => t.fail(err.message)
-      );
-    },
-    () => t.fail('should not fail')
-  )
-  .then(() => {
-    mock.restore();
-    t.end();
-  });
-});
-
-test('defaultNpmPackageLocator returns fileRead func for package with hard coded main', t => {
-  mock({
-    'node_modules/foo/package.json': '{"name":"foo","main":"index.js"}'
-  });
-
-  defaultLocator({name: 'foo', main: 'lib/main'})
-  .then(
-    fileRead => {
-      return fileRead('package.json')
-      .then(
-        file => {
-          t.ok(file.path.endsWith('node_modules/foo/package.json'));
-          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
-        },
-        err => t.fail(err.message)
-      );
-    },
-    () => t.fail('should not fail')
-  )
-  .then(() => {
-    mock.restore();
-    t.end();
-  });
-});
-
-test('defaultNpmPackageLocator returns fileRead func for package with custom path', t => {
-  mock({
-    'packages/foo/package.json': 'lorem'
-  });
-
-  defaultLocator({name: 'foo', location: 'packages/foo'})
-  .then(
-    fileRead => {
-      return fileRead('package.json')
-      .then(
-        file => {
-          t.ok(file.path.endsWith('packages/foo/package.json'));
-          t.equal(file.contents, 'lorem');
-        },
-        err => t.fail(err.message)
-      );
-    },
-    () => t.fail('should not fail')
-  )
-  .then(() => {
-    mock.restore();
-    t.end();
-  });
-});
-
-test('defaultNpmPackageLocator returns fileRead func for package with custom path and hard coded main', t => {
-  mock({
-    'packages/foo/package.json': '{"name":"foo","main":"index.js"}'
-  });
-
-  defaultLocator({name: 'foo', location: 'packages/foo', main: 'lib/main'})
-  .then(
-    fileRead => {
-      return fileRead('package.json')
-      .then(
-        file => {
-          t.ok(file.path.endsWith('packages/foo/package.json'));
-          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
-        },
-        err => t.fail(err.message)
-      );
-    },
-    () => t.fail('should not fail')
-  )
-  .then(() => {
-    mock.restore();
-    t.end();
-  });
-});
-
-test('defaultNpmPackageLocator can read parent node_modules folder', t => {
-  mock({
-    '../node_modules/foo/package.json': 'lorem'
-  });
-
-  _defaultLocator({name: 'foo'}, {
-    resolve: function(path) { return '../node_modules/' + path; }
   })
   .then(
     fileRead => {
@@ -146,17 +51,105 @@ test('defaultNpmPackageLocator can read parent node_modules folder', t => {
     () => t.fail('should not fail')
   )
   .then(() => {
-    mock.restore();
+    t.end();
+  });
+});
+
+test('defaultNpmPackageLocator returns fileRead func for package with hard coded main', t => {
+  defaultLocator({name: 'foo', main: 'lib/main'}, {
+    'node_modules/foo/package.json': '{"name":"foo","main":"index.js"}'
+  })
+  .then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.ok(file.path.endsWith('node_modules/foo/package.json'));
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
+        },
+        err => t.fail(err.message)
+      );
+    },
+    () => t.fail('should not fail')
+  )
+  .then(() => {
+    t.end();
+  });
+});
+
+test('defaultNpmPackageLocator returns fileRead func for package with custom path', t => {
+  defaultLocator({name: 'foo', location: 'packages/foo'}, {
+    'packages/foo/package.json': 'lorem'
+  })
+  .then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.ok(file.path.endsWith('packages/foo/package.json'));
+          t.equal(file.contents, 'lorem');
+        },
+        err => t.fail(err.message)
+      );
+    },
+    () => t.fail('should not fail')
+  )
+  .then(() => {
+    t.end();
+  });
+});
+
+test('defaultNpmPackageLocator returns fileRead func for package with custom path and hard coded main', t => {
+  defaultLocator({name: 'foo', location: 'packages/foo', main: 'lib/main'}, {
+    'packages/foo/package.json': '{"name":"foo","main":"index.js"}'
+  })
+  .then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.ok(file.path.endsWith('packages/foo/package.json'));
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
+        },
+        err => t.fail(err.message)
+      );
+    },
+    () => t.fail('should not fail')
+  )
+  .then(() => {
+    t.end();
+  });
+});
+
+test('defaultNpmPackageLocator can read parent node_modules folder', t => {
+  _defaultLocator({name: 'foo'}, {
+    resolve: function(path) { return '../node_modules/' + path; },
+    readFile: buildReadFile({
+      '../node_modules/foo/package.json': 'lorem'
+    })
+  })
+  .then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.ok(file.path.endsWith('node_modules/foo/package.json'));
+          t.equal(file.contents, 'lorem');
+        },
+        err => t.fail(err.message)
+      );
+    },
+    () => t.fail('should not fail')
+  )
+  .then(() => {
     t.end();
   });
 });
 
 test('defaultNpmPackageLocator returns fileRead func rejects missing file for existing package', t => {
-  mock({
+  defaultLocator({name: 'foo'}, {
     'node_modules/foo/package.json': 'lorem'
-  });
-
-  defaultLocator({name: 'foo'})
+  })
   .then(
     fileRead => {
       return fileRead('nope')
@@ -168,17 +161,14 @@ test('defaultNpmPackageLocator returns fileRead func rejects missing file for ex
     () => t.fail('should not fail')
   )
   .then(() => {
-    mock.restore();
     t.end();
   });
 });
 
 test('defaultNpmPackageLocator returns fileRead func for existing scoped package', t => {
-  mock({
+  defaultLocator({name: '@bar/foo'}, {
     'node_modules/@bar/foo/package.json': 'lorem'
-  });
-
-  defaultLocator({name: '@bar/foo'})
+  })
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -193,17 +183,14 @@ test('defaultNpmPackageLocator returns fileRead func for existing scoped package
     () => t.fail('should not fail')
   )
   .then(() => {
-    mock.restore();
     t.end();
   });
 });
 
 test('defaultNpmPackageLocator returns fileRead func rejects missing file for existing scoped package', t => {
-  mock({
+  defaultLocator({name: '@bar/foo'}, {
     'node_modules/@bar/foo/package.json': 'lorem'
-  });
-
-  defaultLocator({name: '@bar/foo'})
+  })
   .then(
     fileRead => {
       return fileRead('nope')
@@ -215,7 +202,6 @@ test('defaultNpmPackageLocator returns fileRead func rejects missing file for ex
     () => t.fail('should not fail')
   )
   .then(() => {
-    mock.restore();
     t.end();
   });
 });

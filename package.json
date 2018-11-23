@@ -50,7 +50,6 @@
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "eslint": "^5.6.1",
-    "mock-fs": "^4.7.0",
     "standard-changelog": "^2.0.1",
     "tap-dot": "^2.0.0",
     "tape": "^4.9.1",
