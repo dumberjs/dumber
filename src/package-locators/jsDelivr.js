@@ -8,6 +8,11 @@ function fetchText(fetchApi, url) {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
+    if (response.redirected) {
+      // jsdelivr redirects directory access to a html page that
+      // lists all files in the directory
+      throw new Error('it is a directory');
+    }
     return response.text();
   });
 }

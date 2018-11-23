@@ -25,6 +25,9 @@ function mockFetch (url) {
       } else if (url.endsWith('@scoped/pkg/package.json') ||
                  url.endsWith('@scoped/pkg@1.0.0/package.json')) {
         resolve(mkResponse('{"name":"@scoped/pkg","version":"1.0.0"}'));
+      } else if (url.endsWith('foo/dist') ||
+          url.endsWith('foo@1.0.1/dist')) {
+        resolve({ok: true, redirected: true});
       }
 
       resolve({statusText: 'Not Found'});
@@ -123,6 +126,20 @@ test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for e
       .then(
         () => t.fail('should not read non-existing file'),
         () => t.pass('rejects missing file')
+      );
+    },
+    () => t.fail('should not fail')
+  ).then(() => t.end());
+});
+
+test('jsDelivrNpmPackageLocator rejects read on dir', t => {
+  locator({name: 'foo'})
+  .then(
+    fileRead => {
+      return fileRead('dist')
+      .then(
+        () => t.fail('should not read dir'),
+        err => t.equal(err.message, 'it is a directory')
       );
     },
     () => t.fail('should not fail')
