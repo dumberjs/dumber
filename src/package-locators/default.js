@@ -1,8 +1,14 @@
-import util from 'util';
 import fs from 'fs';
 import path from 'path';
 
-const fsReadFile = util.promisify(fs.readFile);
+const fsReadFile = filePath => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, (err, data) => {
+      if (err) reject(err);
+      resolve(data);
+    });
+  })
+}
 
 // default locator using nodejs to resolve package
 export default function (packageConfig, mock) {
