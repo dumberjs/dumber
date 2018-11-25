@@ -5,7 +5,7 @@ import transformAmd from '@babel/plugin-transform-modules-amd';
 const ensureParsed = astMatcher.ensureParsed;
 
 // wrap cjs into amd if needed
-export default function (contents, forceWrap) {
+export default function(contents, forceWrap) {
   let ast = ensureParsed(contents);
 
   if (usesEsm(ast)) {

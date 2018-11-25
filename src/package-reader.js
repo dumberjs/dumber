@@ -1,5 +1,6 @@
-import {parse} from 'dumber-module-loader/dist/id-utils';
-import {stripJsExtension} from './shared';
+import {ext, parse, resolveModuleId, relativeModuleId} from 'dumber-module-loader/dist/id-utils';
+import {stripJsExtension, isPackageName} from './shared';
+import replace from './transformers/replace';
 import path from 'path';
 
 export default class PackageReader {
@@ -15,6 +16,7 @@ export default class PackageReader {
       .then(file => {
         let metadata = JSON.parse(file.contents);
         this.name = metadata.name;
+        this.browserReplacement = _browserReplacement(metadata.browser);
       })
       .then(() => this._nodejsLoadAsDirectory(''))
       .then(mainPath => {
@@ -24,14 +26,7 @@ export default class PackageReader {
   }
 
   readMain() {
-    return this._ensureMainPath().then(() =>
-      this.locator(this.mainPath).then(file => ({
-        path: file.path,
-        contents: file.contents,
-        moduleId: this.name + '/' + this.parsedMainId.bareId,
-        packageName: this.name
-      }))
-    );
+    return this._ensureMainPath().then(() => this._readFile(this.mainPath));
   }
 
   readResource(resource) {
@@ -41,7 +36,9 @@ export default class PackageReader {
       let i = 0;
 
       const findResource = () => {
-        if (i >= len) new Promise.reject(new Error("could not find " + resource));
+        if (i >= len) {
+          return Promise.reject(new Error("could not find " + resource));
+        }
 
         let resParts = parts.slice(0, i);
         resParts.push(resource);
@@ -61,13 +58,43 @@ export default class PackageReader {
     });
   }
 
+  // readFile contents, cleanup dep, normalise browser replacement
   _readFile(filePath) {
-    return this.locator(filePath).then(file => ({
-      path: file.path,
-      contents: file.contents,
-      moduleId: this.name + '/' + parse(stripJsExtension(filePath)).bareId,
-      packageName: this.name
-    }));
+    return this.locator(filePath).then(file => {
+      const moduleId = this.name + '/' + parse(stripJsExtension(filePath)).bareId;
+
+      if (ext(filePath) === '.js') {
+        const replacement = {};
+
+        Object.keys(this.browserReplacement).forEach(key => {
+          const target = this.browserReplacement[key];
+          const baseId = this.name + '/index';
+          const sourceModule = key.startsWith('.') ?
+            relativeModuleId(moduleId, resolveModuleId(baseId, key)) :
+            key;
+
+          let targetModule;
+          if (target) {
+            targetModule = relativeModuleId(moduleId, resolveModuleId(baseId, target));
+          } else {
+            // {"module-a": false}
+            // replace with special placeholder __ignore__
+            targetModule = '__ignore__';
+          }
+
+          replacement[sourceModule] = targetModule;
+        });
+
+        file.contents = replace(file.contents, replacement);
+      }
+
+      return {
+        path: file.path,
+        contents: file.contents,
+        moduleId,
+        packageName: this.name
+      };
+    });
   }
 
   // https://nodejs.org/dist/latest-v10.x/docs/api/modules.html
@@ -148,4 +175,43 @@ export default class PackageReader {
     return this._nodejsLoadAsFile(filePath)
       .catch(() => this._nodejsLoadAsDirectory(filePath));
   }
+}
+
+// https://github.com/defunctzombie/package-browser-field-spec
+function _browserReplacement(browser) {
+  // string browser field is alternative main
+  if (!browser || typeof browser === 'string') return {};
+
+  let replacement = {};
+
+  Object.keys(browser).forEach(key => {
+    const target = browser[key];
+
+    let sourceModule = filePathToModuleId(key);
+
+    if (typeof target === 'string') {
+      let targetModule = filePathToModuleId(target);
+      if (!targetModule.startsWith('.')) {
+        // replacement is always local
+        targetModule = './' + targetModule;
+      }
+      replacement[sourceModule] = targetModule;
+    } else {
+      replacement[sourceModule] = false;
+    }
+  });
+
+  return replacement;
+}
+
+function filePathToModuleId(filePath) {
+  let moduleId = parse(filePath.replace(/\\/g, '/')).bareId;
+
+  // remove tailing '.js', but only when dep is not
+  // referencing a npm package main
+  if (!isPackageName(moduleId) && moduleId.toLowerCase().endsWith('.js')) {
+    moduleId = moduleId.substr(0, moduleId.length - 3);
+  }
+
+  return moduleId;
 }

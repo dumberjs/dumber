@@ -121,6 +121,26 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
   });
 });
 
+test('defaultNpmPackageLocator returns fileRead func for package with custom path and hard coded main, with missing real package.json', t => {
+  defaultLocator({name: 'foo', location: 'packages/foo', main: 'lib/main'}, {})
+  .then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.ok(file.path.endsWith('packages/foo/package.json'));
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
+        },
+        err => t.fail(err.message)
+      );
+    },
+    () => t.fail('should not fail')
+  )
+  .then(() => {
+    t.end();
+  });
+});
+
 test('defaultNpmPackageLocator can read parent node_modules folder', t => {
   _defaultLocator({name: 'foo'}, {
     resolve: function(path) { return '../node_modules/' + path; },

@@ -21,8 +21,8 @@ test('packageReader rejects missing package.json', t => {
   }));
 
   r.readMain().then(
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     },
     () => {
       t.pass('it throws');
@@ -36,8 +36,8 @@ test('packageReader rejects missing main', t => {
   }));
 
   r.readMain().then(
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     },
     () => {
       t.pass('it throws');
@@ -62,9 +62,10 @@ test('packageReader reads main file', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'index.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
@@ -87,9 +88,10 @@ test('packageReader reads module over main field', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'es.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
@@ -113,9 +115,10 @@ test('packageReader reads browser over main/module field', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'br.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
@@ -137,9 +140,10 @@ test('packageReader reads main file with explicit ext', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'main.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
@@ -161,9 +165,10 @@ test('packageReader reads main file with non-js file', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'main.css');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
@@ -185,6 +190,7 @@ test('packageReader reads implicit main file', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'lib/index.js');
+      t.deepEqual(r.browserReplacement, {});
     },
     err => {
       t.fail(err.message);
@@ -200,8 +206,8 @@ test('packageReader rejects missing resource', t => {
   }));
 
   r.readResource('dist/bar').then(
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     },
     () => {
       t.pass('it throws');
@@ -209,7 +215,7 @@ test('packageReader rejects missing resource', t => {
   ).then(t.end);
 });
 
-test('packageReader read resource', t => {
+test('packageReader reads resource', t => {
   const r = new PackageReader(mockLocator('foo', {
     'package.json': '{"name":"foo", "main": "lib/main"}',
     'lib/main.js': 'lorem',
@@ -227,14 +233,15 @@ test('packageReader read resource', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'lib/main.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
 
-test('packageReader read relative resource', t => {
+test('packageReader reads relative resource', t => {
   const r = new PackageReader(mockLocator('foo', {
     'package.json': '{"name":"foo", "main": "lib/main"}',
     'lib/main.js': 'lorem',
@@ -252,14 +259,15 @@ test('packageReader read relative resource', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'lib/main.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
 
-test('packageReader read deep relative resource', t => {
+test('packageReader reads deep relative resource', t => {
   const r = new PackageReader(mockLocator('foo', {
     'package.json': '{"name":"foo", "main": "dist/cjs/main"}',
     'dist/cjs/main.js': 'lorem',
@@ -277,14 +285,15 @@ test('packageReader read deep relative resource', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'dist/cjs/main.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
 
-test('packageReader read json resouce', t => {
+test('packageReader reads json resouce', t => {
   const r = new PackageReader(mockLocator('foo', {
     'package.json': '{"name":"foo", "main": "dist/cjs/main"}',
     'dist/cjs/main.js': 'lorem',
@@ -302,14 +311,15 @@ test('packageReader read json resouce', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'dist/cjs/main.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
 
-test('packageReader read directory index.js', t => {
+test('packageReader reads directory index.js', t => {
   const r = new PackageReader(mockLocator('foo', {
     'package.json': '{"name":"foo", "main": "index"}',
     'index.js': 'lorem',
@@ -327,14 +337,15 @@ test('packageReader read directory index.js', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'index.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
 
-test('packageReader read directory index.json', t => {
+test('packageReader reads directory index.json', t => {
   const r = new PackageReader(mockLocator('foo', {
     'package.json': '{"name":"foo", "main": "index"}',
     'index.js': 'lorem',
@@ -352,14 +363,15 @@ test('packageReader read directory index.json', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'index.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
 
-test('packageReader read directory package.json', t => {
+test('packageReader reads directory package.json', t => {
   const r = new PackageReader(mockLocator('foo', {
     'package.json': '{"name":"foo", "main": "index"}',
     'index.js': 'lorem',
@@ -379,9 +391,145 @@ test('packageReader read directory package.json', t => {
 
       t.equal(r.name, 'foo');
       t.equal(r.mainPath, 'index.js');
+      t.deepEqual(r.browserReplacement, {});
     },
-    () => {
-      t.fail('should not reach here');
+    err => {
+      t.fail(err.message);
+    }
+  ).then(t.end);
+});
+
+test('packageReader reads browser replacement in package.json', t => {
+  const r = new PackageReader(mockLocator('foo', {
+    'package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "module-a": false,
+        "module-b.js": "./shims/module/b.js",
+        "./server/only.js": "./shims/client-only.js"
+      }
+    }`,
+    'index.js': 'lorem'
+  }));
+
+  r.readMain().then(
+    unit => {
+      t.deepEqual(unit, {
+        path: 'node_modules/foo/index.js',
+        contents: 'lorem',
+        moduleId: 'foo/index',
+        packageName: 'foo'
+      });
+
+      t.equal(r.name, 'foo');
+      t.equal(r.mainPath, 'index.js');
+      t.deepEqual(r.browserReplacement, {
+        'module-a': false,
+        'module-b.js': './shims/module/b',
+        './server/only': './shims/client-only'
+      });
+    },
+    err => {
+      t.fail(err.message);
+    }
+  ).then(t.end);
+});
+
+test('packageReader uses browser replacement in package.json to normalize file contents', t => {
+  const r = new PackageReader(mockLocator('foo', {
+    'package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "module-a": false,
+        "module-b.js": "./shims/module/b.js",
+        "./server/only.js": "./shims/client-only.js"
+      }
+    }`,
+    'index.js': "require('module-a');require('module-b.js');require('module-c');require('./server/only.js');"
+  }));
+
+  r.readMain().then(
+    unit => {
+      t.deepEqual(unit, {
+        path: 'node_modules/foo/index.js',
+        contents: "require('__ignore__');require('./shims/module/b');require('module-c');require('./shims/client-only');",
+        moduleId: 'foo/index',
+        packageName: 'foo'
+      });
+
+      t.equal(r.name, 'foo');
+      t.equal(r.mainPath, 'index.js');
+    },
+    err => {
+      t.fail(err.message);
+    }
+  ).then(t.end);
+});
+
+test('packageReader uses browser replacement in package.json to normalize file contents in sub-folder', t => {
+  const r = new PackageReader(mockLocator('foo', {
+    'package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "module-a": false,
+        "module-b.js": "./shims/module/b.js",
+        "./server/only.js": "./shims/client-only.js"
+      }
+    }`,
+    'index.js': 'lorem',
+    'server/bar.js': "require('module-a');require('module-b.js');require('module-c');require('./only.js');"
+  }));
+
+  r.readResource('server/bar').then(
+    unit => {
+      t.deepEqual(unit, {
+        path: 'node_modules/foo/server/bar.js',
+        contents: "require('__ignore__');require('../shims/module/b');require('module-c');require('../shims/client-only');",
+        moduleId: 'foo/server/bar',
+        packageName: 'foo'
+      });
+
+      t.equal(r.name, 'foo');
+      t.equal(r.mainPath, 'index.js');
+    },
+    err => {
+      t.fail(err.message);
+    }
+  ).then(t.end);
+});
+
+test('packageReader uses browser replacement in package.json to normalize file contents in sub-folder, case2', t => {
+  const r = new PackageReader(mockLocator('foo', {
+    'package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "module-a": false,
+        "module-b.js": "./shims/module/b.js",
+        "./server/only.js": "./shims/client-only.js"
+      }
+    }`,
+    'index.js': 'lorem',
+    'lib/bar.js': "require('module-a');require('module-b.js');require('module-c');require('../server/only.js');"
+  }));
+
+  r.readResource('lib/bar').then(
+    unit => {
+      t.deepEqual(unit, {
+        path: 'node_modules/foo/lib/bar.js',
+        contents: "require('__ignore__');require('../shims/module/b');require('module-c');require('../shims/client-only');",
+        moduleId: 'foo/lib/bar',
+        packageName: 'foo'
+      });
+
+      t.equal(r.name, 'foo');
+      t.equal(r.mainPath, 'index.js');
+    },
+    err => {
+      t.fail(err.message);
     }
   ).then(t.end);
 });
