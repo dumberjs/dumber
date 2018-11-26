@@ -39,7 +39,8 @@
     "ast-matcher": "^1.0.1",
     "dumber-module-loader": "bitbucket:huochunpeng/dumber-module-loader#v0.10.0",
     "escope": "^3.6.0",
-    "esprima": "^4.0.1"
+    "esprima": "^4.0.1",
+    "node-fetch": "^2.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",

@@ -1,20 +1,11 @@
-import fs from 'fs';
 import path from 'path';
-
-const fsReadFile = filePath => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, (err, data) => {
-      if (err) reject(err);
-      resolve(data);
-    });
-  })
-}
+import {resolvePackagePath, fsReadFile} from '../shared';
 
 // default locator using nodejs to resolve package
 export default function (packageConfig, mock) {
   let name = packageConfig.name;
   // decoupling for testing
-  let _resolve = (mock && mock.resolve) || require.resolve;
+  let _resolve = (mock && mock.resolve) || resolvePackagePath;
   let _readFile = (mock && mock.readFile) || fsReadFile;
   let packagePath;
   let hardCodedMain = packageConfig.main;
@@ -22,20 +13,16 @@ export default function (packageConfig, mock) {
   if (packageConfig.location) {
     packagePath = packageConfig.location;
   } else {
-    try {
-      let metaPath = _resolve(name + '/package.json');
-      packagePath = metaPath.substr(0, metaPath.length - 13);
-    } catch (e) {
-      return Promise.reject(new Error('cannot find npm package: ' + name));
-    }
+    packagePath = _resolve(name);
   }
 
   return Promise.resolve(filePath => {
     const fp = path.join(packagePath, filePath);
+    const relativePath = path.relative(path.resolve(), path.resolve(fp));
 
     if (hardCodedMain && (filePath === 'package.json' || filePath === './package.json')) {
       return Promise.resolve({
-        path: path.resolve(fp),
+        path: relativePath,
         contents: JSON.stringify({name: name, main: hardCodedMain})
       });
     }
@@ -43,7 +30,7 @@ export default function (packageConfig, mock) {
     return _readFile(fp)
     .then(buffer => {
       return {
-        path: path.resolve(fp),
+        path: relativePath,
         contents: buffer.toString()
       };
     });

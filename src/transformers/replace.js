@@ -2,7 +2,7 @@
 
 // browser replacement
 // https://github.com/defunctzombie/package-browser-field-spec
-// see trace.js for more details
+// see package-reader.js for more details
 //
 // also dep string cleanup
 // remove tailing '/', '.js'

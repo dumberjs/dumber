@@ -114,7 +114,9 @@ export default class PackageReader {
           }
         );
       }
-    );
+    ).catch(() => {
+      throw new Error(`cannot load Nodejs file for ${filePath}`)
+    });
   }
 
   _nodejsLoadIndex(dirPath) {
@@ -127,7 +129,9 @@ export default class PackageReader {
           () => indexJsonFilePath
         );
       }
-    );
+    ).catch(() => {
+      throw new Error(`cannot load Nodejs index file for ${dirPath}`)
+    });
   }
 
   _nodejsLoadAsDirectory(dirPath) {
@@ -168,7 +172,9 @@ export default class PackageReader {
           .catch(() => this._nodejsLoadIndex(mainResourcePath));
       },
       () => this._nodejsLoadIndex(dirPath)
-    );
+    ).catch(() => {
+      throw new Error(`cannot load Nodejs directory for ${dirPath}`)
+    });
   }
 
   _nodejsLoad(filePath) {

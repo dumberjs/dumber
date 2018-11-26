@@ -1,0 +1,74 @@
+import {resolvePackagePath} from './shared';
+
+const warn = function (message) {
+  console.warn('[dumber] WARN: ' + message);
+}
+
+// stub core Node.js modules based on https://github.com/webpack/node-libs-browser/blob/master/index.js
+// no need stub for following modules, they got same name on npm package
+//
+// assert
+// buffer
+// events
+// punycode
+// process
+// string_decoder
+// url
+// util
+
+// fail on following core modules has no stub
+const UNAVAIABLE_CORE_MODULES = [
+  'child_process',
+  'cluster',
+  'dgram',
+  'dns',
+  'fs',
+  'net',
+  'readline',
+  'repl',
+  'tls'
+];
+
+const EMPTY_MODULE = 'define(function(){return {};});';
+
+// note all paths here assumes local node_modules folder
+export default function(moduleId) {
+  // with subfix -browserify
+  if (['crypto', 'https', 'os', 'path', 'stream', 'timers', 'tty', 'vm'].indexOf(moduleId) !== -1) {
+    return {name: moduleId, location: resolvePackagePath(`${moduleId}-browserify`)};
+  }
+
+  if (moduleId === 'domain') {
+    warn('core Node.js module "domain" is deprecated');
+    return {name: 'domain', location: resolvePackagePath('domain-browser')};
+  }
+
+  if (moduleId === 'http') {
+    return {name: 'http', location: resolvePackagePath('stream-http')};
+  }
+
+  if (moduleId === 'querystring') {
+    // using querystring-es3 next version 1.0.0-0
+    return {name: 'querystring', location: resolvePackagePath('querystring-es3')};
+  }
+
+  if (moduleId === 'sys') {
+    warn('core Node.js module "sys" is deprecated, the stub is disabled in CLI bundler due to conflicts with "util"');
+  }
+
+  if (moduleId === 'zlib') {
+    return {name: 'zlib', location: resolvePackagePath('browserify-zlib')};
+  }
+
+  if (UNAVAIABLE_CORE_MODULES.indexOf(moduleId) !== -1) {
+    warn(`No avaiable stub for core Node.js module "${moduleId}", stubbed with empty module`);
+    return EMPTY_MODULE;
+  }
+
+  // https://github.com/defunctzombie/package-browser-field-spec
+  // {"module-a": false}
+  // replace with special placeholder __ignore__
+  if (moduleId === '__ignore__') {
+    return EMPTY_MODULE;
+  }
+}

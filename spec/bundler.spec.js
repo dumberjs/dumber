@@ -1,0 +1,250 @@
+import test from 'tape';
+import Bundler from '../src/index';
+import {contentOrFile} from '../src/shared';
+import {mockResolve, buildReadFile, mockLocator} from './mock';
+
+function mockTrace(unit) {
+  const contents = unit.contents;
+  const moduleId = unit.moduleId;
+  const shim = unit.shim;
+  // very simple deps trace
+  let deps = [];
+  let transformed;
+  if (shim) {
+    if (shim.deps) deps = shim.deps;
+    transformed = contents;
+    transformed += `\ndefine('${moduleId}',${JSON.stringify(deps)},function(){`;
+    if (shim.exports) {
+      transformed += `return ${shim.exports};`;
+    }
+    transformed += '});';
+  } else {
+    if (contents) deps = contents.split(' ');
+    transformed = `define('${moduleId}',${JSON.stringify(deps)},1);`
+  }
+
+  return Promise.resolve({
+    path: unit.path,
+    contents: transformed,
+    sourceMap: unit.sourceMap,
+    moduleId,
+    defined: moduleId,
+    deps,
+    packageName: unit.packageName,
+    shimed: !!shim
+  });
+}
+
+function mockContentOrFile(fakeReader) {
+  return pathOrContent => contentOrFile(pathOrContent, {readFile: fakeReader});
+}
+
+function createBundler(fakeFs = {}, opts = {}) {
+  const fakeReader = buildReadFile(fakeFs);
+  opts.packageLocator = mockLocator(fakeReader);
+
+  return new Bundler(opts, {
+    trace: mockTrace,
+    resolve: mockResolve,
+    contentOrFile: mockContentOrFile(fakeReader)
+  });
+}
+
+test('Bundler traces files', t => {
+  const fakeFs = {
+    'local/setup.js': 'setup',
+    'local/after.js': 'after',
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
+    'node_modules/foo/index.js': 'loo',
+    'node_modules/foo/bar.js': '',
+    'node_modules/loo/package.json':  JSON.stringify({name: 'loo', main: './loo'}),
+    'node_modules/loo/loo.js': '',
+  };
+  const bundler = createBundler(fakeFs, {
+    prepends: ['var pre = 1;', 'local/setup.js'],
+    appends: ['local/after.js', 'var ape = 1;']
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo page/one', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: 'foo/bar loo', moduleId: 'page/one'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'app': {
+          files: [
+            {contents: 'var pre = 1;'},
+            {contents: 'setup'},
+            {contents: 'dumber-module-loader'},
+            {contents: 'define.switchToUserSpace()'},
+            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
+            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace()'},
+            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace()'},
+            {contents: 'after'},
+            {contents: 'var ape = 1;'},
+          ],
+          config: {
+            baseUrl: 'dist',
+            bundles: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
+test('Bundler traces files, split bundles', t => {
+  const fakeFs = {
+    'local/setup.js': 'setup',
+    'local/after.js': 'after',
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
+    'node_modules/foo/index.js': 'loo',
+    'node_modules/foo/bar.js': '',
+    'node_modules/loo/package.json':  JSON.stringify({name: 'loo', main: './loo'}),
+    'node_modules/loo/loo.js': '',
+  };
+  const bundler = createBundler(fakeFs, {
+    prepends: ['var pre = 1;', 'local/setup.js'],
+    appends: ['local/after.js', 'var ape = 1;'],
+    codeSplit: (moduleId, packageName) => {
+      if (packageName) return 'vendor';
+    }
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo page/one', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: 'foo/bar loo', moduleId: 'page/one'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'app': {
+          files: [
+            {contents: 'var pre = 1;'},
+            {contents: 'setup'},
+            {contents: 'dumber-module-loader'},
+            {contents: 'define.switchToUserSpace()'},
+            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
+            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
+            {contents: 'after'},
+            {contents: 'var ape = 1;'},
+          ],
+          config: {
+            baseUrl: 'dist',
+            bundles: {
+              'vendor': {
+                user: [],
+                package: ['foo', 'foo/bar', 'foo/index', 'loo', 'loo/loo']
+              }
+            }
+          }
+        },
+        'vendor': {
+          files: [
+            {contents: 'define.switchToPackageSpace()'},
+            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace()'},
+          ]
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
+test('Bundler traces files, split bundles, case2', t => {
+  const fakeFs = {
+    'local/setup.js': 'setup',
+    'local/after.js': 'after',
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
+    'node_modules/foo/index.js': 'loo',
+    'node_modules/foo/bar.js': '',
+    'node_modules/loo/package.json':  JSON.stringify({name: 'loo', main: './loo'}),
+    'node_modules/loo/loo.js': '',
+  };
+  const bundler = createBundler(fakeFs, {
+    prepends: ['var pre = 1;', 'local/setup.js'],
+    appends: ['local/after.js', 'var ape = 1;'],
+    entryBundle: 'main',
+    baseUrl: 'scripts',
+    codeSplit: (moduleId, packageName) => {
+      if (packageName) {
+        if (packageName === 'loo') return 'app';
+        return 'vendor';
+      } else {
+        return 'app';
+      }
+    }
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo page/one', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: 'foo/bar loo', moduleId: 'page/one'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'main': {
+          files: [
+            {contents: 'var pre = 1;'},
+            {contents: 'setup'},
+            {contents: 'dumber-module-loader'},
+            {contents: 'after'},
+            {contents: 'var ape = 1;'},
+          ],
+          config: {
+            baseUrl: 'scripts',
+            bundles: {
+              'vendor': {
+                user: [],
+                package: ['foo', 'foo/bar', 'foo/index']
+              },
+              'app': {
+                user: ['app', 'page/one'],
+                package: ['loo', 'loo/loo']
+              }
+            }
+          }
+        },
+        'app': {
+          files: [
+            {contents: 'define.switchToUserSpace()'},
+            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
+            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace()'},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace()'},
+          ]
+        },
+        'vendor': {
+          files: [
+            {contents: 'define.switchToPackageSpace()'},
+            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace()'},
+          ]
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
+
