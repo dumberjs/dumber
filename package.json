@@ -16,6 +16,7 @@
     "pretest": "npm run lint",
     "prepare": "babel src -d dist",
     "nodejs-test": "tape -r @babel/register 'spec/**/*.spec.js' | tap-dot",
+    "coverage": "nyc tape -r @babel/register 'spec/**/*.spec.js' | tap-nyc",
     "browser-test": "browserify -t babelify spec/all-browser-spec.js | tape-run | tap-dot",
     "test": "npm run nodejs-test && npm run browser-test"
   },
@@ -51,8 +52,10 @@
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "eslint": "^5.9.0",
+    "nyc": "^13.1.0",
     "standard-changelog": "^2.0.6",
     "tap-dot": "^2.0.0",
+    "tap-nyc": "^1.0.3",
     "tape": "^4.9.1",
     "tape-run": "^4.0.0"
   }

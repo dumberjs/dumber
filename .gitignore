@@ -16,3 +16,6 @@
 # vim
 *~
 
+# istanbuljs code coverage
+/.nyc_output
+/coverage
