@@ -1,6 +1,6 @@
 {
   "name": "dumber",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A dumb bundler for building JavasScript Single Page Application, dumber than you and me",
   "main": "dist/index.js",
   "types": "index.d.ts",
