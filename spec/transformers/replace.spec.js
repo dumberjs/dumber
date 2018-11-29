@@ -51,6 +51,29 @@ test('replace transform does replacement', t => {
   t.end();
 });
 
+test('replace transform does replacement for anonymous amd module', t => {
+  const source = `define(['require', 'module-a', './bar', './server/only.js'], function (require) {
+    require('module-a');
+    require('./bar');
+    require('./server/only.js');
+  })`;
+
+  const replacement = {
+    'module-a': '__ignore__',
+    'module-b': './shims/module/b',
+    './server/only': './shims/client-only'
+  }
+
+  const result = `define(['require', '__ignore__', './bar', './shims/client-only'], function (require) {
+    require('__ignore__');
+    require('./bar');
+    require('./shims/client-only');
+  })`;
+
+  t.equal(replace(source, replacement), result);
+  t.end();
+});
+
 test('replace transform does replace es6 module dep', t => {
   const source = `import a from 'module-a';
     import './bar/';

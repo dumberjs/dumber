@@ -1,8 +1,4 @@
-import {resolvePackagePath} from './shared';
-
-const warn = function (message) {
-  console.warn('[dumber] WARN: ' + message);
-}
+import {resolvePackagePath, warn} from './shared';
 
 // stub core Node.js modules based on https://github.com/webpack/node-libs-browser/blob/master/index.js
 // no need stub for following modules, they got same name on npm package

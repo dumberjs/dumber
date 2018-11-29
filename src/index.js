@@ -5,7 +5,7 @@ import defaultPackageLocator from './package-locators/default';
 import PackageReader from './package-reader';
 import Package from './package';
 import stubModule from './stub-module';
-import {stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
+import {error, warn, stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
 import path from 'path';
 
 function mergeTransformed(unit, transformed) {
@@ -59,7 +59,7 @@ export default class Bundler {
     );
     this._appends = opts.appends || opts.append || [];
 
-    this._dependencies = (opts.dependencies || []).map(d => new Package(d));
+    this._dependencies = (opts.dependencies || opts.deps || []).map(d => new Package(d));
     this._entryBundle = stripJsExtension(opts.entryBundle) || 'app';
     this._codeSplit = opts.codeSplit || function(){};
     // mark dirtiness of bundles
@@ -80,31 +80,14 @@ export default class Bundler {
   }
 
   shimFor(packageName) {
-    const dep = this._dependencies.find(d => d.packageName === packageName);
-    if (dep) {
-      return dep.shim;
-    }
+    const dep = this._dependencies.find(d => d.name === packageName);
+    if (dep) return dep.shim;
   }
 
   bundleOf(unit) {
     const bundleName = this._codeSplit(unit.moduleId, unit.packageName);
     if (!bundleName) return this._entryBundle;
     return stripJsExtension(bundleName);
-  }
-
-  unitOfModuleId(moduleId) {
-    if (!this._moduleId_done.has(moduleId)) return;
-
-    const paths = Object.keys(this._unitsMap);
-    const pLen = paths.length;
-
-    for (let i = 0; i < pLen; i += 1) {
-      const unit = this._unitsMap[paths[i]];
-      if (unit.moduleId === moduleId ||
-          (unit.defined && unit.defined.indexOf(moduleId) !== -1)) {
-        return unit;
-      }
-    }
   }
 
   capture(unit) {
@@ -115,7 +98,7 @@ export default class Bundler {
     // return tracedUnit
     return this._trace(unit, this._depsFinder).then(
       tracedUnit => this._capture(tracedUnit),
-      err => console.error(err)
+      err => error(err)
     );
   }
 
@@ -136,6 +119,8 @@ export default class Bundler {
 
     // mark todo. beware we didn't check whether the id is in _moduleId_done.
     // they will be checked during resolve phase.
+
+    // console.log('_capture ' + tracedUnit.moduleId + ' deps ' + tracedUnit.deps);
     tracedUnit.deps.forEach(d => this._moduleIds_todo.add(d));
 
     const bundle = this.bundleOf(tracedUnit);
@@ -150,11 +135,13 @@ export default class Bundler {
     if (this.isExplicitDepsResolved) return Promise.resolve();
     this.isExplicitDepsResolved = true;
 
+    // console.log('_resolveExplicitDepsIfNeeded');
     let p = Promise.resolve();
 
     this._dependencies.forEach(pkg => {
       p = p.then(() => this.packageReaderFor(pkg)).then(reader => {
         if (!pkg.lazyMain) {
+          // console.log('to readMain for ' + pkg.name);
           return reader.readMain()
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
@@ -198,7 +185,7 @@ export default class Bundler {
     }
 
     // alias to main is also created here
-    if (!toId) return new Error('no defined module found in ' + tracedUnit.path);
+    if (!toId) warn('no defined module found in ' + tracedUnit.path);
 
     // only create alias when defined id is not same as package name
     if (toId !== id && toId !== tracedUnit.packageName) {
@@ -238,24 +225,24 @@ export default class Bundler {
         const stub = stubModule(bareId);
 
         if (typeof stub === 'string') {
-          this.capture({
+          p = p.then(() => this.capture({
             // not a real file path
             path: path.join('__stub__', bareId),
             contents: stub,
             moduleId: bareId,
             packageName
+          }));
+        } else {
+          p = p.then(() => this.packageReaderFor(stub || {name: packageName}))
+          .then(reader => resource ? reader.readResource(resource) : reader.readMain())
+          .then(unit => this.capture(unit))
+          .then(tracedUnit => {
+            this._createAliasToNpmResourceIfNeeded(tracedUnit, bareId);
+          })
+          .catch(err => {
+            error(err);
           });
         }
-
-        p = p.then(() => this.packageReaderFor(stub || {name: packageName}))
-        .then(reader => resource ? reader.readResource(resource) : reader.readMain())
-        .then(unit => this.capture(unit))
-        .then(tracedUnit => {
-          this._createAliasToNpmResourceIfNeeded(tracedUnit, bareId);
-        })
-        .catch(err => {
-          console.error(err);
-        });
       });
 
       return p;

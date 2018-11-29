@@ -126,6 +126,47 @@ test('defines ignores multiple defines case 2', t => {
   t.end();
 });
 
+test('defines ignores multiple defines case 3', t => {
+  const multi = 'define("foo", ["a"], function (require) { var bar = require("bar"); });\n' +
+                'define("bar", ["b", "c"], function (require) { var foo = require("foo"); });\n';
+  const r = defines('multi', multi);
+  t.deepEqual(r.defined, ['foo', 'bar']);
+  t.notOk(r.shimed);
+  t.deepEqual(r.deps, ['a', 'b', 'c']);
+  t.equal(r.contents, multi);
+  t.end();
+});
+
+test('defines ignores empty define call', t => {
+  const empty = 'define();\n';
+  const r = defines('empty', empty);
+  t.notOk(r.defined);
+  t.notOk(r.shimed);
+  t.equal(r.deps.length, 0);
+  t.equal(r.contents, empty);
+  t.end();
+});
+
+test('defines does not rewrite named define', t => {
+  const foo = 'define("foo", function(){});\n';
+  const r = defines('bar', foo);
+  t.equal(r.defined, 'foo');
+  t.notOk(r.shimed);
+  t.equal(r.deps.length, 0);
+  t.equal(r.contents, foo);
+  t.end();
+});
+
+test('defines ignore  define call without implementation', t => {
+  const empty = 'define(["a"]);\n';
+  const r = defines('empty', empty);
+  t.notOk(r.defined);
+  t.notOk(r.shimed);
+  t.equal(r.deps.length, 0);
+  t.equal(r.contents, empty);
+  t.end();
+});
+
 test('defines wrapps multi anonymous define', t => {
   const multiAnonWrapped =  '(function (root, factory) {\n' +
                             '    if (typeof define === \'function\' && define.amd) {\n' +

@@ -96,3 +96,18 @@ test('contentOrFile rejects missing local js file', t => {
   )
   .then(t.end);
 });
+
+test('contentOrFile rejects invalid input', t => {
+  function toReject(p) {
+    return p.then(
+      () => t.fail('should not resolve'),
+      err => t.pass(err.message)
+    );
+  }
+  Promise.all([
+    toReject(contentOrFile()),
+    toReject(contentOrFile(null)),
+    toReject(contentOrFile('')),
+    toReject(contentOrFile({path: 'lorem'}))
+  ]).then(() => t.end());
+});

@@ -1,10 +1,7 @@
 import {globalIndentifiers} from '../parser';
+import {warn} from '../shared';
 import astMatcher from 'ast-matcher';
 const ensureParsed = astMatcher.ensureParsed;
-
-const warn = function (message) {
-  console.warn('[dumber] WARN: ' + message);
-}
 
 const defineCallFinder = astMatcher('define(__anl_args)');
 const cjsDepFinder = astMatcher.depFinder('require(__dep)');

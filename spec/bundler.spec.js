@@ -7,17 +7,32 @@ function mockTrace(unit) {
   const contents = unit.contents;
   const moduleId = unit.moduleId;
   const shim = unit.shim;
+
+  if (unit.packageName === 'jquery') {
+    return Promise.resolve({
+      path: unit.path,
+      contents,
+      sourceMap: unit.sourceMap,
+      moduleId,
+      defined: 'jquery',
+      deps: [],
+      packageName: 'jquery',
+      shimed: false
+    });
+  }
   // very simple deps trace
   let deps = [];
   let transformed;
   if (shim) {
     if (shim.deps) deps = shim.deps;
     transformed = contents;
-    transformed += `\ndefine('${moduleId}',${JSON.stringify(deps)},function(){`;
+    transformed += `define('${moduleId}',${JSON.stringify(deps)},function(){`;
     if (shim.exports) {
       transformed += `return ${shim.exports};`;
     }
     transformed += '});';
+  } else if (contents.startsWith('define')) {
+    transformed = contents;
   } else {
     if (contents) deps = contents.split(' ');
     transformed = `define('${moduleId}',${JSON.stringify(deps)},1);`
@@ -247,4 +262,47 @@ test('Bundler traces files, split bundles, case2', t => {
   .then(t.end);
 });
 
+test('Bundler traces files, sorts shim', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/jquery/package.json': JSON.stringify({name: 'jquery', main: 'dist/jquery'}),
+    'node_modules/jquery/dist/jquery.js': 'define("jquery",[],1);',
+    'node_modules/bootstrap/package.json':  JSON.stringify({name: 'bootstrap', main: './dist/bootstrap'}),
+    'node_modules/bootstrap/dist/bootstrap.js': '',
+  };
+  const bundler = createBundler(fakeFs, {
+    deps: [
+      {name: 'bootstrap', deps: ['jquery'], 'exports': 'jQuery'}
+    ]
+  });
 
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'fs bootstrap', moduleId: 'app'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'app': {
+          files: [
+            {contents: 'dumber-module-loader'},
+            {contents: 'define.switchToUserSpace()'},
+            {path: 'src/app.js', contents: "define('app',[\"fs\",\"bootstrap\"],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace()'},
+            {path: 'node_modules/jquery/dist/jquery.js', contents: 'define("jquery",[],1);', sourceMap: undefined},
+            {path: 'node_modules/bootstrap/dist/bootstrap.js', contents: "define('bootstrap/dist/bootstrap',[\"jquery\"],function(){return jQuery;});define('bootstrap',['bootstrap/dist/bootstrap'],function(m){return m;});\n", sourceMap: undefined},
+            // mockTrace didn't touch fs stub, it is different in real usage
+            {path: '__stub__/fs', contents: "define(function(){return {};});", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace()'},
+          ],
+          config: {
+            baseUrl: 'dist',
+            bundles: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});

@@ -70,6 +70,47 @@ test('packageReader reads main file', t => {
   ).then(t.end);
 });
 
+test('packageReader rejects invalid package.json', t => {
+  const r = new PackageReader(mockLocator('foo', {
+    'package.json': '{"name":"foo", "main": "index"',
+    'index.js': "lorem"
+  }));
+
+  r.readMain().then(
+    () => {
+      t.fail('should not pass')
+    },
+    err => {
+      t.pass(err.message);
+    }
+  ).then(t.end);
+});
+
+test('packageReader use default main index.js', t => {
+  const r = new PackageReader(mockLocator('foo', {
+    'package.json': '{"name":"foo"}',
+    'index.js': "lorem"
+  }));
+
+  r.readMain().then(
+    unit => {
+      t.deepEqual(unit, {
+        path: 'node_modules/foo/index.js',
+        contents: 'lorem',
+        moduleId: 'foo/index',
+        packageName: 'foo'
+      });
+
+      t.equal(r.name, 'foo');
+      t.equal(r.mainPath, 'index.js');
+      t.deepEqual(r.browserReplacement, {});
+    },
+    err => {
+      t.fail(err.message);
+    }
+  ).then(t.end);
+});
+
 test('packageReader reads module over main field', t => {
   const r = new PackageReader(mockLocator('foo', {
     'package.json': '{"name":"foo", "module": "es", "main": "index"}',
@@ -509,7 +550,7 @@ test('packageReader uses browser replacement in package.json to normalize file c
       "browser": {
         "module-a": false,
         "module-b.js": "./shims/module/b.js",
-        "./server/only.js": "./shims/client-only.js"
+        "./server/only.js": "shims/client-only.js"
       }
     }`,
     'index.js': 'lorem',

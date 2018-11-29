@@ -3,6 +3,14 @@ import fetch from 'node-fetch';
 import {ensureParsed} from 'ast-matcher';
 import './ensure-parser-set';
 
+export function warn(message) {
+  console.warn('[dumber] WARN: ' + message);
+}
+
+export function error(message) {
+  console.error('[dumber] ERROR: ' + message);
+}
+
 export function stripJsExtension(d) {
    return d && d.endsWith('.js') ? d.substring(0, d.length - 3) : d;
 }
@@ -36,7 +44,9 @@ export function contentOrFile(pathOrContent, mock) {
   // decoupling for testing
   let _readFile = (mock && mock.readFile) || fsReadFile;
 
-  if (!pathOrContent) return Promise.reject(new Error('No content or file provided'));
+  if (typeof pathOrContent !== 'string' || !pathOrContent) {
+    return Promise.reject(new Error('No content or file provided'));
+  }
 
   // pathOrContent is a path
   if (pathOrContent.match(/^https?:\/\//)) {
