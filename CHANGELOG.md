@@ -1,3 +1,12 @@
+## [0.1.1](https://github.com/huochunpeng/dumber/compare/v0.1.0...v0.1.1) (2018-11-29)
+
+
+### Bug Fixes
+
+* fix dep on [@babel](https://github.com/babel)/core ([6c5ce23](https://github.com/huochunpeng/dumber/commit/6c5ce23))
+
+
+
 # 0.1.0 (2018-11-29)
 
 
