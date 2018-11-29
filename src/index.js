@@ -29,10 +29,9 @@ function mergeTransformed(unit, transformed) {
 // Bundler does
 // 1. capture: capture units (unit is a file like object plus meta data)
 // 2. resolve: resolve all dependencies
-// 3. bundle: write to bundles units (file like obj plus meta data)
+// 3. bundle: write to bundles (objs, not final file contents)
 
-// gulp-dumber or dumberify will then pick bundles files
-// to do uglify and write.
+// gulp-dumber or dumberify will then process bundles objects to files
 
 export default class Bundler {
   constructor(opts, mock) {
@@ -51,6 +50,7 @@ export default class Bundler {
     // baseUrl default to "dist"
     this._baseUrl = opts.baseUrl || 'dist';
     this._depsFinder = opts.depsFinder;
+    this._onRequire = opts.onRequire || opts.onrequire || opts.onRequiringModule;
 
     this._prepends = opts.prepends || opts.prepend || [];
     this._prepends.push(
@@ -196,22 +196,58 @@ export default class Bundler {
   }
 
   resolve() {
+    let todo = [];
     return this._resolvePrependsAndAppends()
     .then(() => this._resolveExplicitDepsIfNeeded())
     .then(() => {
-      let todo = [];
+      const consults = [];
+      const rawTodo = Array.from(this._moduleIds_todo);
+      this._moduleIds_todo.clear();
+
 
       // console.log('_moduleIds_todo', this._moduleIds_todo);
-      this._moduleIds_todo.forEach(id => {
+      rawTodo.forEach(id => {
         const parsedId = parse(id);
         const possibleIds = nodejsIds(parsedId.bareId);
         if (possibleIds.some(id => this._moduleId_done.has(id))) return;
-        todo.push(parsedId);
+
+        const j = new Promise(resolve => {
+          resolve(this._onRequire && this._onRequire(parsedId.bareId, parsedId));
+        }).then(
+          result => {
+            // ignore this module id
+            if (result === false) return;
+
+            // require other module ids instead
+            if (Array.isArray(result) && result.length) {
+              result.forEach(d => todo.push(parse(d)));
+              return;
+            }
+
+            // got full content of this module
+            if (typeof result === 'string') {
+              return this.capture({
+                path: path.join('__on_require__', parsedId.bareId),
+                contents: result,
+                moduleId: parsedId.bareId
+              });
+            }
+
+            // process normally if result is not recognizable
+            todo.push(parsedId);
+          },
+          // proceed normally after error
+          err => {
+            error(err);
+            todo.push(parsedId);
+          }
+        );
+        consults.push(j);
       });
 
-      // clear after screened all to todo list
-      this._moduleIds_todo.clear();
-      todo.sort();
+      if (consults.length) return Promise.all(consults);
+    })
+    .then(() => {
 
       let p = Promise.resolve();
 
