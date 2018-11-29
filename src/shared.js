@@ -3,6 +3,10 @@ import fetch from 'node-fetch';
 import {ensureParsed} from 'ast-matcher';
 import './ensure-parser-set';
 
+export function info(message) {
+  console.info('[dumber] INFO: ' + message);
+}
+
 export function warn(message) {
   console.warn('[dumber] WARN: ' + message);
 }
