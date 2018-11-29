@@ -534,3 +534,16 @@ test('defines get requirejs deps', t => {
   );
   t.end();
 });
+
+test('defines fills up module name', t => {
+  const cjs = "define(['require','exports','module','./a'],function(){});";
+
+  const cjsExpected = "define('cjs',['require','exports','module','./a'],function(){});";
+
+  const r = defines('cjs', cjs);
+  t.equal(r.defined, 'cjs');
+  t.notOk(r.shimed);
+  t.deepEqual(r.deps, ['./a']);
+  t.equal(r.contents, cjsExpected);
+  t.end();
+});

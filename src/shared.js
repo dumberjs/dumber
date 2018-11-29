@@ -27,7 +27,7 @@ export function resolvePackagePath(packageName) {
     let metaPath = require.resolve(packageName + '/package.json');
     return metaPath.substr(0, metaPath.length - 13);
   } catch (e) {
-    return Promise.reject(new Error('cannot find npm package: ' + packageName));
+    throw new Error('cannot find npm package: ' + packageName);
   }
 }
 

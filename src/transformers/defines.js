@@ -24,6 +24,11 @@ export default function(moduleId, amdContents, shim) {
     result.deps.push.apply(result.deps, reqDeps);
   }
 
+  // remove cjs constants
+  result.deps = result.deps.filter(d =>
+    !(d === 'require' || d === 'exports' || d === 'module')
+  );
+
   if (!shim) return result;
   // bypass shim settings as package already defined amd module
   if (result.defined) {
