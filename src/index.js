@@ -322,7 +322,7 @@ export default class Bundler {
 
       if (userSpaceUnits.length) {
         // write userSpaceUnits
-        files.push({contents: 'define.switchToUserSpace()'});
+        files.push({contents: 'define.switchToUserSpace();'});
 
         userSpaceUnits.forEach(unit => {
           files.push({
@@ -341,7 +341,7 @@ export default class Bundler {
 
       if (packageSpaceUnits.length) {
         // write packageSpaceUnits
-        files.push({contents: 'define.switchToPackageSpace()'});
+        files.push({contents: 'define.switchToPackageSpace();'});
         packageSpaceUnits.forEach(unit => {
           files.push({
             path: unit.path,
@@ -357,7 +357,7 @@ export default class Bundler {
         });
 
         // reset to userSpaceUnits
-        files.push({contents: 'define.switchToUserSpace()'});
+        files.push({contents: 'define.switchToUserSpace();'});
       }
 
 

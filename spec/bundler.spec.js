@@ -94,14 +94,14 @@ test('Bundler traces files', t => {
             {contents: 'var pre = 1;'},
             {contents: 'setup'},
             {contents: 'dumber-module-loader'},
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
             {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace()'},
+            {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
             {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
             {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
             {contents: 'after'},
             {contents: 'var ape = 1;'},
           ],
@@ -149,7 +149,7 @@ test('Bundler traces files, split bundles', t => {
             {contents: 'var pre = 1;'},
             {contents: 'setup'},
             {contents: 'dumber-module-loader'},
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
             {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
             {contents: 'after'},
@@ -167,11 +167,11 @@ test('Bundler traces files, split bundles', t => {
         },
         'vendor': {
           files: [
-            {contents: 'define.switchToPackageSpace()'},
+            {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
             {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
             {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
           ]
         }
       })
@@ -239,20 +239,20 @@ test('Bundler traces files, split bundles, case2', t => {
         },
         'app': {
           files: [
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
             {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace()'},
+            {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
           ]
         },
         'vendor': {
           files: [
-            {contents: 'define.switchToPackageSpace()'},
+            {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
             {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
           ]
         }
       })
@@ -286,14 +286,14 @@ test('Bundler traces files, sorts shim', t => {
         'app': {
           files: [
             {contents: 'dumber-module-loader'},
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"fs\",\"bootstrap\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace()'},
+            {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/jquery/dist/jquery.js', contents: 'define("jquery",[],1);', sourceMap: undefined},
             {path: 'node_modules/bootstrap/dist/bootstrap.js', contents: "define('bootstrap/dist/bootstrap',[\"jquery\"],function(){return jQuery;});define('bootstrap',['bootstrap/dist/bootstrap'],function(m){return m;});\n", sourceMap: undefined},
             // mockTrace didn't touch fs stub, it is different in real usage
             {path: '__stub__/fs', contents: "define(function(){return {};});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace()'},
+            {contents: 'define.switchToUserSpace();'},
           ],
           config: {
             baseUrl: 'dist',
