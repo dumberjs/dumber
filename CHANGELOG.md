@@ -1,3 +1,12 @@
+## [0.1.2](https://github.com/huochunpeng/dumber/compare/v0.1.1...v0.1.2) (2018-11-29)
+
+
+### Bug Fixes
+
+* remove cjs contants from deps ([90eb551](https://github.com/huochunpeng/dumber/commit/90eb551))
+
+
+
 ## [0.1.1](https://github.com/huochunpeng/dumber/compare/v0.1.0...v0.1.1) (2018-11-29)
 
 
