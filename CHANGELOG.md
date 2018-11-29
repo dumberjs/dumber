@@ -1,3 +1,12 @@
+## [0.1.3](https://github.com/huochunpeng/dumber/compare/v0.1.2...v0.1.3) (2018-11-29)
+
+
+### Bug Fixes
+
+* cleanup switch module space call ([637d5a2](https://github.com/huochunpeng/dumber/commit/637d5a2))
+
+
+
 ## [0.1.2](https://github.com/huochunpeng/dumber/compare/v0.1.1...v0.1.2) (2018-11-29)
 
 
