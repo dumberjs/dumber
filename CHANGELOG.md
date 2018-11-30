@@ -1,3 +1,12 @@
+## [0.1.4](https://github.com/huochunpeng/dumber/compare/v0.1.3...v0.1.4) (2018-11-30)
+
+
+### Features
+
+* support optional onRequire hook ([72cd8ff](https://github.com/huochunpeng/dumber/commit/72cd8ff))
+
+
+
 ## [0.1.3](https://github.com/huochunpeng/dumber/compare/v0.1.2...v0.1.3) (2018-11-29)
 
 
