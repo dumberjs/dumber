@@ -39,7 +39,7 @@
     "@babel/core": "^7.1.6",
     "@babel/plugin-transform-modules-amd": "^7.1.0",
     "ast-matcher": "^1.0.1",
-    "dumber-module-loader": "bitbucket:huochunpeng/dumber-module-loader#v0.10.0",
+    "dumber-module-loader": "bitbucket:huochunpeng/dumber-module-loader#v0.10.1",
     "escope": "^3.6.0",
     "esprima": "^4.0.1",
     "node-fetch": "^2.3.0"
