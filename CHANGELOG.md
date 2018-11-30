@@ -1,3 +1,7 @@
+## [0.1.5](https://github.com/huochunpeng/dumber/compare/v0.1.4...v0.1.5) (2018-11-30)
+
+
+
 ## [0.1.4](https://github.com/huochunpeng/dumber/compare/v0.1.3...v0.1.4) (2018-11-30)
 
 
