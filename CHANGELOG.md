@@ -1,3 +1,17 @@
+# [0.2.0](https://github.com/huochunpeng/dumber/compare/v0.1.5...v0.2.0) (2018-12-02)
+
+
+### Bug Fixes
+
+* support stub-module when running dumber in browser ([9aca164](https://github.com/huochunpeng/dumber/commit/9aca164))
+
+
+### Features
+
+* cache trace ([1cf3e32](https://github.com/huochunpeng/dumber/commit/1cf3e32))
+
+
+
 ## [0.1.5](https://github.com/huochunpeng/dumber/compare/v0.1.4...v0.1.5) (2018-11-30)
 
 
