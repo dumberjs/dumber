@@ -89,7 +89,7 @@ test('Bundler traces files', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'app': {
+        'entry-bundle': {
           files: [
             {contents: 'var pre = 1;'},
             {contents: 'setup'},
@@ -144,7 +144,7 @@ test('Bundler traces files, split bundles', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'app': {
+        'entry-bundle': {
           files: [
             {contents: 'var pre = 1;'},
             {contents: 'setup'},
@@ -283,7 +283,7 @@ test('Bundler traces files, sorts shim', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'app': {
+        'entry-bundle': {
           files: [
             {contents: 'dumber-module-loader'},
             {contents: 'define.switchToUserSpace();'},
@@ -324,7 +324,7 @@ test('Bundler ignores module when onRequire returns false', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'app': {
+        'entry-bundle': {
           files: [
             {contents: 'dumber-module-loader'},
             {contents: 'define.switchToUserSpace();'},
@@ -363,7 +363,7 @@ test('Bundler replaces deps when onRequire returns array', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'app': {
+        'entry-bundle': {
           files: [
             {contents: 'dumber-module-loader'},
             {contents: 'define.switchToUserSpace();'},
@@ -405,7 +405,7 @@ test('Bundler supports implementation returned by onRequire', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'app': {
+        'entry-bundle': {
           files: [
             {contents: 'dumber-module-loader'},
             {contents: 'define.switchToUserSpace();'},
@@ -446,7 +446,7 @@ test('Bundler swallows onRequire exception', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'app': {
+        'entry-bundle': {
           files: [
             {contents: 'dumber-module-loader'},
             {contents: 'define.switchToUserSpace();'},
@@ -486,7 +486,7 @@ test('Bundler swallows onRequire promise rejection', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'app': {
+        'entry-bundle': {
           files: [
             {contents: 'dumber-module-loader'},
             {contents: 'define.switchToUserSpace();'},
@@ -506,4 +506,6 @@ test('Bundler swallows onRequire promise rejection', t => {
   )
   .then(t.end);
 });
+
+// TODO test watch mode
 

@@ -18,6 +18,8 @@ export default function (unit, depsFinder) {
     return Promise.reject(new Error('module "' + moduleId + '" is not in package "' + packageName + '"'));
   }
 
+  // TODO cache
+
   let deps = new Set();
   let defined;
   let extname = ext(path);

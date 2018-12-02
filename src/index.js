@@ -60,7 +60,7 @@ export default class Bundler {
     this._appends = opts.appends || opts.append || [];
 
     this._dependencies = (opts.dependencies || opts.deps || []).map(d => new Package(d));
-    this._entryBundle = stripJsExtension(opts.entryBundle) || 'app';
+    this._entryBundle = stripJsExtension(opts.entryBundle) || 'entry-bundle';
     this._codeSplit = opts.codeSplit || function(){};
     // mark dirtiness of bundles
     this.dirty = {};
@@ -333,6 +333,7 @@ export default class Bundler {
   //   'bunele-entry-name': {files: [{path, contents, sourceMap}], config: {...}},
   // }
   bundle() {
+    // TODO persist bundles info
     const bundles = {};
 
     Object.keys(this.dirty).forEach(bundle => {
