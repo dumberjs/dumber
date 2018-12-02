@@ -507,5 +507,26 @@ test('Bundler swallows onRequire promise rejection', t => {
   .then(t.end);
 });
 
+test('Bundler uses cache by default', t => {
+  const bundler = createBundler();
+  t.ok(bundler._cache);
+  t.end();
+});
+
+test('Bundler can turn off cache', t => {
+  const bundler = createBundler({}, {cache: false});
+  t.notOk(bundler._cache);
+  t.end();
+});
+
+test('Bundler can customise cache implementation', t => {
+  const getCache = () => {};
+  const setCache = () => {};
+  const clearCache = () => {};
+  const bundler = createBundler({}, {cache: {getCache, setCache, clearCache}});
+  t.deepEqual(bundler._cache, {getCache, setCache, clearCache});
+  t.end();
+});
+
 // TODO test watch mode
 

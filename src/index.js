@@ -6,6 +6,7 @@ import PackageReader from './package-reader';
 import Package from './package';
 import stubModule from './stub-module';
 import {error, warn, stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
+import * as cache from './cache/default';
 import path from 'path';
 
 function mergeTransformed(unit, transformed) {
@@ -41,6 +42,20 @@ export default class Bundler {
     let _resolve = (mock && mock.resolve) || resolvePackagePath;
     this._contentOrFile = (mock && mock.contentOrFile) || contentOrFile;
 
+    if (opts.hasOwnProperty('cache')) {
+      if (opts.cache === false) {
+        this._cache = null;
+      } else if (opts.cache.getCache && opts.cache.setCache && opts.cache.clearCache) {
+        this._cache = opts.cache;
+      } else {
+        // turn on cache by default
+        this._cache = cache;
+      }
+    } else {
+      // turn on cache by default
+      this._cache = cache;
+    }
+
     this._unitsMap = {};
     this._moduleId_done = new Set();
     this._moduleIds_todo = new Set();
@@ -63,8 +78,13 @@ export default class Bundler {
     this._entryBundle = stripJsExtension(opts.entryBundle) || 'entry-bundle';
     this._codeSplit = opts.codeSplit || function(){};
     // mark dirtiness of bundles
-    this.dirty = {};
-    this.dirty[this._entryBundle] = true;
+    this.dirty = {[this._entryBundle]: true};
+    // persist bundles in watch mode
+    this._bundles = {};
+  }
+
+  clearCache() {
+    this._cache && this._cache.clearCache();
   }
 
   packageReaderFor(packageConfig) {
@@ -96,7 +116,10 @@ export default class Bundler {
     }
 
     // return tracedUnit
-    return this._trace(unit, this._depsFinder).then(
+    return this._trace(unit, {
+      cache: this._cache,
+      depsFinder: this._depsFinder
+    }).then(
       tracedUnit => this._capture(tracedUnit),
       err => error(err)
     );
@@ -333,9 +356,6 @@ export default class Bundler {
   //   'bunele-entry-name': {files: [{path, contents, sourceMap}], config: {...}},
   // }
   bundle() {
-    // TODO persist bundles info
-    const bundles = {};
-
     Object.keys(this.dirty).forEach(bundle => {
       const files = [];
 
@@ -398,7 +418,7 @@ export default class Bundler {
       }
 
 
-      bundles[bundle] = {
+      this._bundles[bundle] = {
         files,
         modules: {
           user: Array.from(userSpaceModuleIds).sort(),
@@ -412,18 +432,18 @@ export default class Bundler {
       }
     });
 
-    const bundleWithConfig = bundles[this._entryBundle];
+    const bundleWithConfig = this._bundles[this._entryBundle];
     if (!bundleWithConfig) {
       throw new Error(`Entry bundle "${this._entryBundle}" is missing`);
     }
 
-    const bundlesConfig = {};
-    Object.keys(bundles).forEach(bundle => {
-      if (bundle !== this._entryBundle) {
-        bundlesConfig[bundle] = bundles[bundle].modules;
-        this.dirty[bundle] = false;
+    const bundlesConfig = (bundleWithConfig.config && bundleWithConfig.config.bundles) || {};
+
+    Object.keys(this._bundles).forEach(bundle => {
+      if (bundle !== this._entryBundle && this.dirty[bundle]) {
+        bundlesConfig[bundle] = this._bundles[bundle].modules;
       }
-      delete bundles[bundle].modules;
+      delete this._bundles[bundle].modules;
     });
 
     bundleWithConfig.config = {
@@ -431,6 +451,13 @@ export default class Bundler {
       // TODO paths:
       bundles: bundlesConfig
     };
+
+    const bundles = {};
+    Object.keys(this.dirty).forEach(bundle => {
+      bundles[bundle] = this._bundles[bundle];
+    });
+    // reset dirty flags
+    this.dirty = {[this._entryBundle]: true};
 
     return bundles;
   }

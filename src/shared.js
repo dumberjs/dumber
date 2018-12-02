@@ -1,5 +1,6 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
+import crypto from 'crypto';
 import {ensureParsed} from 'ast-matcher';
 import './ensure-parser-set';
 
@@ -85,4 +86,8 @@ export function contentOrFile(pathOrContent, mock) {
       }
     );
   }
+}
+
+export function generateHash(bufOrStr) {
+  return crypto.createHash('md5').update(bufOrStr).digest('hex');
 }

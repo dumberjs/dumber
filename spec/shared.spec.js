@@ -1,5 +1,5 @@
 import test from 'tape';
-import {stripJsExtension, isPackageName, contentOrFile} from '../src/shared';
+import {stripJsExtension, isPackageName, contentOrFile, generateHash} from '../src/shared';
 import {buildReadFile} from './mock';
 
 test('stripJsExtension keeps other extension', t => {
@@ -111,3 +111,9 @@ test('contentOrFile rejects invalid input', t => {
     toReject(contentOrFile({path: 'lorem'}))
   ]).then(() => t.end());
 });
+
+test('generateHash generates hash', t => {
+  t.ok(generateHash('lorem').match(/^[0-9a-f]{32}$/));
+  t.end();
+});
+

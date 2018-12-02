@@ -3,9 +3,12 @@ import text from './transformers/text';
 import cjsEs from './transformers/cjs-es';
 import defines from './transformers/defines';
 import {ext, resolveModuleId} from 'dumber-module-loader/dist/id-utils';
+import {generateHash} from './shared';
 
 // depsFinder is optional
-export default function (unit, depsFinder) {
+export default function (unit, opts = {}) {
+  const {cache, depsFinder} = opts;
+
   const path = unit.path;
   let contents = unit.contents;
   let sourceMap = unit.sourceMap;
@@ -18,11 +21,26 @@ export default function (unit, depsFinder) {
     return Promise.reject(new Error('module "' + moduleId + '" is not in package "' + packageName + '"'));
   }
 
-  // TODO cache
+  let hash;
+
+  if (cache) {
+    const key = [
+      moduleId,
+      packageName,
+      JSON.stringify(shim),
+      contents
+    ].join('|');
+    hash = generateHash(key);
+    const cached = cache.getCache(hash);
+    if (cached) {
+      return Promise.resolve(cached);
+    }
+  }
 
   let deps = new Set();
   let defined;
   let extname = ext(path);
+
   if (extname === '.js') {
     const forceCjsWrap = !!path.match(/\/(cjs|commonjs)\//i);
     let cjsEsResult = cjsEs(contents, forceCjsWrap);
@@ -71,14 +89,22 @@ export default function (unit, depsFinder) {
     });
   }
 
-  return p.then(() => ({
-    path: path,
-    contents: contents,
-    sourceMap: sourceMap,
-    moduleId: unit.moduleId,
-    defined: defined,
-    deps: Array.from(deps).sort(),
-    packageName: packageName,
-    shimed: shimed
-  }));
+  return p.then(() => {
+    const traced = {
+      path: path,
+      contents: contents,
+      sourceMap: sourceMap,
+      moduleId: unit.moduleId,
+      defined: defined,
+      deps: Array.from(deps).sort(),
+      packageName: packageName,
+      shimed: shimed
+    };
+
+    if (cache) {
+      cache.setCache(hash, traced);
+    }
+
+    return traced;
+  });
 }

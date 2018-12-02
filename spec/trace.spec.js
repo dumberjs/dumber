@@ -1,5 +1,6 @@
 import test from 'tape';
 import trace from '../src/trace';
+import * as cache from '../src/cache/default';
 
 test('trace rejects not-matching packageName and moduleId', t => {
   const unit = {
@@ -175,12 +176,12 @@ test('trace supports optional depsFinder returns deps directly', t => {
       path: 'src/foo/bar.js',
       contents: 'require("./b");',
       moduleId: 'foo/bar'
-    }, depsFinder),
+    }, {depsFinder}),
     trace({
       path: 'src/foo/bar.html',
       contents: '<require from="lorem"></require>',
       moduleId: 'foo/bar.html'
-    }, depsFinder)
+    }, {depsFinder})
   ])
   .then(result => {
     const [traced1, traced2] = result;
@@ -208,13 +209,72 @@ test('trace supports optional depsFinder returns deps in promise', t => {
       path: 'src/foo/bar.js',
       contents: 'require("./b");',
       moduleId: 'foo/bar'
-    }, depsFinder),
+    }, {depsFinder}),
     trace({
       path: 'src/foo/bar.html',
       contents: '<require from="lorem"></require>',
       moduleId: 'foo/bar.html'
-    }, depsFinder)
+    }, {depsFinder})
   ])
+  .then(result => {
+    const [traced1, traced2] = result;
+    t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
+    t.deepEqual(traced2.deps, ['lorem']);
+    t.end();
+  });
+});
+
+test('trace supports cache', t => {
+  const tracedPath = {};
+  const depsFinder = function (path, contents) {
+    if (tracedPath[path]) {
+      t.fail('should not call depsFinder again on ' + path);
+      return;
+    }
+
+    tracedPath[path] = true;
+
+    return new Promise(resolve => {
+      if (path.endsWith('.js')) return resolve(['./x']);
+      if (path.endsWith('.html')) {
+        let m = contents.match(/<require from="(\w+)"><\/require>/i);
+        if (m) return resolve([m[1]]);
+        return resolve([]);
+      }
+      return resolve([]);
+    });
+  }
+
+  Promise.all([
+    trace({
+      path: 'src/foo/bar.js',
+      contents: 'require("./b");',
+      moduleId: 'foo/bar'
+    }, {cache, depsFinder}),
+    trace({
+      path: 'src/foo/bar.html',
+      contents: '<require from="lorem"></require>',
+      moduleId: 'foo/bar.html'
+    }, {cache, depsFinder})
+  ])
+  .then(result => {
+    const [traced1, traced2] = result;
+    t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
+    t.deepEqual(traced2.deps, ['lorem']);
+
+    return Promise.all([
+      trace({
+        path: 'src/foo/bar.js',
+        contents: 'require("./b");',
+        moduleId: 'foo/bar'
+      }, {cache, depsFinder}),
+      trace({
+        path: 'src/foo/bar.html',
+        contents: '<require from="lorem"></require>',
+        moduleId: 'foo/bar.html'
+      }, {cache, depsFinder})
+    ]);
+  })
   .then(result => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);

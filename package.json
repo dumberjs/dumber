@@ -3,6 +3,10 @@
   "version": "0.1.5",
   "description": "A dumb bundler for building JavasScript Single Page Application, dumber than you and me",
   "main": "dist/index.js",
+  "browser": {
+    "./cache/default.js": "./cache/local-storage.js",
+    "./package-locators/default.js": "./package-locators/jsDelivr.js"
+  },
   "types": "index.d.ts",
   "files": [
     "index.d.ts",
@@ -39,10 +43,12 @@
     "@babel/core": "^7.1.6",
     "@babel/plugin-transform-modules-amd": "^7.1.0",
     "ast-matcher": "^1.0.1",
+    "del": "^3.0.0",
     "dumber-module-loader": "bitbucket:huochunpeng/dumber-module-loader#v0.10.2",
     "escope": "^3.6.0",
     "esprima": "^4.0.1",
-    "node-fetch": "^2.3.0"
+    "node-fetch": "^2.3.0",
+    "node-libs-browser": "^2.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
