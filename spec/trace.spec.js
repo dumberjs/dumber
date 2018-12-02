@@ -1,6 +1,5 @@
 import test from 'tape';
 import trace from '../src/trace';
-import * as cache from '../src/cache/default';
 
 test('trace rejects not-matching packageName and moduleId', t => {
   const unit = {
@@ -243,6 +242,13 @@ test('trace supports cache', t => {
       }
       return resolve([]);
     });
+  }
+
+  let cached = {};
+  const cache = {
+    getCache: hash => cached[hash],
+    setCache: (hash, obj) => cached[hash] = obj,
+    clearCache: () => cached = {}
   }
 
   Promise.all([

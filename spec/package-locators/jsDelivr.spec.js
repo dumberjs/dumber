@@ -85,6 +85,26 @@ test('jsDelivrNpmPackageLocator returns fileRead func for fixed package version'
   ).then(() => t.end());
 });
 
+test('jsDelivrNpmPackageLocator returns fileRead func for alias package', t => {
+  const l = locator({name: 'bar', location: 'foo', version: '1.0.1'});
+
+  l.then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
+          const info = JSON.parse(file.contents);
+          t.equal(info.name, 'foo');
+          t.equal(info.version, '1.0.1');
+        },
+        err => t.fail(err.message)
+      );
+    },
+    () => t.fail('should not fail')
+  ).then(() => t.end());
+});
+
 test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for existing package', t => {
   locator({name: 'foo'})
   .then(

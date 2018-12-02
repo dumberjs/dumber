@@ -15,8 +15,8 @@ export default class Package {
       throw new Error('not a valid package options, use "packageName" or {name: "packageName", ...}');
     }
 
+    this.version = (typeof opts.version === 'string') ? opts.version : undefined;
     this.lazyMain = !!opts.lazyMain;
-    this.resources = Array.isArray(opts.resources) ? opts.resources : [];
 
     const deps = Array.isArray(opts.deps) ? opts.deps : undefined;
     const _exports = (typeof opts.exports === 'string') ? opts.exports : undefined;

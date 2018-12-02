@@ -11,12 +11,11 @@ export default function(contents, forceWrap) {
   if (usesEsm(ast)) {
     const amd = transform(contents, {
       babelrc: false,
-      sourceMaps: true,
+      sourceMaps: false,
       plugins: [[transformAmd, {"loose": true}]]
     });
 
     return {
-      // TODO replace headLines with sourceMap
       headLines: 1,
       contents: amd.code
     };

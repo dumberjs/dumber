@@ -27,33 +27,42 @@ const UNAVAIABLE_CORE_MODULES = [
 
 const EMPTY_MODULE = 'define(function(){return {};});';
 
+function resolve(packageName) {
+  if (require && typeof require.resolve === 'function') {
+    return resolvePackagePath(packageName);
+  }
+  // browser
+  return packageName;
+}
+
 // note all paths here assumes local node_modules folder
 export default function(moduleId) {
   // with subfix -browserify
   if (['crypto', 'https', 'os', 'path', 'stream', 'timers', 'tty', 'vm'].indexOf(moduleId) !== -1) {
-    return {name: moduleId, location: resolvePackagePath(`${moduleId}-browserify`)};
+    return {name: moduleId, location: resolve(`${moduleId}-browserify`)};
   }
 
   if (moduleId === 'domain') {
     warn('core Node.js module "domain" is deprecated');
-    return {name: 'domain', location: resolvePackagePath('domain-browser')};
+    return {name: 'domain', location: resolve('domain-browser')};
   }
 
   if (moduleId === 'http') {
-    return {name: 'http', location: resolvePackagePath('stream-http')};
+    return {name: 'http', location: resolve('stream-http')};
   }
 
   if (moduleId === 'querystring') {
     // using querystring-es3 next version 1.0.0-0
-    return {name: 'querystring', location: resolvePackagePath('querystring-es3')};
+    return {name: 'querystring', location: resolve('querystring-es3')};
   }
 
   if (moduleId === 'sys') {
     warn('core Node.js module "sys" is deprecated, the stub is disabled in CLI bundler due to conflicts with "util"');
+    return EMPTY_MODULE;
   }
 
   if (moduleId === 'zlib') {
-    return {name: 'zlib', location: resolvePackagePath('browserify-zlib')};
+    return {name: 'zlib', location: resolve('browserify-zlib')};
   }
 
   if (UNAVAIABLE_CORE_MODULES.indexOf(moduleId) !== -1) {

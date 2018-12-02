@@ -38,7 +38,13 @@ export default function (packageConfig, mock) {
   }
 
   const name = packageConfig.name;
-  let packagePath = prefix + name;
+  let packagePath;
+  if (packageConfig.location) {
+    packagePath = prefix + packageConfig.location;
+  } else {
+    packagePath = prefix + name;
+  }
+
   let version = packageConfig.version;
 
   if (version) {

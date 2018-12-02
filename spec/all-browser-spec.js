@@ -13,3 +13,4 @@ require('./transformers/alias.spec');
 require('./transformers/defines.spec');
 require('./transformers/text.spec');
 require('./shared.spec');
+require('./stub-module.spec');
