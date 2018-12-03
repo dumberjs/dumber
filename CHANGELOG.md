@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/huochunpeng/dumber/compare/v0.2.0...v0.2.1) (2018-12-03)
+
+
+### Bug Fixes
+
+* fix missing dep mkdirp ([11c3808](https://github.com/huochunpeng/dumber/commit/11c3808))
+
+
+
 # [0.2.0](https://github.com/huochunpeng/dumber/compare/v0.1.5...v0.2.0) (2018-12-02)
 
 
