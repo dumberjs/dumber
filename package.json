@@ -47,6 +47,7 @@
     "dumber-module-loader": "bitbucket:huochunpeng/dumber-module-loader#v0.10.2",
     "escope": "^3.6.0",
     "esprima": "^4.0.1",
+    "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
     "node-libs-browser": "^2.1.0"
   },
