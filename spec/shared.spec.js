@@ -1,5 +1,5 @@
 import test from 'tape';
-import {stripJsExtension, isPackageName, contentOrFile, generateHash} from '../src/shared';
+import {stripJsExtension, isPackageName, contentOrFile, generateHash, stripSourceMappingUrl} from '../src/shared';
 import {buildReadFile} from './mock';
 
 test('stripJsExtension keeps other extension', t => {
@@ -114,6 +114,20 @@ test('contentOrFile rejects invalid input', t => {
 
 test('generateHash generates hash', t => {
   t.ok(generateHash('lorem').match(/^[0-9a-f]{32}$/));
+  t.end();
+});
+
+test('stripSourceMappingUrl strips js sourcemapping url', t => {
+  t.equal(stripSourceMappingUrl('lorem\n'), 'lorem\n');
+  t.equal(stripSourceMappingUrl('lorem\n//# sourceMappingURL=abc123'), 'lorem\n');
+  t.equal(stripSourceMappingUrl('lorem\n//# sourceMappingURL=abc123\nfoo\n//# sourceMappingURL=xyz'), 'lorem\n\nfoo\n');
+  t.end();
+});
+
+test('stripSourceMappingUrl strips css sourcemapping url', t => {
+  t.equal(stripSourceMappingUrl('lorem\n'), 'lorem\n');
+  t.equal(stripSourceMappingUrl('lorem\n/*# sourceMappingURL=abc123 */'), 'lorem\n');
+  t.equal(stripSourceMappingUrl('lorem\n/*# sourceMappingURL=abc123 */\nfoo\n/*# sourceMappingURL=xyz */'), 'lorem\n\nfoo\n');
   t.end();
 });
 

@@ -1,5 +1,5 @@
 import {ext, parse, resolveModuleId, relativeModuleId} from 'dumber-module-loader/dist/id-utils';
-import {stripJsExtension, isPackageName} from './shared';
+import {stripJsExtension, isPackageName, stripSourceMappingUrl} from './shared';
 import replace from './transformers/replace';
 import path from 'path';
 
@@ -90,7 +90,8 @@ export default class PackageReader {
 
       return {
         path: file.path.replace(/\\/g, '/'),
-        contents: file.contents,
+        // not handling sourcemaps from npm packages, at least for now
+        contents: stripSourceMappingUrl(file.contents),
         moduleId,
         packageName: this.name
       };

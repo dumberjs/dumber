@@ -80,3 +80,8 @@ export function contentOrFile(pathOrContent, mock) {
 export function generateHash(bufOrStr) {
   return crypto.createHash('md5').update(bufOrStr).digest('hex');
 }
+
+export function stripSourceMappingUrl(contents) {
+  return contents.replace(/\/\/(#|@)\s*sourceMappingURL=\S+\s*$/gm, '')
+    .replace(/\/\*(#|@)\s*sourceMappingURL=\S+\s*\*\//g, '');
+}
