@@ -66,25 +66,14 @@ export function contentOrFile(pathOrContent, mock) {
       // pathOrContent is code
       return Promise.resolve({contents: text});
     });
-  } else {
-    // local file path
+  } else if (pathOrContent.endsWith('.js')) {
     return _readFile(pathOrContent)
-    .then(
-      buffer => ({contents: buffer.toString()}),
-      fileErr => {
-        if (pathOrContent.endsWith('.js')) {
-          throw fileErr;
-        }
-
-        try {
-          ensureParsed(pathOrContent);
-          // pathOrContent is code
-          return Promise.resolve({contents: pathOrContent});
-        } catch(e) {
-          throw fileErr;
-        }
-      }
-    );
+    .then(buffer => ({contents: buffer.toString()}));
+  } else {
+    return new Promise(resolve => {
+      ensureParsed(pathOrContent);
+      resolve({contents: pathOrContent});
+    });
   }
 }
 
