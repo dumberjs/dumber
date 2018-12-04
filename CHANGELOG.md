@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/dumberjs/dumber/compare/v0.3.0...v0.4.0) (2018-12-04)
+
+
+### Features
+
+* follow Fred's advice, replace esprima with cherow ([eea54a2](https://github.com/dumberjs/dumber/commit/eea54a2))
+
+
+
 # [0.3.0](https://github.com/dumberjs/dumber/compare/v0.2.1...v0.3.0) (2018-12-04)
 
 
