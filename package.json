@@ -1,15 +1,13 @@
 {
   "name": "dumber",
   "version": "0.2.1",
-  "description": "A dumb bundler for building JavasScript Single Page Application, dumber than you and me",
+  "description": "A dumb JavasScript bundler for Single Page Application, dumber than you and me",
   "main": "dist/index.js",
   "browser": {
     "./cache/default.js": "./cache/local-storage.js",
     "./package-locators/default.js": "./package-locators/jsDelivr.js"
   },
-  "types": "index.d.ts",
   "files": [
-    "index.d.ts",
     "dist"
   ],
   "scripts": {
@@ -26,25 +24,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/huochunpeng/dumber.git"
+    "url": "https://github.com/dumberjs/dumber"
   },
   "keywords": [
     "bundle",
     "browser",
+    "spa",
     "amd"
   ],
   "author": "Chunpeng Huo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/huochunpeng/dumber/issues"
+    "url": "https://github.com/dumberjs/dumber/issues"
   },
-  "homepage": "https://github.com/huochunpeng/dumber#readme",
+  "homepage": "https://github.com/dumberjs/dumber#readme",
   "dependencies": {
-    "@babel/core": "^7.1.6",
-    "@babel/plugin-transform-modules-amd": "^7.1.0",
+    "@babel/core": "^7.2.0",
+    "@babel/plugin-transform-modules-amd": "^7.2.0",
     "ast-matcher": "^1.0.1",
     "del": "^3.0.0",
-    "dumber-module-loader": "bitbucket:huochunpeng/dumber-module-loader#v0.10.2",
+    "dumber-module-loader": "^0.14.0",
     "escope": "^3.6.0",
     "esprima": "^4.0.1",
     "mkdirp": "^0.5.1",
@@ -52,8 +51,8 @@
     "node-libs-browser": "^2.1.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.5",
-    "@babel/preset-env": "^7.1.6",
+    "@babel/cli": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
     "@babel/register": "^7.0.0",
     "babel-eslint": "^10.0.1",
     "babelify": "^10.0.0",
