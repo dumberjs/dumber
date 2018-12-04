@@ -14,7 +14,7 @@
     "lint": "eslint src spec",
     "preversion": "npm test",
     "version": "standard-changelog && git add CHANGELOG.md",
-    "postversion": "git push && git push --tags",
+    "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
     "prepare": "babel src -d dist",
     "nodejs-test": "tape -r @babel/register \"spec/**/*.spec.js\" | tap-dot",
