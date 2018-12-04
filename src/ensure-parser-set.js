@@ -1,14 +1,14 @@
-import {parseModule} from 'esprima';
+import {parse} from 'cherow';
 import astMatcher from 'ast-matcher';
 
-function parser (contents) {
+function _parser (contents) {
   // Turn on range to get position info in scope analysis.
   // Do not need to turn on JSX, dumber is designed to be
   // small, supposes to be used after transpiling.
-  return parseModule(contents, {range: true});
+  return parse(contents, {ranges: true, loc: true, module: true});
 }
 
 if (!astMatcher.__amd_parser_set) {
-  astMatcher.setParser(parser);
+  astMatcher.setParser(_parser);
   astMatcher.__amd_parser_set = true;
 }

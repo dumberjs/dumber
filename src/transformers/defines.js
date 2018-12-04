@@ -149,7 +149,7 @@ function ensureNamedDefine (moduleId, amdContents) {
 
   let namedDefine;
   let needsScanDeps = true;
-  let firstArgLoc = args[0].range[0];
+  let firstArgLoc = args[0].start; // .start for cherow, .range[0] for esprima
 
   if (args[0].type === 'Literal') {
     // already has named define
@@ -223,9 +223,9 @@ function ensureNamedDefine (moduleId, amdContents) {
     }
 
     if (cjsDeps.length) {
-      amdContents = amdContents.substring(0, factory.range[0]) +
+      amdContents = amdContents.substring(0, factory.start) + // .start for cherow, .range[0], for esprima
                     depsString(cjsDeps) + ',' +
-                    amdContents.substring(factory.range[0]);
+                    amdContents.substring(factory.start); // .start for cherow, .range[0], for esprima
     }
   }
 

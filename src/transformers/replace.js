@@ -39,8 +39,8 @@ export default function(contents, replacement) {
 
     if (node.value !== dep) {
       toReplace.push({
-        start: node.range[0],
-        end: node.range[1],
+        start: node.start, // .start for cherow, .range[0] for esprima
+        end: node.end, // .end cherow, .range[1] for esprima
         text: `'${dep}'`
       });
     }
