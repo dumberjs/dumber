@@ -528,5 +528,171 @@ test('Bundler can customise cache implementation', t => {
   t.end();
 });
 
-// TODO test watch mode
+test('Bundler traces files, split bundles, continuously update bundles in watch mode', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
+    'node_modules/foo/index.js': '',
+    'node_modules/foo/bar.js': '',
+    'node_modules/loo/package.json':  JSON.stringify({name: 'loo', main: './loo'}),
+    'node_modules/loo/loo.js': '',
+  };
+  const bundler = createBundler(fakeFs, {
+    codeSplit: (moduleId, packageName) => {
+      if (packageName) {
+        if (packageName !== 'loo') return 'vendor-bundle';
+      } else {
+        if (moduleId.startsWith('page/')) return 'page-bundle';
+        return 'app-bundle';
+      }
+    }
+  });
 
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo page/one', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: '', moduleId: 'page/one'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader'}
+          ],
+          config: {
+            baseUrl: 'dist',
+            bundles: {
+              'vendor-bundle': {
+                user: [],
+                package: ['foo', 'foo/index']
+              },
+              'app-bundle': {
+                user: ['app'],
+                package: []
+              },
+              'page-bundle': {
+                user: ['page/one'],
+                package: []
+              }
+            }
+          }
+        },
+        'app-bundle': {
+          files: [
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
+          ]
+        },
+        'page-bundle': {
+          files: [
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/page/one.js', contents: "define('page/one',[],1);", sourceMap: undefined},
+          ]
+        },
+        'vendor-bundle': {
+          files: [
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'}
+          ]
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: 'foo/bar loo', moduleId: 'page/one'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader'},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'}
+          ],
+          config: {
+            baseUrl: 'dist',
+            bundles: {
+              'vendor-bundle': {
+                user: [],
+                package: ['foo', 'foo/bar', 'foo/index']
+              },
+              'app-bundle': {
+                user: ['app'],
+                package: []
+              },
+              'page-bundle': {
+                user: ['page/one'],
+                package: []
+              }
+            }
+          }
+        },
+        'page-bundle': {
+          files: [
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
+          ]
+        },
+        'vendor-bundle': {
+          files: [
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'}
+          ]
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(() => bundler.capture({path: 'src/goo.js', contents: '', moduleId: 'goo'}))
+  .then(() => bundler.capture({path: 'src/goo2.js', contents: '', moduleId: 'goo2'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader'},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'}
+          ],
+          config: {
+            baseUrl: 'dist',
+            bundles: {
+              'vendor-bundle': {
+                user: [],
+                package: ['foo', 'foo/bar', 'foo/index']
+              },
+              'app-bundle': {
+                user: ['app', 'goo', 'goo2'],
+                package: []
+              },
+              'page-bundle': {
+                user: ['page/one'],
+                package: []
+              }
+            }
+          }
+        },
+        'app-bundle': {
+          files: [
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
+            {path: 'src/goo.js', contents: "define('goo',[],1);", sourceMap: undefined},
+            {path: 'src/goo2.js', contents: "define('goo2',[],1);", sourceMap: undefined},
+          ]
+        },
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});

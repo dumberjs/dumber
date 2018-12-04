@@ -417,14 +417,13 @@ export default class Bundler {
         files.push({contents: 'define.switchToUserSpace();'});
       }
 
+      if (!this._bundles[bundle]) this._bundles[bundle] = {};
 
-      this._bundles[bundle] = {
-        files,
-        modules: {
-          user: Array.from(userSpaceModuleIds).sort(),
-          package: Array.from(packageSpaceModuleIds).sort()
-        }
-      }
+      this._bundles[bundle].files = files;
+      this._bundles[bundle].modules = {
+        user: Array.from(userSpaceModuleIds).sort(),
+        package: Array.from(packageSpaceModuleIds).sort()
+      };
 
       if (bundle === this._entryBundle) {
         // write appends
@@ -439,8 +438,8 @@ export default class Bundler {
 
     const bundlesConfig = (bundleWithConfig.config && bundleWithConfig.config.bundles) || {};
 
-    Object.keys(this._bundles).forEach(bundle => {
-      if (bundle !== this._entryBundle && this.dirty[bundle]) {
+    Object.keys(this.dirty).forEach(bundle => {
+      if (bundle !== this._entryBundle) {
         bundlesConfig[bundle] = this._bundles[bundle].modules;
       }
       delete this._bundles[bundle].modules;
