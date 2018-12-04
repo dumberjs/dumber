@@ -2,7 +2,7 @@
 
 A dumb JavasScript bundler for Single Page Application, dumber than you and me.
 
-End users don't use this package directly, dumber is designed to be consumed through [gulp-dumber](https://github.com/dumberjs/gulp-dumber) and dumberify (TBD).
+You won't normally use this package directly, dumber is designed to be consumed through [gulp-dumber](https://github.com/dumberjs/gulp-dumber) or dumberify (TBD).
 
 status: extremely alpha
 
