@@ -250,7 +250,7 @@ export default class Bundler {
             // got full content of this module
             if (typeof result === 'string') {
               return this.capture({
-                path: path.join('__on_require__', parsedId.bareId),
+                path: '__on_require__/' + parsedId.bareId,
                 contents: result,
                 moduleId: parsedId.bareId
               });
@@ -286,7 +286,7 @@ export default class Bundler {
         if (typeof stub === 'string') {
           p = p.then(() => this.capture({
             // not a real file path
-            path: path.join('__stub__', bareId),
+            path:'__stub__/' + bareId,
             contents: stub,
             moduleId: bareId,
             packageName

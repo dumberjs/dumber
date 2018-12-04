@@ -17,8 +17,8 @@
     "postversion": "git push && git push --tags",
     "pretest": "npm run lint",
     "prepare": "babel src -d dist",
-    "nodejs-test": "tape -r @babel/register 'spec/**/*.spec.js' | tap-dot",
-    "coverage": "nyc --reporter=lcov tape -r @babel/register 'spec/**/*.spec.js' | tap-dot",
+    "nodejs-test": "tape -r @babel/register \"spec/**/*.spec.js\" | tap-dot",
+    "coverage": "nyc --reporter=lcov tape -r @babel/register \"spec/**/*.spec.js\" | tap-dot",
     "browser-test": "browserify -t babelify spec/all-browser-spec.js | tape-run | tap-dot",
     "test": "npm run nodejs-test && npm run browser-test"
   },

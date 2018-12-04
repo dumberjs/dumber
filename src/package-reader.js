@@ -89,7 +89,7 @@ export default class PackageReader {
       }
 
       return {
-        path: file.path,
+        path: file.path.replace(/\\/g, '/'),
         contents: file.contents,
         moduleId,
         packageName: this.name
@@ -114,9 +114,12 @@ export default class PackageReader {
           }
         );
       }
-    ).catch(() => {
+    ).then(
+      p => p.replace(/\\/g, '/'), // normalize path
+      () => {
       throw new Error(`cannot load Nodejs file for ${filePath}`)
-    });
+      }
+    );
   }
 
   _nodejsLoadIndex(dirPath) {
@@ -129,14 +132,16 @@ export default class PackageReader {
           () => indexJsonFilePath
         );
       }
-    ).catch(() => {
-      throw new Error(`cannot load Nodejs index file for ${dirPath}`)
-    });
+    ).then(
+      p => p.replace(/\\/g, '/'), // normalize path
+      () => {
+        throw new Error(`cannot load Nodejs index file for ${dirPath}`)
+      }
+    );
   }
 
   _nodejsLoadAsDirectory(dirPath) {
     const packageJsonPath = path.join(dirPath, 'package.json');
-
     return this.locator(packageJsonPath).then(
       file => {
         let metadata;

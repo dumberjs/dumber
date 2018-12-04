@@ -1,3 +1,4 @@
+import path from 'path';
 import _defaultLocator from '../src/package-locators/default';
 
 export function mockResolve(path) {
@@ -5,9 +6,10 @@ export function mockResolve(path) {
 }
 
 export function buildReadFile(fakeFs = {}) {
-  return path => {
-    if (fakeFs.hasOwnProperty(path)) return Promise.resolve(fakeFs[path]);
-    return Promise.reject('no file at ' + path);
+  return p => {
+    p = path.normalize(p).replace(/\\/g, '/');
+    if (fakeFs.hasOwnProperty(p)) return Promise.resolve(fakeFs[p]);
+    return Promise.reject('no file at ' + p);
   };
 }
 
