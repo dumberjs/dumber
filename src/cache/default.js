@@ -8,8 +8,8 @@ const tmpDir = os.tmpdir();
 const CACHE_DIR = path.resolve(tmpDir, 'dumber');
 
 function cachedFilePath(hash) {
-  const folder = hash.substr(0, 2);
-  const fileName = hash.substr(2);
+  const folder = hash.slice(0, 2);
+  const fileName = hash.slice(2);
   return path.resolve(CACHE_DIR, folder, fileName);
 }
 

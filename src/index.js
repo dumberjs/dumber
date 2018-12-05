@@ -279,7 +279,7 @@ export default class Bundler {
       todo.forEach(td => {
         const bareId = td.bareId;
         const packageName = td.parts[0];
-        const resource = bareId.substr(packageName.length + 1);
+        const resource = bareId.slice(packageName.length + 1);
 
         const stub = stubModule(bareId);
 

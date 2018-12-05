@@ -17,7 +17,7 @@ export function error(message) {
 }
 
 export function stripJsExtension(d) {
-   return d && d.endsWith('.js') ? d.substring(0, d.length - 3) : d;
+   return d && d.endsWith('.js') ? d.slice(0, -3) : d;
 }
 
 export function isPackageName(path) {
@@ -30,7 +30,7 @@ export function isPackageName(path) {
 export function resolvePackagePath(packageName) {
   try {
     let metaPath = require.resolve(packageName + '/package.json');
-    return metaPath.substr(0, metaPath.length - 13);
+    return metaPath.slice(0, -13);
   } catch (e) {
     throw new Error('cannot find npm package: ' + packageName);
   }

@@ -222,7 +222,7 @@ function filePathToModuleId(filePath) {
   // remove tailing '.js', but only when dep is not
   // referencing a npm package main
   if (!isPackageName(moduleId) && moduleId.toLowerCase().endsWith('.js')) {
-    moduleId = moduleId.substr(0, moduleId.length - 3);
+    moduleId = moduleId.slice(0, -3);
   }
 
   return moduleId;

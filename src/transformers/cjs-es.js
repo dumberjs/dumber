@@ -35,7 +35,7 @@ export default function(contents, forceWrap) {
   if (cjsUsage && (cjsUsage.dirname || cjsUsage.filename)) {
     pre = 'var __filename = module.filename || \'\', ' +
           '__dirname = ' +
-          '__filename.substring(0, __filename.lastIndexOf(\'/\') + 1);';
+          '__filename.slice(0, __filename.lastIndexOf(\'/\') + 1);';
   }
 
   return {

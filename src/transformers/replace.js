@@ -23,7 +23,7 @@ export default function(contents, replacement) {
 
     // remove tailing '/'
     if (dep.endsWith('/')) {
-      dep = dep.substr(0, dep.length - 1);
+      dep = dep.slice(0, -1);
     }
 
     // remove tailing '.js', but only when dep is not
@@ -87,7 +87,7 @@ export default function(contents, replacement) {
 }
 
 function modify(contents, replacement) {
-  return contents.substr(0, replacement.start) +
+  return contents.slice(0, replacement.start) +
     replacement.text +
-    contents.substr(replacement.end);
+    contents.slice(replacement.end);
 }

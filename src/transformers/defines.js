@@ -226,16 +226,16 @@ function ensureNamedDefine (moduleId, amdContents) {
     }
 
     if (cjsDeps.length) {
-      amdContents = amdContents.substring(0, factory.start) + // .start for cherow, .range[0], for esprima
+      amdContents = amdContents.slice(0, factory.start) + // .start for cherow, .range[0], for esprima
                     depsString(cjsDeps) + ',' +
-                    amdContents.substring(factory.start); // .start for cherow, .range[0], for esprima
+                    amdContents.slice(factory.start); // .start for cherow, .range[0], for esprima
     }
   }
 
   if (!namedDefine) {
-    amdContents = amdContents.substring(0, firstArgLoc) +
+    amdContents = amdContents.slice(0, firstArgLoc) +
                     "'" + moduleId + "'," +
-                    amdContents.substring(firstArgLoc);
+                    amdContents.slice(firstArgLoc);
     namedDefine = moduleId;
   }
 
