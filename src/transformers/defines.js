@@ -25,9 +25,12 @@ export default function(moduleId, amdContents, shim) {
   }
 
   // remove cjs constants
-  result.deps = result.deps.filter(d =>
-    !(d === 'require' || d === 'exports' || d === 'module')
-  );
+  result.deps = result.deps.filter(d => {
+    if (d === 'require' || d === 'exports' || d === 'module') return false;
+    if (typeof result.defined === 'string' && d === result.defined) return false;
+    if (Array.isArray(result.defined) && result.defined.indexOf(d) !== -1) return false;
+    return true;
+  });
 
   if (!shim) return result;
   // bypass shim settings as package already defined amd module

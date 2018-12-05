@@ -137,6 +137,17 @@ test('defines ignores multiple defines case 3', t => {
   t.end();
 });
 
+test('defines ignores inner deps', t => {
+  const multi = 'define("foo", function() {});\n' +
+                'define("bar", ["foo", "loo"], function (require) { var foo = require("foo"); });\n';
+  const r = defines('bar', multi);
+  t.deepEqual(r.defined, ['foo', 'bar']);
+  t.notOk(r.shimed);
+  t.deepEqual(r.deps, ["loo"]);
+  t.equal(r.contents, multi);
+  t.end();
+});
+
 test('defines ignores empty define call', t => {
   const empty = 'define();\n';
   const r = defines('empty', empty);
