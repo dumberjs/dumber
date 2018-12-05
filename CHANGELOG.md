@@ -1,3 +1,12 @@
+## [0.4.2](https://github.com/dumberjs/dumber/compare/v0.4.1...v0.4.2) (2018-12-05)
+
+
+### Bug Fixes
+
+* remove inner defined modules from deps ([e772a62](https://github.com/dumberjs/dumber/commit/e772a62))
+
+
+
 ## [0.4.1](https://github.com/dumberjs/dumber/compare/v0.4.0...v0.4.1) (2018-12-04)
 
 
