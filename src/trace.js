@@ -28,6 +28,7 @@ export default function (unit, opts = {}) {
       moduleId,
       packageName,
       JSON.stringify(shim),
+      depsFinder ? depsFinder.toString() : '',
       contents
     ].join('|');
     hash = generateHash(key);
