@@ -35,9 +35,11 @@ export default function(moduleId, amdContents, shim) {
   if (!shim) return result;
   // bypass shim settings as package already defined amd module
   if (result.defined) {
-    warn('for module "' + moduleId + '", it defined amd module "' +
+    if (shim.deps && shim.deps.length) {
+      warn('for module "' + moduleId + '", it defined amd module "' +
                  result.defined + '", ignores shim settings ' +
                  JSON.stringify(shim));
+    }
     return result;
   }
 
