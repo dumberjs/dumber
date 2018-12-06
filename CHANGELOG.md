@@ -1,3 +1,17 @@
+## [0.4.6](https://github.com/dumberjs/dumber/compare/v0.4.5...v0.4.6) (2018-12-06)
+
+
+### Bug Fixes
+
+* take depsFinder in consideration when doing cache ([5d4be04](https://github.com/dumberjs/dumber/commit/5d4be04))
+
+
+### Features
+
+* conventional alias from npm package module foo/dist/lib/bar (or foo/dist/_favor_/lib/bar) to foo/bar ([fcb11c9](https://github.com/dumberjs/dumber/commit/fcb11c9))
+
+
+
 ## [0.4.5](https://github.com/dumberjs/dumber/compare/v0.4.4...v0.4.5) (2018-12-06)
 
 
