@@ -128,7 +128,7 @@ test('trace transforms json', t => {
       contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});\n",
       sourceMap: undefined,
       moduleId: 'foo/bar.json',
-      defined: ['text!foo/bar.json'],
+      defined: 'text!foo/bar.json',
       deps: [],
       packageName: undefined,
       shimed: undefined
@@ -150,7 +150,7 @@ test('trace transforms text file', t => {
       contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});\n",
       sourceMap: undefined,
       moduleId: 'foo/bar.html',
-      defined: ['text!foo/bar.html'],
+      defined: 'text!foo/bar.html',
       deps: [],
       packageName: undefined,
       shimed: undefined
@@ -285,6 +285,52 @@ test('trace supports cache', t => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
     t.deepEqual(traced2.deps, ['lorem']);
+    t.end();
+  });
+});
+
+test('trace traces npm js with dist alias', t => {
+  const unit = {
+    path: 'node_modules/foo/dist/bar.js',
+    contents: "define(['a','text!./b.css'],function() {});",
+    moduleId: 'foo/dist/bar',
+    packageName: 'foo'
+  }
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/foo/dist/bar.js',
+      contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});define('foo/bar',['foo/dist/bar'],function(m){return m;});\n",
+      sourceMap: undefined,
+      moduleId: 'foo/dist/bar',
+      defined: ['foo/dist/bar', 'foo/bar'],
+      deps: ['a', 'text!foo/dist/b.css'],
+      packageName: 'foo',
+      shimed: undefined
+    })
+    t.end();
+  });
+});
+
+test('trace traces npm html with dist alias', t => {
+  const unit = {
+    path: 'node_modules/foo/dist/cjs/bar.html',
+    contents: "<p></p>",
+    moduleId: 'foo/dist/cjs/bar.html',
+    packageName: 'foo'
+  }
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/foo/dist/cjs/bar.html',
+      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\ndefine('text!foo/bar.html',['text!foo/dist/cjs/bar.html'],function(m){return m;});\n",
+      sourceMap: undefined,
+      moduleId: 'foo/dist/cjs/bar.html',
+      defined: ['text!foo/dist/cjs/bar.html', 'text!foo/bar.html'],
+      deps: [],
+      packageName: 'foo',
+      shimed: undefined
+    })
     t.end();
   });
 });

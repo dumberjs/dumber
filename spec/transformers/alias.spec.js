@@ -23,15 +23,12 @@ test('alias creates aliases for js module', t => {
 
 test('alias creates aliases for other modules', t => {
   t.deepEqual(alias('from/id.json', 'to/id.json'), {
-    defined: ['text!from/id.json', 'from/id.json', 'json!from/id.json'],
-    contents: "define('text!from/id.json',['text!to/id.json'],function(m){return m;});\n" +
-              "define('from/id.json',['to/id.json'],function(m){return m;});\n" +
-              "define('json!from/id.json',['json!to/id.json'],function(m){return m;});\n"
+    defined: 'text!from/id.json',
+    contents: "define('text!from/id.json',['text!to/id.json'],function(m){return m;});\n"
   });
   t.deepEqual(alias('from/id.css', 'to/id.css'), {
-    defined: ['text!from/id.css', 'from/id.css'],
-    contents: "define('text!from/id.css',['text!to/id.css'],function(m){return m;});\n" +
-              "define('from/id.css',['to/id.css'],function(m){return m;});\n"
+    defined: 'text!from/id.css',
+    contents: "define('text!from/id.css',['text!to/id.css'],function(m){return m;});\n"
   });
   t.end();
 });

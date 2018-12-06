@@ -8,24 +8,7 @@ import stubModule from './stub-module';
 import {error, warn, stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
 import * as cache from './cache/default';
 import path from 'path';
-
-function mergeTransformed(unit, transformed) {
-  if (transformed.defined) {
-    let newDefined = transformed.defined
-    if (!Array.isArray(newDefined)) newDefined = [newDefined];
-
-    if (!unit.defined) {
-      unit.defined = []
-    } else if (typeof unit.defined === 'string') {
-      unit.defined = [unit.defined];
-    }
-    unit.defined.push.apply(unit.defined, newDefined);
-  }
-
-  if (transformed.contents) {
-    unit.contents += transformed.contents;
-  }
-}
+import mergeTransformed from './transformers/merge';
 
 // Bundler does
 // 1. capture: capture units (unit is a file like object plus meta data)
@@ -168,7 +151,7 @@ export default class Bundler {
           return reader.readMain()
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
-            this._createAliasToNpmResourceIfNeeded(tracedUnit, pkg.name);
+            this._ensureNpmMainAlias(tracedUnit, pkg.name);
           });
         }
       });
@@ -194,7 +177,7 @@ export default class Bundler {
     })
   }
 
-  _createAliasToNpmResourceIfNeeded(tracedUnit, id) {
+  _ensureNpmMainAlias(tracedUnit, id) {
     if (this._moduleId_done.has(id)) return;
 
     const defined = tracedUnit.defined;
@@ -212,7 +195,7 @@ export default class Bundler {
 
     // only create alias when defined id is not same as package name
     if (toId !== id && toId !== tracedUnit.packageName) {
-      let aliasResult = alias(id, toId);
+      const aliasResult = alias(id, toId);
       mergeTransformed(tracedUnit, aliasResult);
       this._addToDone(aliasResult.defined);
     }
@@ -296,7 +279,9 @@ export default class Bundler {
           .then(reader => resource ? reader.readResource(resource) : reader.readMain())
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
-            this._createAliasToNpmResourceIfNeeded(tracedUnit, bareId);
+            if (!resource) {
+              this._ensureNpmMainAlias(tracedUnit, bareId);
+            }
           })
           .catch(err => {
             error(err);

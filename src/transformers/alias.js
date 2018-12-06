@@ -13,17 +13,9 @@ export default function (fromId, toId) {
 
   // if got ext, then ext is not .js, we need wrapper
   if (parsedFromId.ext) {
-    let defined = ['text!' + parsedFromId.bareId, parsedFromId.bareId];
+    let defined = 'text!' + parsedFromId.bareId;
     let contents = "define('text!" + parsedFromId.bareId + "',['text!" + parsedToId.bareId +
-                     "'],function(m){return m;});\n" +
-                     "define('" + parsedFromId.bareId + "',['" + parsedToId.bareId +
-                     "'],function(m){return m;});\n"
-
-    if (parsedFromId.ext === '.json') {
-      defined.push('json!' + parsedFromId.bareId);
-      contents += "define('json!" + parsedFromId.bareId + "',['json!" + parsedToId.bareId +
-                  "'],function(m){return m;});\n";
-    }
+                     "'],function(m){return m;});\n";
 
     return {
       defined: defined,
