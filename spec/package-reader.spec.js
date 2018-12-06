@@ -8,16 +8,26 @@ function getReader(name, fakeFs) {
   return mockLocator(fakeReader)(new Package(name)).then(locator => new PackageReader(locator));
 }
 
-test('packageReader rejects missing package.json', t => {
+test('packageReader falls back to main:index when package.json is missing', t => {
   getReader('foo', {
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
     r.readMain().then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/index.js',
+          contents: 'lorem',
+          moduleId: 'foo/index',
+          packageName: 'foo'
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
       err => {
         t.fail(err.message);
-      },
-      () => {
-        t.pass('it throws');
       }
     ).then(t.end);
   });
@@ -25,13 +35,14 @@ test('packageReader rejects missing package.json', t => {
 
 test('packageReader rejects missing main', t => {
   getReader('foo', {
-    'node_modules/foo/package.json': '{"name":"foo", "main": "index"}'
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index", "version": "1.0.0"}'
   }).then(r => {
     r.readMain().then(
       err => {
         t.fail(err.message);
       },
       () => {
+        t.equal(r.version, '1.0.0');
         t.pass('it throws');
       }
     ).then(t.end);
@@ -45,6 +56,7 @@ test('packageReader reads main file', t => {
   }).then(r => {
     r.readMain().then(
       unit => {
+        t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: 'lorem',

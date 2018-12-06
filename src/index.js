@@ -5,7 +5,7 @@ import defaultPackageLocator from './package-locators/default';
 import PackageReader from './package-reader';
 import Package from './package';
 import stubModule from './stub-module';
-import {error, warn, stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
+import {info, error, warn, stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
 import * as cache from './cache/default';
 import path from 'path';
 import mergeTransformed from './transformers/merge';
@@ -78,7 +78,7 @@ export default class Bundler {
     return this._locator(packageConfig).then(locator => {
       const reader = new PackageReader(locator);
       this._readersMap[packageConfig.name] = reader;
-      return reader;
+      return reader.ensureMainPath();
     });
   }
 
@@ -141,11 +141,11 @@ export default class Bundler {
     if (this.isExplicitDepsResolved) return Promise.resolve();
     this.isExplicitDepsResolved = true;
 
-    // console.log('_resolveExplicitDepsIfNeeded');
     let p = Promise.resolve();
 
     this._dependencies.forEach(pkg => {
       p = p.then(() => this.packageReaderFor(pkg)).then(reader => {
+        info('Manually add ' + reader.banner());
         if (!pkg.lazyMain) {
           // console.log('to readMain for ' + pkg.name);
           return reader.readMain()
@@ -276,7 +276,10 @@ export default class Bundler {
           }));
         } else {
           p = p.then(() => this.packageReaderFor(stub || {name: packageName}))
-          .then(reader => resource ? reader.readResource(resource) : reader.readMain())
+          .then(reader => {
+            info('Auto tracing ' + reader.banner());
+            return resource ? reader.readResource(resource) : reader.readMain()
+          })
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
             if (!resource) {

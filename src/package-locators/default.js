@@ -1,5 +1,5 @@
 import path from 'path';
-import {resolvePackagePath, fsReadFile} from '../shared';
+import {info, warn, resolvePackagePath, fsReadFile} from '../shared';
 
 // default locator using nodejs to resolve package
 export default function (packageConfig, mock) {
@@ -28,11 +28,25 @@ export default function (packageConfig, mock) {
     }
 
     return _readFile(fp)
-    .then(buffer => {
-      return {
-        path: relativePath,
-        contents: buffer.toString()
-      };
-    });
+    .then(
+      buffer => {
+        return {
+          path: relativePath,
+          contents: buffer.toString()
+        };
+      },
+      err => {
+        if (filePath === 'package.json' || filePath === './package.json') {
+          warn('No package.json found at ' + relativePath);
+          const mock = `{"name":${JSON.stringify(name)},"main":"index"}`;
+          info('Fall back to ' + mock);
+          return {
+            path: relativePath,
+            contents: mock
+          };
+        }
+        throw err;
+      }
+    );
   });
 }

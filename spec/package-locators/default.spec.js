@@ -3,15 +3,18 @@ import path from 'path';
 import {buildReadFile, mockLocator} from '../mock';
 import _defaultLocator from '../../src/package-locators/default';
 
-test('defaultNpmPackageLocator rejects missing package.json', t => {
+test('defaultNpmPackageLocator falls back to main:index when package.json is missing', t => {
   const defaultLocator = mockLocator(buildReadFile());
   defaultLocator({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
       .then(
-        () => t.fail('should not pass'),
-        e => t.pass(e.message)
+        file => {
+          t.ok(path.resolve('node_modules/foo/package.json'));
+          t.equal(file.contents, '{"name":"foo","main":"index"}');
+        },
+        err => t.fail(err.stack)
       );
     },
     err => t.fail(err.stack)

@@ -9,28 +9,35 @@ export default class PackageReader {
     this._readFile = this._readFile.bind(this);
   }
 
-  _ensureMainPath() {
+  banner() {
+    const {version, name} = this;
+    return `package: ${version}${' '.repeat(version.length < 10 ? (10 - version.length) : 0)} ${name}`;
+  }
+
+  ensureMainPath() {
     if (this.hasOwnProperty('mainPath')) return Promise.resolve();
 
     return this.locator('package.json')
       .then(file => {
         let metadata = JSON.parse(file.contents);
         this.name = metadata.name;
+        this.version = metadata.version || 'N/A';
         this.browserReplacement = _browserReplacement(metadata.browser);
       })
       .then(() => this._nodejsLoadAsDirectory(''))
       .then(mainPath => {
         this.mainPath = mainPath;
         this.parsedMainId = parse(stripJsExtension(mainPath));
+        return this;
       });
   }
 
   readMain() {
-    return this._ensureMainPath().then(() => this._readFile(this.mainPath));
+    return this.ensureMainPath().then(() => this._readFile(this.mainPath));
   }
 
   readResource(resource) {
-    return this._ensureMainPath().then(() => {
+    return this.ensureMainPath().then(() => {
       let parts = this.parsedMainId.parts;
       let len = parts.length;
       let i = 0;
