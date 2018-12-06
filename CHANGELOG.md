@@ -1,3 +1,12 @@
+## [0.4.4](https://github.com/dumberjs/dumber/compare/v0.4.3...v0.4.4) (2018-12-06)
+
+
+### Bug Fixes
+
+* cleanup dist folder before build ([1bd842a](https://github.com/dumberjs/dumber/commit/1bd842a))
+
+
+
 ## [0.4.3](https://github.com/dumberjs/dumber/compare/v0.4.2...v0.4.3) (2018-12-05)
 
 
