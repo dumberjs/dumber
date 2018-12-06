@@ -1,3 +1,12 @@
+## [0.4.5](https://github.com/dumberjs/dumber/compare/v0.4.4...v0.4.5) (2018-12-06)
+
+
+### Bug Fixes
+
+* no warning for empty shim deps ([23c9ae3](https://github.com/dumberjs/dumber/commit/23c9ae3))
+
+
+
 ## [0.4.4](https://github.com/dumberjs/dumber/compare/v0.4.3...v0.4.4) (2018-12-06)
 
 
