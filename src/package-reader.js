@@ -11,7 +11,7 @@ export default class PackageReader {
 
   banner() {
     const {version, name} = this;
-    return `${version}${' '.repeat(version.length < 10 ? (10 - version.length) : 0)} ${name}`;
+    return `  ${version}${' '.repeat(version.length < 10 ? (10 - version.length) : 0)} ${name}`;
   }
 
   ensureMainPath() {
