@@ -53,10 +53,11 @@ export function contentOrFile(pathOrContent, mock) {
     return Promise.reject(new Error('No content or file provided'));
   }
 
+  let p;
   // pathOrContent is a path
   if (pathOrContent.match(/^https?:\/\//)) {
     // remote url
-    return fetch(pathOrContent)
+    p = fetch(pathOrContent)
     .then(response => {
       if (response.ok) return response.text();
       else throw new Error(response.statusText)
@@ -64,17 +65,19 @@ export function contentOrFile(pathOrContent, mock) {
     .then(text => {
       ensureParsed(text);
       // pathOrContent is code
-      return Promise.resolve({contents: text});
+      return text;
     });
   } else if (pathOrContent.endsWith('.js')) {
-    return _readFile(pathOrContent)
-    .then(buffer => ({contents: buffer.toString()}));
+    p = _readFile(pathOrContent)
+    .then(buffer => buffer.toString());
   } else {
-    return new Promise(resolve => {
+    p = new Promise(resolve => {
       ensureParsed(pathOrContent);
-      resolve({contents: pathOrContent});
+      resolve(pathOrContent);
     });
   }
+
+  return p.then(text => ({contents: stripSourceMappingUrl(text)}));
 }
 
 export function generateHash(bufOrStr) {

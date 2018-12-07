@@ -78,9 +78,9 @@ test('contentOrFile rejects wrong remote url', t => {
 test('contentOrFile reads local js file', t => {
   const path = 'a.js';
 
-  contentOrFile(path, {readFile: buildReadFile({'a.js': 'var a;'})})
+  contentOrFile(path, {readFile: buildReadFile({'a.js': 'var a;\n//# sourceMappingURL=abc'})})
   .then(
-    result => t.equal(result.contents, 'var a;'),
+    result => t.equal(result.contents, 'var a;\n'),
     err => t.fail(err.message)
   )
   .then(t.end);
