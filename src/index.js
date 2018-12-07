@@ -161,9 +161,7 @@ export default class Bundler {
       });
     });
 
-    info('Auto trace dependencies:');
-
-    return p;
+    return p.then(() => info('Auto trace dependencies:'));
   }
 
   _resolvePrependsAndAppends() {
