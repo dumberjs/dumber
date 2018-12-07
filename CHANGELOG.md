@@ -1,3 +1,12 @@
+## [0.4.10](https://github.com/dumberjs/dumber/compare/v0.4.9...v0.4.10) (2018-12-07)
+
+
+### Bug Fixes
+
+* remove sourceMappingUrl from prepends and appends ([803954e](https://github.com/dumberjs/dumber/commit/803954e))
+
+
+
 ## [0.4.9](https://github.com/dumberjs/dumber/compare/v0.4.8...v0.4.9) (2018-12-07)
 
 
