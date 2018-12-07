@@ -161,6 +161,8 @@ export default class Bundler {
       });
     });
 
+    info('Auto trace dependencies:');
+
     return p;
   }
 
@@ -210,9 +212,6 @@ export default class Bundler {
     return this._resolvePrependsAndAppends()
     .then(() => this._resolveExplicitDepsIfNeeded())
     .then(() => {
-      if (this.isExplicitDepsResolved) {
-        info('Auto trace dependencies:');
-      }
       const consults = [];
       const rawTodo = Array.from(this._moduleIds_todo);
       this._moduleIds_todo.clear();
