@@ -79,6 +79,9 @@ export default class Bundler {
       const reader = new PackageReader(locator);
       this._readersMap[packageConfig.name] = reader;
       return reader.ensureMainPath();
+    }).then(reader => {
+      info(reader.banner());
+      return reader;
     });
   }
 
@@ -143,9 +146,10 @@ export default class Bundler {
 
     let p = Promise.resolve();
 
+    if (this._dependencies.length) info('Manually add dependencies:');
+
     this._dependencies.forEach(pkg => {
       p = p.then(() => this.packageReaderFor(pkg)).then(reader => {
-        info('Manually add ' + reader.banner());
         if (!pkg.lazyMain) {
           // console.log('to readMain for ' + pkg.name);
           return reader.readMain()
@@ -206,6 +210,9 @@ export default class Bundler {
     return this._resolvePrependsAndAppends()
     .then(() => this._resolveExplicitDepsIfNeeded())
     .then(() => {
+      if (this.isExplicitDepsResolved) {
+        info('Auto trace dependencies:');
+      }
       const consults = [];
       const rawTodo = Array.from(this._moduleIds_todo);
       this._moduleIds_todo.clear();
@@ -265,6 +272,7 @@ export default class Bundler {
         const resource = bareId.slice(packageName.length + 1);
 
         const stub = stubModule(bareId);
+        if (stub) info('Stub module ' + bareId);
 
         if (typeof stub === 'string') {
           p = p.then(() => this.capture({
@@ -276,10 +284,7 @@ export default class Bundler {
           }));
         } else {
           p = p.then(() => this.packageReaderFor(stub || {name: packageName}))
-          .then(reader => {
-            info('Auto tracing ' + reader.banner());
-            return resource ? reader.readResource(resource) : reader.readMain()
-          })
+          .then(reader => resource ? reader.readResource(resource) : reader.readMain())
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
             if (!resource) {
