@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/dumberjs/dumber/compare/v0.4.10...v0.5.0) (2018-12-09)
+
+
+### Features
+
+* tolerant missing main file like npm package simple-line-icons ([1fe8744](https://github.com/dumberjs/dumber/commit/1fe8744))
+
+
+
 ## [0.4.10](https://github.com/dumberjs/dumber/compare/v0.4.9...v0.4.10) (2018-12-07)
 
 
