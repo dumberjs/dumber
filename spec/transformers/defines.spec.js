@@ -356,7 +356,7 @@ test('defines inserts correctly for cjs wrapper define case 4, keep deps order',
 
 test('defines shim', t => {
   const shim = 'var Foo = "Foo";';
-  const shimExpected = 'var Foo = "Foo";\n' +
+  const shimExpected = 'var Foo = "Foo";;\n' +
                        'define("shim", [\'bar\'], (function (global) {\n' +
                        '  return function () {\n' +
                        '    return global.Foo;\n' +
@@ -372,7 +372,7 @@ test('defines shim', t => {
 
 test('defines shim without deps', t => {
   const shim = 'var Foo = "Foo";';
-  const shimExpected = 'var Foo = "Foo";\n' +
+  const shimExpected = 'var Foo = "Foo";;\n' +
                        'define("shim", (function (global) {\n' +
                        '  return function () {\n' +
                        '    return global.Foo;\n' +
@@ -388,7 +388,7 @@ test('defines shim without deps', t => {
 
 test('defines shim without exports', t => {
   const shim = 'var Foo = "Foo";';
-  const shimExpected = 'var Foo = "Foo";\n' +
+  const shimExpected = 'var Foo = "Foo";;\n' +
                        'define("shim", [\'bar\'], function(){});\n';
   const r = defines('shim', shim, {deps: ['bar']});
   t.equal(r.defined, 'shim');
@@ -403,7 +403,7 @@ test('defines wrapShim', t => {
   const shimExpected = '(function(root) {\n' +
                        'define("shim", [\'bar\'], function() {\n' +
                        '  return (function() {\n' +
-                       'var Foo = "Foo";\n' +
+                       'var Foo = "Foo";;\n' +
                        'return root.Foo = Foo;\n' +
                        '  }).apply(root, arguments);\n' +
                        '});\n' +
@@ -422,7 +422,7 @@ test('defines wrapShim without deps', t => {
   const shimExpected = '(function(root) {\n' +
                        'define("shim", function() {\n' +
                        '  return (function() {\n' +
-                       'var Foo = "Foo";\n' +
+                       'var Foo = "Foo";;\n' +
                        'return root.Foo = Foo;\n' +
                        '  }).apply(root, arguments);\n' +
                        '});\n' +
@@ -441,7 +441,7 @@ test('defines wrapShim without exports', t => {
   const shimExpected = '(function(root) {\n' +
                        'define("shim", [\'bar\'], function() {\n' +
                        '  return (function() {\n' +
-                       'var Foo = "Foo";\n' +
+                       'var Foo = "Foo";;\n' +
                        '\n' +
                        '  }).apply(root, arguments);\n' +
                        '});\n' +

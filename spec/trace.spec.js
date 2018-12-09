@@ -76,7 +76,7 @@ test('trace traces shimed js and update sourceMap', t => {
       contents: '(function(root) {\n' +
                 'define("bar/bar", [\'foo\'], function() {\n' +
                 '  return (function() {\n' +
-                'var Bar = 1;\n' +
+                'var Bar = 1;;\n' +
                 'return root.Bar = Bar;\n' +
                 '  }).apply(root, arguments);\n});\n}(this));\n',
       sourceMap: {mappings: ";;;;TEST;"},
@@ -102,7 +102,7 @@ test('trace forces shim on old js and update sourceMap', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/bar/bar.js',
-      contents: 'var Bar = 1;\n' +
+      contents: 'var Bar = 1;;\n' +
                 'define("bar/bar", function(){});\n',
       sourceMap: {mappings: ";TEST;"},
       moduleId: 'bar/bar',

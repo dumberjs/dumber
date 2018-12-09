@@ -55,14 +55,14 @@ export default function(moduleId, amdContents, shim) {
                    contents +
                    // Start with a \n in case last line is a comment
                    // in the contents, like a sourceURL comment.
-                   '\n' + exportsFn(shim.exports, true) +
+                   ';\n' + exportsFn(shim.exports, true) +
                    '\n' +
               '  }).apply(root, arguments);\n' +
               '});\n' +
               '}(this));\n';
     result.headLines = 3;
   } else {
-    contents += '\n' + 'define("' + moduleId + '", ' +
+    contents += ';\n' + 'define("' + moduleId + '", ' +
                    (shim.deps && shim.deps.length ?
                           depsString(shim.deps) + ', ' : '') +
                    exportsFn(shim.exports) +
