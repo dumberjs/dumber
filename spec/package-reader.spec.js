@@ -49,6 +49,32 @@ test('packageReader rejects missing main', t => {
   });
 });
 
+test('packageReader uses default index.js as main path if main file is missing but not required', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "foo", "version": "1.0.0"}',
+    'node_modules/foo/bar.js': 'lorem'
+  }).then(r => {
+    r.readResource('bar').then(
+      unit => {
+        t.equal(r.version, '1.0.0');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/bar.js',
+          contents: 'lorem',
+          moduleId: 'foo/bar',
+          packageName: 'foo'
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      },
+    ).then(t.end);
+  });
+});
+
 test('packageReader reads main file', t => {
   getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
