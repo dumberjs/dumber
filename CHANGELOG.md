@@ -1,3 +1,12 @@
+# [0.7.0](https://github.com/dumberjs/dumber/compare/v0.6.0...v0.7.0) (2018-12-10)
+
+
+### Features
+
+* ensure ending in semicolon for prepends/appends ([e00be42](https://github.com/dumberjs/dumber/commit/e00be42))
+
+
+
 # [0.6.0](https://github.com/dumberjs/dumber/compare/v0.5.1...v0.6.0) (2018-12-10)
 
 
