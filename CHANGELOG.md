@@ -1,3 +1,12 @@
+# [0.6.0](https://github.com/dumberjs/dumber/compare/v0.5.1...v0.6.0) (2018-12-10)
+
+
+### Features
+
+* ignore falsy values in prepends/appends/deps, so it is easier for user to do conditional config ([096fabb](https://github.com/dumberjs/dumber/commit/096fabb))
+
+
+
 ## [0.5.1](https://github.com/dumberjs/dumber/compare/v0.5.0...v0.5.1) (2018-12-09)
 
 
