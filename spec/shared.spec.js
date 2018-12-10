@@ -42,12 +42,12 @@ test('isPackageName returns false for sub id', t => {
   t.end();
 });
 
-test('contentOrFile returns passed js content', t => {
-  const content = 'var a = 1;';
+test('contentOrFile returns passed js content, ensures end with semicolon', t => {
+  const content = 'var a = 1\n';
 
   contentOrFile(content)
   .then(
-    result => t.equal(result.contents, content),
+    result => t.equal(result.contents, 'var a = 1;'),
     err => t.fail(err.message)
   )
   .then(t.end);
@@ -80,7 +80,7 @@ test('contentOrFile reads local js file', t => {
 
   contentOrFile(path, {readFile: buildReadFile({'a.js': 'var a;\n//# sourceMappingURL=abc'})})
   .then(
-    result => t.equal(result.contents, 'var a;\n'),
+    result => t.equal(result.contents, 'var a;'),
     err => t.fail(err.message)
   )
   .then(t.end);

@@ -300,7 +300,7 @@ test('trace traces npm js with dist alias', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.js',
-      contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});define('foo/bar',['foo/dist/bar'],function(m){return m;});\n",
+      contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});define('foo/bar',['foo/dist/bar'],function(m){return m;});",
       sourceMap: undefined,
       moduleId: 'foo/dist/bar',
       defined: ['foo/dist/bar', 'foo/bar'],
@@ -323,7 +323,7 @@ test('trace traces npm html with dist alias', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/cjs/bar.html',
-      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\ndefine('text!foo/bar.html',['text!foo/dist/cjs/bar.html'],function(m){return m;});\n",
+      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\ndefine('text!foo/bar.html',['text!foo/dist/cjs/bar.html'],function(m){return m;});",
       sourceMap: undefined,
       moduleId: 'foo/dist/cjs/bar.html',
       defined: ['text!foo/dist/cjs/bar.html', 'text!foo/bar.html'],

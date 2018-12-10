@@ -92,17 +92,17 @@ test('Bundler traces files', t => {
         'entry-bundle': {
           files: [
             {contents: 'var pre = 1;'},
-            {contents: 'setup'},
-            {contents: 'dumber-module-loader'},
+            {contents: 'setup;'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
             {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
-            {contents: 'after'},
+            {contents: 'after;'},
             {contents: 'var ape = 1;'},
           ],
           config: {
@@ -147,12 +147,12 @@ test('Bundler traces files, split bundles', t => {
         'entry-bundle': {
           files: [
             {contents: 'var pre = 1;'},
-            {contents: 'setup'},
-            {contents: 'dumber-module-loader'},
+            {contents: 'setup;'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
             {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
-            {contents: 'after'},
+            {contents: 'after;'},
             {contents: 'var ape = 1;'},
           ],
           config: {
@@ -169,8 +169,8 @@ test('Bundler traces files, split bundles', t => {
           files: [
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ]
         }
@@ -218,9 +218,9 @@ test('Bundler traces files, split bundles, case2', t => {
         'main': {
           files: [
             {contents: 'var pre = 1;'},
-            {contents: 'setup'},
-            {contents: 'dumber-module-loader'},
-            {contents: 'after'},
+            {contents: 'setup;'},
+            {contents: 'dumber-module-loader;'},
+            {contents: 'after;'},
             {contents: 'var ape = 1;'},
           ],
           config: {
@@ -243,7 +243,7 @@ test('Bundler traces files, split bundles, case2', t => {
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
             {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ]
         },
@@ -251,7 +251,7 @@ test('Bundler traces files, split bundles, case2', t => {
           files: [
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ]
         }
@@ -285,12 +285,12 @@ test('Bundler traces files, sorts shim', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"fs\",\"bootstrap\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/jquery/dist/jquery.js', contents: 'define("jquery",[],1);', sourceMap: undefined},
-            {path: 'node_modules/bootstrap/dist/bootstrap.js', contents: "define('bootstrap/dist/bootstrap',[\"jquery\"],function(){return jQuery;});define('bootstrap',['bootstrap/dist/bootstrap'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/bootstrap/dist/bootstrap.js', contents: "define('bootstrap/dist/bootstrap',[\"jquery\"],function(){return jQuery;});define('bootstrap',['bootstrap/dist/bootstrap'],function(m){return m;});", sourceMap: undefined},
             // mockTrace didn't touch fs stub, it is different in real usage
             {path: '__stub__/fs', contents: "define(function(){return {};});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
@@ -326,7 +326,7 @@ test('Bundler ignores module when onRequire returns false', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
           ],
@@ -365,12 +365,12 @@ test('Bundler replaces deps when onRequire returns array', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/bar/index.js', contents: "define('bar/index',[],1);define('bar',['bar/index'],function(m){return m;});\n", sourceMap: undefined},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/bar/index.js', contents: "define('bar/index',[],1);define('bar',['bar/index'],function(m){return m;});", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
@@ -407,12 +407,12 @@ test('Bundler supports implementation returned by onRequire', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {path: '__on_require__/foo', contents: "define('foo',[\"loo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
@@ -448,11 +448,11 @@ test('Bundler swallows onRequire exception', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/foo.js', contents: "define('foo/foo',[],1);define('foo',['foo/foo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/foo/foo.js', contents: "define('foo/foo',[],1);define('foo',['foo/foo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
@@ -488,11 +488,11 @@ test('Bundler swallows onRequire promise rejection', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/foo.js', contents: "define('foo/foo',[],1);define('foo',['foo/foo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/foo/foo.js', contents: "define('foo/foo',[],1);define('foo',['foo/foo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
@@ -558,7 +558,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'}
+            {contents: 'dumber-module-loader;'}
           ],
           config: {
             baseUrl: 'dist',
@@ -593,7 +593,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
         'vendor-bundle': {
           files: [
             {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'}
           ]
         }
@@ -609,9 +609,9 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'}
           ],
           config: {
@@ -642,7 +642,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
           files: [
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('foo',['foo/index'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'}
           ]
         }
@@ -659,9 +659,9 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader'},
+            {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});\n", sourceMap: undefined},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'}
           ],
           config: {

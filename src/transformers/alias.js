@@ -15,7 +15,7 @@ export default function (fromId, toId) {
   if (parsedFromId.ext) {
     let defined = 'text!' + parsedFromId.bareId;
     let contents = "define('text!" + parsedFromId.bareId + "',['text!" + parsedToId.bareId +
-                     "'],function(m){return m;});\n";
+                     "'],function(m){return m;});";
 
     return {
       defined: defined,
@@ -25,7 +25,7 @@ export default function (fromId, toId) {
     return {
       defined: parsedFromId.bareId,
       contents: "define('" + parsedFromId.bareId + "',['" + parsedToId.bareId +
-                "'],function(m){return m;});\n"
+                "'],function(m){return m;});"
     };
   }
 }

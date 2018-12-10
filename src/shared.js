@@ -77,7 +77,9 @@ export function contentOrFile(pathOrContent, mock) {
     });
   }
 
-  return p.then(text => ({contents: stripSourceMappingUrl(text)}));
+  return p.then(text => ({
+    contents: ensureSemicolon(stripSourceMappingUrl(text || ''))
+  }));
 }
 
 export function generateHash(bufOrStr) {
@@ -87,4 +89,10 @@ export function generateHash(bufOrStr) {
 export function stripSourceMappingUrl(contents) {
   return contents.replace(/\/\/(#|@)\s*sourceMappingURL=\S+\s*$/gm, '')
     .replace(/\/\*(#|@)\s*sourceMappingURL=\S+\s*\*\//g, '');
+}
+
+export function ensureSemicolon(contents) {
+  let trimed = contents.trim();
+  if (trimed.slice(-1) === ';') return trimed;
+  return trimed + ';';
 }
