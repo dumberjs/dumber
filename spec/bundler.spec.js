@@ -77,7 +77,7 @@ test('Bundler traces files', t => {
     'node_modules/loo/loo.js': '',
   };
   const bundler = createBundler(fakeFs, {
-    prepends: ['var pre = 1;', 'local/setup.js'],
+    prepends: ['var pre = 1;', '', undefined, false, 'local/setup.js', null],
     appends: ['local/after.js', 'var ape = 1;']
   });
 

@@ -50,14 +50,14 @@ export default class Bundler {
     this._depsFinder = opts.depsFinder;
     this._onRequire = opts.onRequire || opts.onrequire || opts.onRequiringModule;
 
-    this._prepends = opts.prepends || opts.prepend || [];
+    this._prepends = (opts.prepends || opts.prepend || []).filter(t => t);
     this._prepends.push(
       // load dumber-module-loader after prepends
       path.join(_resolve('dumber-module-loader'), 'dist/index.js')
     );
-    this._appends = opts.appends || opts.append || [];
+    this._appends = (opts.appends || opts.append || []).filter(t => t);
 
-    this._dependencies = (opts.dependencies || opts.deps || []).map(d => new Package(d));
+    this._dependencies = (opts.dependencies || opts.deps || []).filter(t => t).map(d => new Package(d));
     this._entryBundle = stripJsExtension(opts.entryBundle) || 'entry-bundle';
     this._codeSplit = opts.codeSplit || function(){};
     // mark dirtiness of bundles
