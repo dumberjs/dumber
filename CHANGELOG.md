@@ -1,3 +1,12 @@
+## [0.7.2](https://github.com/dumberjs/dumber/compare/v0.7.1...v0.7.2) (2018-12-11)
+
+
+### Features
+
+* support option skipModuleLoader ([1fc207c](https://github.com/dumberjs/dumber/commit/1fc207c))
+
+
+
 ## [0.7.1](https://github.com/dumberjs/dumber/compare/v0.7.0...v0.7.1) (2018-12-11)
 
 
