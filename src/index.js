@@ -71,7 +71,8 @@ export default class Bundler {
   }
 
   clearCache() {
-    this._cache && this._cache.clearCache();
+    if(this._cache) return this._cache.clearCache();
+    return Promise.resolve();
   }
 
   packageReaderFor(packageConfig) {

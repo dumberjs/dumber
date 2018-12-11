@@ -29,5 +29,5 @@ export function setCache(hash, object) {
 }
 
 export function clearCache() {
-  return del.sync(CACHE_DIR, {force: true});
+  return del(CACHE_DIR, {force: true});
 }

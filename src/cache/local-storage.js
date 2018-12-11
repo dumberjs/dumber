@@ -12,5 +12,8 @@ export function setCache(hash, object) {
 }
 
 export function clearCache() {
-  localStorage.clear();
+  return new Promise(resolve => {
+    localStorage.clear();
+    resolve();
+  });
 }
