@@ -117,6 +117,42 @@ test('Bundler traces files', t => {
   .then(t.end);
 });
 
+test('Bundler can optionally skip dumber-module-loader', t => {
+  const fakeFs = {
+    'local/setup.js': 'setup',
+    'local/after.js': 'after',
+
+  };
+  const bundler = createBundler(fakeFs, {
+    skipModuleLoader: true,
+    prepends: ['dev-dumber-module-loader']
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: '', moduleId: 'app'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dev-dumber-module-loader;'},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[],1);", sourceMap: undefined}
+          ],
+          config: {
+            baseUrl: 'dist',
+            bundles: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
 test('Bundler traces files, split bundles', t => {
   const fakeFs = {
     'local/setup.js': 'setup',

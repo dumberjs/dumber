@@ -51,10 +51,14 @@ export default class Bundler {
     this._onRequire = opts.onRequire || opts.onrequire || opts.onRequiringModule;
 
     this._prepends = (opts.prepends || opts.prepend || []).filter(t => t);
-    this._prepends.push(
-      // load dumber-module-loader after prepends
-      path.join(_resolve('dumber-module-loader'), 'dist/index.js')
-    );
+
+    if (!opts.skipModuleLoader) {
+      this._prepends.push(
+        // load dumber-module-loader after prepends
+        path.join(_resolve('dumber-module-loader'), 'dist/index.js')
+      );
+    }
+
     this._appends = (opts.appends || opts.append || []).filter(t => t);
 
     this._dependencies = (opts.dependencies || opts.deps || []).filter(t => t).map(d => new Package(d));
