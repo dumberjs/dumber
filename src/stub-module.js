@@ -38,13 +38,18 @@ function resolve(packageName) {
 // note all paths here assumes local node_modules folder
 export default function(moduleId) {
   // with subfix -browserify
-  if (['crypto', 'https', 'os', 'path', 'stream', 'timers', 'tty', 'vm'].indexOf(moduleId) !== -1) {
+  if (['crypto', 'https', 'os', 'path', 'timers', 'tty', 'vm'].indexOf(moduleId) !== -1) {
     return {name: moduleId, location: resolve(`${moduleId}-browserify`)};
   }
 
   if (moduleId === 'domain') {
     warn('core Node.js module "domain" is deprecated');
     return {name: 'domain', location: resolve('domain-browser')};
+  }
+
+  if (moduleId === 'stream') {
+    // use new readable-stream instead of old stream-browserify
+    return {name: 'stream', location: resolve('readable-stream')};
   }
 
   if (moduleId === 'http') {

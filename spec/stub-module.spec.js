@@ -27,6 +27,14 @@ test('stubModule stubs domain', t => {
   t.end();
 });
 
+test('stubModule stubs stream', t => {
+  t.deepEqual(stubModule('stream'),{
+    name: 'stream',
+    location: resolve('readable-stream')
+  });
+  t.end();
+});
+
 test('stubModule stubs http', t => {
   t.deepEqual(stubModule('http'),{
     name: 'http',

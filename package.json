@@ -48,7 +48,8 @@
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
-    "node-libs-browser": "^2.1.0"
+    "node-libs-browser": "^2.1.0",
+    "readable-stream": "^3.0.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
