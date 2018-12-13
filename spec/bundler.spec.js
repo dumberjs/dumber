@@ -328,7 +328,7 @@ test('Bundler traces files, sorts shim', t => {
             {path: 'node_modules/jquery/dist/jquery.js', contents: 'define("jquery",[],1);', sourceMap: undefined},
             {path: 'node_modules/bootstrap/dist/bootstrap.js', contents: "define('bootstrap/dist/bootstrap',[\"jquery\"],function(){return jQuery;});define('bootstrap',['bootstrap/dist/bootstrap'],function(m){return m;});", sourceMap: undefined},
             // mockTrace didn't touch fs stub, it is different in real usage
-            {path: '__stub__/fs', contents: "define(function(){return {};});", sourceMap: undefined},
+            {path: '__stub__/fs.js', contents: "define(function(){return {};});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {

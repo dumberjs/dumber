@@ -14,6 +14,35 @@ test('trace rejects not-matching packageName and moduleId', t => {
   })
 });
 
+test('trace does not reject moduleId which is same as packageName', t => {
+  const unit = {
+    path: '__stub__/fs.js',
+    contents: "define(function(){});",
+    moduleId: 'fs',
+    packageName: 'fs'
+  }
+  trace(unit).then(
+    traced => {
+      t.deepEqual(traced, {
+        path: '__stub__/fs.js',
+        contents: "define('fs',function(){});",
+        sourceMap: undefined,
+        moduleId: 'fs',
+        defined: 'fs',
+        deps: [],
+        packageName: 'fs',
+        shimed: undefined
+      });
+      t.end();
+    },
+    err => {
+      console.log(err.stack);
+      t.fail(err);
+      t.end();
+    }
+  );
+});
+
 test('trace traces js', t => {
   const unit = {
     path: 'src/foo/bar.js',

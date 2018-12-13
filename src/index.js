@@ -279,7 +279,7 @@ export default class Bundler {
         if (typeof stub === 'string') {
           p = p.then(() => this.capture({
             // not a real file path
-            path:'__stub__/' + bareId,
+            path:'__stub__/' + bareId + '.js',
             contents: stub,
             moduleId: bareId,
             packageName

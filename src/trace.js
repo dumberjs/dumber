@@ -22,7 +22,7 @@ export default function (unit, opts = {}) {
   let shim = unit.shim;
   let shimed;
 
-  if (packageName && !moduleId.startsWith(packageName + '/')) {
+  if (packageName && (moduleId !== packageName && !moduleId.startsWith(packageName + '/'))) {
     return Promise.reject(new Error('module "' + moduleId + '" is not in package "' + packageName + '"'));
   }
 
@@ -117,7 +117,7 @@ export default function (unit, opts = {}) {
       const {parts, cleanId} = parse(unit.moduleId);
       let toSkip = 0;
 
-      if (DIST_FOLDERS.indexOf(parts[1].toLowerCase()) !== -1) {
+      if (parts.length > 2 && DIST_FOLDERS.indexOf(parts[1].toLowerCase()) !== -1) {
         toSkip = 1;
         if (parts.length > 3 && DIST_FAVORS.indexOf(parts[2].toLowerCase()) !== -1) {
           toSkip = 2;
