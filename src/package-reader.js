@@ -28,6 +28,11 @@ export default class PackageReader {
       // when main file is missing, falls back to default index.js
       .catch(() => 'index.js')
       .then(mainPath => {
+        const replacement = this.browserReplacement['./' + stripJsExtension(mainPath)];
+        if (replacement) {
+           // replacement is always local, remove leading ./
+          mainPath = replacement.slice(2) + '.js';
+        }
         this.mainPath = mainPath;
         this.parsedMainId = parse(stripJsExtension(mainPath));
         return this;
@@ -52,9 +57,8 @@ export default class PackageReader {
         let resParts = parts.slice(0, i);
         resParts.push(resource);
 
-        let fullResource = resParts.join('/');
+        let fullResource = stripJsExtension(resParts.join('/'));
 
-        if (ext(fullResource) === '.js') fullResource = fullResource.slice(-3);
         const replacement = this.browserReplacement['./' + fullResource];
         if (replacement) {
            // replacement is always local, remove leading ./

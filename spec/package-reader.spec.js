@@ -541,6 +541,36 @@ test('packageReader uses browser replacement in package.json to normalize resour
   });
 });
 
+test('packageReader uses browser replacement in package.json to normalize main read', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "./index.js": "./browser.js"
+      }
+    }`,
+    'node_modules/foo/index.js': "index",
+    'node_modules/foo/browser.js': "browser"
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/browser.js',
+          contents: "browser",
+          moduleId: 'foo/browser',
+          packageName: 'foo'
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'browser.js');
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
 
 test('packageReader uses browser replacement in package.json to normalize file contents', t => {
   getReader('foo', {
