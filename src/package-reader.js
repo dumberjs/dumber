@@ -46,7 +46,7 @@ export default class PackageReader {
 
       const findResource = () => {
         if (i >= len) {
-          return Promise.reject(new Error("could not find " + resource));
+          return Promise.reject(new Error(`could not find ${resource} in package ${this.name}`));
         }
 
         let resParts = parts.slice(0, i);
