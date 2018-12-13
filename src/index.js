@@ -160,7 +160,7 @@ export default class Bundler {
           return reader.readMain()
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
-            this._ensureNpmMainAlias(tracedUnit, pkg.name);
+            this._ensureNpmAlias(tracedUnit, pkg.name);
           });
         }
       });
@@ -186,7 +186,10 @@ export default class Bundler {
     })
   }
 
-  _ensureNpmMainAlias(tracedUnit, id) {
+  // this ensures alias to package main, and alias to direct require
+  // to some browser replacement.
+  // e.g. readable-stream/readable -> readable-stream/readable-browser
+  _ensureNpmAlias(tracedUnit, id) {
     if (this._moduleId_done.has(id)) return;
 
     const defined = tracedUnit.defined;
@@ -290,7 +293,7 @@ export default class Bundler {
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
             if (!resource) {
-              this._ensureNpmMainAlias(tracedUnit, bareId);
+              this._ensureNpmAlias(tracedUnit, bareId);
             }
           })
           .catch(err => {

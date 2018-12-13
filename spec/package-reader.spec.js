@@ -509,6 +509,39 @@ test('packageReader reads browser replacement in package.json', t => {
   });
 });
 
+test('packageReader uses browser replacement in package.json to normalize resource read', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "module-a": false,
+        "module-b.js": "./shims/module/b.js",
+        "./server/only.js": "./shims/client-only.js"
+      }
+    }`,
+    'node_modules/foo/shims/client-only.js': "require('module-a');require('module-b.js');require('module-c');"
+  }).then(r => {
+    r.readResource('server/only').then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/shims/client-only.js',
+          contents: "require('__ignore__');require('./module/b');require('module-c');",
+          moduleId: 'foo/shims/client-only',
+          packageName: 'foo'
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.js');
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+
 test('packageReader uses browser replacement in package.json to normalize file contents', t => {
   getReader('foo', {
     'node_modules/foo/package.json': `{

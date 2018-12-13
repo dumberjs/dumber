@@ -54,6 +54,13 @@ export default class PackageReader {
 
         let fullResource = resParts.join('/');
 
+        if (ext(fullResource) === '.js') fullResource = fullResource.slice(-3);
+        const replacement = this.browserReplacement['./' + fullResource];
+        if (replacement) {
+           // replacement is always local, remove leading ./
+          fullResource = replacement.slice(2);
+        }
+
         return this._nodejsLoad(fullResource).then(
           filePath => this._readFile(filePath),
           () => {
