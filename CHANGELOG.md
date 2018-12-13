@@ -1,3 +1,12 @@
+## [0.7.6](https://github.com/dumberjs/dumber/compare/v0.7.5...v0.7.6) (2018-12-13)
+
+
+### Bug Fixes
+
+* use new readable-stream instead of old stream-browserify to stub nodejs core module stream ([f579263](https://github.com/dumberjs/dumber/commit/f579263))
+
+
+
 ## [0.7.5](https://github.com/dumberjs/dumber/compare/v0.7.4...v0.7.5) (2018-12-13)
 
 
