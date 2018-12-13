@@ -1,3 +1,12 @@
+## [0.7.5](https://github.com/dumberjs/dumber/compare/v0.7.4...v0.7.5) (2018-12-13)
+
+
+### Bug Fixes
+
+* fix false error on stub module ([efe776f](https://github.com/dumberjs/dumber/commit/efe776f))
+
+
+
 ## [0.7.4](https://github.com/dumberjs/dumber/compare/v0.7.3...v0.7.4) (2018-12-13)
 
 
