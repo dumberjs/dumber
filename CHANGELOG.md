@@ -1,3 +1,12 @@
+## [0.7.9](https://github.com/dumberjs/dumber/compare/v0.7.8...v0.7.9) (2018-12-13)
+
+
+### Bug Fixes
+
+* need alias for direct browser replacement too ([62d0224](https://github.com/dumberjs/dumber/commit/62d0224))
+
+
+
 ## [0.7.8](https://github.com/dumberjs/dumber/compare/v0.7.7...v0.7.8) (2018-12-13)
 
 
