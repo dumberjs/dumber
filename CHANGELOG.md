@@ -1,3 +1,12 @@
+## [0.7.8](https://github.com/dumberjs/dumber/compare/v0.7.7...v0.7.8) (2018-12-13)
+
+
+### Bug Fixes
+
+* hopefully fixed stream stub ([e92bc04](https://github.com/dumberjs/dumber/commit/e92bc04))
+
+
+
 ## [0.7.7](https://github.com/dumberjs/dumber/compare/v0.7.6...v0.7.7) (2018-12-13)
 
 
