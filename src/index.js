@@ -292,9 +292,7 @@ export default class Bundler {
           .then(reader => resource ? reader.readResource(resource) : reader.readMain())
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
-            if (!resource) {
-              this._ensureNpmAlias(tracedUnit, bareId);
-            }
+            this._ensureNpmAlias(tracedUnit, bareId);
           })
           .catch(err => {
             error(err);
