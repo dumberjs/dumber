@@ -27,9 +27,9 @@ test('stubModule stubs domain', t => {
   t.end();
 });
 
-test('stubModule stubs stream', t => {
-  t.deepEqual(stubModule('stream'),{
-    name: 'stream',
+test('stubModule stubs local readable-stream', t => {
+  t.deepEqual(stubModule('readable-stream'),{
+    name: 'readable-stream',
     location: resolve('readable-stream')
   });
   t.end();

@@ -44,12 +44,12 @@
     "ast-matcher": "^1.0.1",
     "cherow": "^1.6.8",
     "del": "^3.0.0",
-    "dumber-module-loader": "^0.15.0",
+    "dumber-module-loader": "^0.15.2",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
     "node-libs-browser": "^2.1.0",
-    "readable-stream": "^3.0.6"
+    "readable-stream": "^2.3.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
