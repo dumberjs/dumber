@@ -1,3 +1,17 @@
+## [0.7.4](https://github.com/dumberjs/dumber/compare/v0.7.3...v0.7.4) (2018-12-13)
+
+
+### Bug Fixes
+
+* fix parser on special globals like __defineSetter__ ([36cb1d4](https://github.com/dumberjs/dumber/commit/36cb1d4))
+
+
+### Features
+
+* support nodejs globals: global, process, Buffer ([a1975c4](https://github.com/dumberjs/dumber/commit/a1975c4))
+
+
+
 ## [0.7.3](https://github.com/dumberjs/dumber/compare/v0.7.2...v0.7.3) (2018-12-11)
 
 
