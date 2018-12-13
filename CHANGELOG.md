@@ -1,3 +1,13 @@
+## [0.7.7](https://github.com/dumberjs/dumber/compare/v0.7.6...v0.7.7) (2018-12-13)
+
+
+### Bug Fixes
+
+* fix browser replacement on direct resource require ([73d26d8](https://github.com/dumberjs/dumber/commit/73d26d8))
+* fix browser replacement on main ([a0b4934](https://github.com/dumberjs/dumber/commit/a0b4934))
+
+
+
 ## [0.7.6](https://github.com/dumberjs/dumber/compare/v0.7.5...v0.7.6) (2018-12-13)
 
 
