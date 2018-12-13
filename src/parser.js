@@ -75,10 +75,14 @@ export function usesCommonJs (code, globals) {
     usage.require = true;
   }
 
-  if (globals['exports']) usage.exports = true;
-  if (globals['module']) usage.moduleExports = true;
-  if (globals['__dirname']) usage.dirname = true;
-  if (globals['__filename']) usage.filename = true;
+  if (globals['exports']) usage['exports'] = true;
+  if (globals['module']) usage['moduleExports'] = true;
+  if (globals['__dirname']) usage['dirname'] = true;
+  if (globals['__filename']) usage['filename'] = true;
+  // special nodejs globals
+  if (globals['global']) usage['global'] = true;
+  if (globals['process']) usage['process'] = true;
+  if (globals['Buffer']) usage['Buffer'] = true;
 
   if (Object.keys(usage).length) {
     return usage;
@@ -129,21 +133,21 @@ export function usesAmdOrRequireJs (code, globals) {
   }
   let usage = {};
 
-  if (globals['requirejs']) usage.requirejs = true;
+  if (globals['requirejs']) usage['requirejs'] = true;
 
   if (globals['require']) {
     let list = globals['require'];
     if (some(list, findAmdRequireIdentifiers(ast))) {
-      usage.require = true;
+      usage['require'] = true;
     }
 
     if (some(list, findAmdRequireConfigIdentifiers(ast))) {
-      usage.requireConfig = true;
+      usage['requireConfig'] = true;
     }
   }
 
   if (globals['define']) {
-    usage.define = true;
+    usage['define'] = true;
     // We didn't implement declaresDefine and defineAmd here.
     // If we want, use eslint-scope getDeclaredVariables(node) api to get function definition in inner scope.
   }

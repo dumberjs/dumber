@@ -110,3 +110,8 @@ module.exports = require('./_library') || !require('./_fails')(function () {
   t.deepEqual(usesCommonJs(code), {require: true, moduleExports: true});
   t.end();
 });
+
+test('usesCommonJs picks nodejs global, process, and Buffer', t => {
+  t.deepEqual(usesCommonJs("if (global) { Buffer.from(process.cwd()); }"), {'global': true, 'Buffer': true, 'process': true});
+  t.end();
+});

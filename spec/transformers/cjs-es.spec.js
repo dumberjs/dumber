@@ -74,3 +74,13 @@ test('cjsEs transform wraps ES module', t => {
   t.ok(result.contents.startsWith('define(["exports"'));
   t.end();
 });
+
+test('cjsEs transform wraps cjs code with global, process, and Buffer', t => {
+  const source = 'exports.name = global.bar;exports.loo = new Buffer(process.cwd());';
+  const expected = 'define(function (require, exports, module) {' +
+                   'var global = window;var process = require(\'process\');var Buffer = require(\'buffer\').Buffer;\n' +
+                   'exports.name = global.bar;exports.loo = new Buffer(process.cwd());\n});\n';
+
+  t.deepEqual(cjsEs(source), {headLines: 1, contents: expected});
+  t.end();
+});

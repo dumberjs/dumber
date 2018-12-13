@@ -33,9 +33,21 @@ export default function(contents, forceWrap) {
 
   let pre = '';
   if (cjsUsage && (cjsUsage.dirname || cjsUsage.filename)) {
-    pre = 'var __filename = module.filename || \'\', ' +
+    pre += 'var __filename = module.filename || \'\', ' +
           '__dirname = ' +
           '__filename.slice(0, __filename.lastIndexOf(\'/\') + 1);';
+  }
+
+  if (cjsUsage && cjsUsage['global']) {
+    pre += 'var global = window;';
+  }
+
+  if (cjsUsage && cjsUsage['process']) {
+    pre += "var process = require('process');";
+  }
+
+  if (cjsUsage && cjsUsage['Buffer']) {
+    pre += "var Buffer = require('buffer').Buffer;";
   }
 
   return {
