@@ -10,7 +10,11 @@ export function globalIndentifiers (code) {
   let scopeManager = analyze(ast, {ecmaVersion: 6});
   let globalScope = scopeManager.acquire(ast);
 
-  let globalIndentifiers = {};
+  // This is very interesting.
+  // If you do `let globals = {};`, globals actually has some properties inherited
+  // like __defineSetter__, which makes globals['__defineSetter__'] not empty!
+  // Check last test in spec/parser.uses-common-js.spec.js
+  let globals = Object.create(null);
 
   globalScope.through.forEach(function (ref) {
     let name = ref.identifier.name;
@@ -22,14 +26,14 @@ export function globalIndentifiers (code) {
       return;
     }
 
-    if (globalIndentifiers[name]) {
-      globalIndentifiers[name].push(ref.identifier);
+    if (globals[name]) {
+      globals[name].push(ref.identifier);
     } else {
-      globalIndentifiers[name] = [ref.identifier];
+      globals[name] = [ref.identifier];
     }
   });
 
-  return globalIndentifiers;
+  return globals;
 }
 
 function some(list, interested) {
