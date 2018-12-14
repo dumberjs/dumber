@@ -47,12 +47,6 @@ export default function(moduleId) {
     return {name: 'domain', location: resolve('domain-browser')};
   }
 
-  if (moduleId === 'readable-stream') {
-    // forcing the local old readable-stream v2
-    // this is required by stream-browserify stub
-    return {name: 'readable-stream', location: resolve('readable-stream')};
-  }
-
   if (moduleId === 'http') {
     return {name: 'http', location: resolve('stream-http')};
   }
