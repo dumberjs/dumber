@@ -46,7 +46,7 @@ export default class Bundler {
     this._locator = opts.packageLocator || defaultPackageLocator;
 
     // baseUrl default to "dist"
-    this._baseUrl = opts.baseUrl || 'dist';
+    this._baseUrl = opts.baseUrl || '/dist';
     this._depsFinder = opts.depsFinder;
     this._onRequire = opts.onRequire || opts.onrequire || opts.onRequiringModule;
 

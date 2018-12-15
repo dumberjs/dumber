@@ -106,7 +106,7 @@ test('Bundler traces files', t => {
             {contents: 'var ape = 1;'},
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {}
           }
         }
@@ -142,7 +142,7 @@ test('Bundler can optionally skip dumber-module-loader', t => {
             {path: 'src/app.js', contents: "define('app',[],1);", sourceMap: undefined}
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {}
           }
         }
@@ -192,7 +192,7 @@ test('Bundler traces files, split bundles', t => {
             {contents: 'var ape = 1;'},
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {
               'vendor': {
                 user: [],
@@ -332,7 +332,7 @@ test('Bundler traces files, sorts shim', t => {
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {}
           }
         }
@@ -367,7 +367,7 @@ test('Bundler ignores module when onRequire returns false', t => {
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {}
           }
         }
@@ -410,7 +410,7 @@ test('Bundler replaces deps when onRequire returns array', t => {
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {}
           }
         }
@@ -452,7 +452,7 @@ test('Bundler supports implementation returned by onRequire', t => {
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {}
           }
         }
@@ -492,7 +492,7 @@ test('Bundler swallows onRequire exception', t => {
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {}
           }
         }
@@ -532,7 +532,7 @@ test('Bundler swallows onRequire promise rejection', t => {
             {contents: 'define.switchToUserSpace();'},
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {}
           }
         }
@@ -597,7 +597,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             {contents: 'dumber-module-loader;'}
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {
               'vendor-bundle': {
                 user: [],
@@ -651,7 +651,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             {contents: 'define.switchToUserSpace();'}
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {
               'vendor-bundle': {
                 user: [],
@@ -701,7 +701,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             {contents: 'define.switchToUserSpace();'}
           ],
           config: {
-            baseUrl: 'dist',
+            baseUrl: '/dist',
             bundles: {
               'vendor-bundle': {
                 user: [],
