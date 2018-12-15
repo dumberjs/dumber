@@ -45,7 +45,7 @@
     "ast-matcher": "^1.0.1",
     "cherow": "^1.6.8",
     "del": "^3.0.0",
-    "dumber-module-loader": "^0.15.4",
+    "dumber-module-loader": "^0.15.5",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
