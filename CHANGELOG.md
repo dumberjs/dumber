@@ -1,3 +1,12 @@
+## [0.7.10](https://github.com/dumberjs/dumber/compare/v0.7.9...v0.7.10) (2018-12-15)
+
+
+### Features
+
+* support es dynamic import() ([a9c0caf](https://github.com/dumberjs/dumber/commit/a9c0caf))
+
+
+
 ## [0.7.9](https://github.com/dumberjs/dumber/compare/v0.7.8...v0.7.9) (2018-12-13)
 
 
