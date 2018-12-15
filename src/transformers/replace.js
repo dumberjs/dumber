@@ -77,9 +77,7 @@ export default function(contents, replacement) {
   })
 
   // reverse sort by "start"
-  toReplace.sort((a, b) => b.start - a.start);
-
-  toReplace.forEach(r => {
+  toReplace.sort((a, b) => b.start - a.start).forEach(r => {
     contents = modify(contents, r);
   });
 

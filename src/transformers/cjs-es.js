@@ -1,24 +1,23 @@
 import {globalIndentifiers, usesCommonJs, usesEsm, usesAmdOrRequireJs} from '../parser';
-import astMatcher from 'ast-matcher';
+import {ensureParsed, traverse} from 'ast-matcher';
 import {transform} from '@babel/core';
-import transformAmd from '@babel/plugin-transform-modules-amd';
-const ensureParsed = astMatcher.ensureParsed;
+import transformCjs from '@babel/plugin-transform-modules-commonjs';
+import syntaxDynamicImport from '@babel/plugin-syntax-dynamic-import';
 
 // wrap cjs into amd if needed
 export default function(contents, forceWrap) {
   let ast = ensureParsed(contents);
 
   if (usesEsm(ast)) {
-    const amd = transform(contents, {
+    const cjs = transform(contents, {
       babelrc: false,
       sourceMaps: false,
-      plugins: [[transformAmd, {"loose": true}]]
+      plugins: [[transformCjs, {"loose": true}], syntaxDynamicImport]
     });
 
-    return {
-      headLines: 1,
-      contents: amd.code
-    };
+    contents = cjs.code;
+    ast = ensureParsed(contents);
+    forceWrap = true;
   }
 
   let globalIds = globalIndentifiers(ast);
@@ -48,6 +47,27 @@ export default function(contents, forceWrap) {
 
   if (cjsUsage && cjsUsage['Buffer']) {
     pre += "var Buffer = require('buffer').Buffer;";
+  }
+
+  // es6 dynamic import() call
+  const toReplace = [];
+  traverse(ast, node => {
+    if (node.type === 'Import') {
+      toReplace.push({
+        start: node.start,
+        end: node.end
+      });
+    }
+  });
+
+  if (toReplace.length) {
+    // Use "imp0r_()" to replace "import()".
+    // Note they have same length, so sourcemaps won't be affected.
+    pre += "var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0]&&r[0].default?r[0].default:r;});};"
+    // reverse sort by "start"
+    toReplace.sort((a, b) => b.start - a.start).forEach(r => {
+      contents = contents.slice(0, r.start) + 'imp0r_' + contents.slice(r.end);
+    });
   }
 
   return {

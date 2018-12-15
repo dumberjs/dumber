@@ -69,9 +69,10 @@ test('cjsEs transform wraps cjs code case 3', t => {
 });
 
 test('cjsEs transform wraps ES module', t => {
-  const source = 'export default 1';
+  const source = 'export default process.cwd();';
   const result = cjsEs(source);
-  t.ok(result.contents.startsWith('define(["exports"'));
+  t.ok(result.contents.startsWith('define(function (require, exports, module) {' +
+                                  'var process = require(\'process\');\n'));
   t.end();
 });
 
@@ -82,5 +83,14 @@ test('cjsEs transform wraps cjs code with global, process, and Buffer', t => {
                    'exports.name = global.bar;exports.loo = new Buffer(process.cwd());\n});\n';
 
   t.deepEqual(cjsEs(source), {headLines: 1, contents: expected});
+  t.end();
+});
+
+test('cjsEs support dynamic import() in ES module', t => {
+  const source = "export default import('./a');";
+  const result = cjsEs(source);
+  t.ok(result.contents.startsWith('define(function (require, exports, module) {' +
+                                  'var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0]&&r[0].default?r[0].default:r;});};\n'));
+  t.ok(result.contents.includes("imp0r_('./a')"))
   t.end();
 });

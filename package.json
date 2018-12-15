@@ -40,7 +40,8 @@
   "homepage": "https://github.com/dumberjs/dumber#readme",
   "dependencies": {
     "@babel/core": "^7.2.0",
-    "@babel/plugin-transform-modules-amd": "^7.2.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.2.0",
     "ast-matcher": "^1.0.1",
     "cherow": "^1.6.8",
     "del": "^3.0.0",
