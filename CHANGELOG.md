@@ -1,3 +1,12 @@
+## [0.7.11](https://github.com/dumberjs/dumber/compare/v0.7.10...v0.7.11) (2018-12-15)
+
+
+### Bug Fixes
+
+* get missed location and main ([dc7c550](https://github.com/dumberjs/dumber/commit/dc7c550))
+
+
+
 ## [0.7.10](https://github.com/dumberjs/dumber/compare/v0.7.9...v0.7.10) (2018-12-15)
 
 
