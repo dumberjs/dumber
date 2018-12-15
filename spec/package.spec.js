@@ -10,17 +10,32 @@ test('package rejects invalid options', t => {
 test('package takes simple package name', t => {
   const p = new Package('a');
   t.equal(p.name, 'a');
+  t.equal(p.location, undefined);
+  t.equal(p.main, undefined);
   t.equal(p.shim, undefined);
   t.notOk(p.lazyMain);
   t.end();
 });
 
 test('package takes options', t => {
-  const p = new Package({name: 'a', lazyMain: true, version: '2.1.0'});
+  const p = new Package({name: 'a', location: 'f/a', lazyMain: true, version: '2.1.0'});
   t.equal(p.name, 'a');
+  t.equal(p.location, 'f/a');
+  t.equal(p.main, undefined);
   t.equal(p.version, '2.1.0');
   t.equal(p.shim, undefined);
   t.ok(p.lazyMain);
+  t.end();
+});
+
+test('package takes options case2', t => {
+  const p = new Package({name: 'a', location: 'f/a', main: './aa.js'});
+  t.equal(p.name, 'a');
+  t.equal(p.location, 'f/a');
+  t.equal(p.main, './aa.js');
+  t.equal(p.version, undefined);
+  t.equal(p.shim, undefined);
+  t.notOk(p.lazyMain);
   t.end();
 });
 

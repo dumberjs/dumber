@@ -15,6 +15,8 @@ export default class Package {
       throw new Error('not a valid package options, use "packageName" or {name: "packageName", ...}');
     }
 
+    this.location = (typeof opts.location === 'string') ? opts.location : undefined;
+    this.main = (typeof opts.main === 'string') ? opts.main : undefined;
     this.version = (typeof opts.version === 'string') ? opts.version : undefined;
     this.lazyMain = !!opts.lazyMain;
 
