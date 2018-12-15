@@ -1,3 +1,12 @@
+## [0.7.12](https://github.com/dumberjs/dumber/compare/v0.7.11...v0.7.12) (2018-12-15)
+
+
+### Bug Fixes
+
+* change default baseUrl from "dist" to "/dist" to work better in some SPA router ([71f0099](https://github.com/dumberjs/dumber/commit/71f0099))
+
+
+
 ## [0.7.11](https://github.com/dumberjs/dumber/compare/v0.7.10...v0.7.11) (2018-12-15)
 
 
