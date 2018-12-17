@@ -39,6 +39,9 @@ export default class Bundler {
       this._cache = cache;
     }
 
+    // turn on injection of css (inject onto html head)
+    if (opts.injectCss || opts.injectCSS) this._injectCss = true;
+
     this._unitsMap = {};
     this._moduleId_done = new Set();
     this._moduleIds_todo = new Set();
@@ -146,8 +149,8 @@ export default class Bundler {
   }
 
   _resolveExplicitDepsIfNeeded() {
-    if (this.isExplicitDepsResolved) return Promise.resolve();
-    this.isExplicitDepsResolved = true;
+    if (this._isExplicitDepsResolved) return Promise.resolve();
+    this._isExplicitDepsResolved = true;
 
     let p = Promise.resolve();
 
@@ -170,8 +173,8 @@ export default class Bundler {
   }
 
   _resolvePrependsAndAppends() {
-    if (this.isPrependsAndAppendsResolved) return Promise.resolve();
-    this.isPrependsAndAppendsResolved = true;
+    if (this._isPrependsAndAppendsResolved) return Promise.resolve();
+    this._isPrependsAndAppendsResolved = true;
 
     let {_prepends, _appends} = this;
     let prepends = new Array(_prepends.length);
@@ -213,9 +216,21 @@ export default class Bundler {
     }
   }
 
+  _supportInjectCssIfNeeded() {
+    if (!this._injectCss || this._isInjectCssTurnedOn) return Promise.resolve();
+    this._isInjectCssTurnedOn = true;
+
+    return this.capture({
+      path:'__stub__/ext-css.js',
+      contents: "define(['dumber/dist/inject-css'],function(m){return m;});",
+      moduleId: 'ext:css'
+    });
+  }
+
   resolve() {
     let todo = [];
-    return this._resolvePrependsAndAppends()
+    return this._supportInjectCssIfNeeded()
+    .then(() => this._resolvePrependsAndAppends())
     .then(() => this._resolveExplicitDepsIfNeeded())
     .then(() => {
       const consults = [];

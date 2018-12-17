@@ -1,5 +1,6 @@
 import test from 'tape';
 import Bundler from '../src/index';
+import trace from '../src/trace';
 import {contentOrFile} from '../src/shared';
 import {mockResolve, buildReadFile, mockLocator} from './mock';
 
@@ -7,6 +8,11 @@ function mockTrace(unit) {
   const contents = unit.contents;
   const moduleId = unit.moduleId;
   const shim = unit.shim;
+
+  if (unit.moduleId === 'ext:css') {
+    // don't mock ext:css trace
+    return trace(unit);
+  }
 
   if (unit.packageName === 'jquery') {
     return Promise.resolve({
@@ -732,3 +738,43 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
   )
   .then(t.end);
 });
+
+test('Bundler supports inject css', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
+    'node_modules/dumber/dist/inject-css.js': '',
+  };
+  const bundler = createBundler(fakeFs, {
+    injectCss: true
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: '', moduleId: 'app'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;'},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[],1);", sourceMap: undefined},
+            {path: '__stub__/ext-css.js', contents: "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/dumber/dist/inject-css.js', contents: "define('dumber/dist/inject-css',[],1);", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
