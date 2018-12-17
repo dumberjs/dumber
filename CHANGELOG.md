@@ -1,3 +1,12 @@
+## [0.7.16](https://github.com/dumberjs/dumber/compare/v0.7.15...v0.7.16) (2018-12-17)
+
+
+### Bug Fixes
+
+* fix missing } in wasm wrapper ([cab8453](https://github.com/dumberjs/dumber/commit/cab8453))
+
+
+
 ## [0.7.15](https://github.com/dumberjs/dumber/compare/v0.7.14...v0.7.15) (2018-12-17)
 
 
