@@ -154,7 +154,7 @@ test('trace transforms json', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.json',
-      contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});\n",
+      contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});",
       sourceMap: undefined,
       moduleId: 'foo/bar.json',
       defined: 'text!foo/bar.json',
@@ -176,7 +176,7 @@ test('trace transforms text file', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.html',
-      contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});\n",
+      contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});",
       sourceMap: undefined,
       moduleId: 'foo/bar.html',
       defined: 'text!foo/bar.html',
@@ -198,7 +198,7 @@ test('trace transforms wasm file', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.wasm',
-      contents: "define('raw!foo/bar.wasm',['base64-arraybuffer'],function(a){return {arrayBuffer: function() {return Promise.resolve(a.decode(\"abc\"));}}});\n",
+      contents: "define('raw!foo/bar.wasm',['base64-arraybuffer'],function(a){return {arrayBuffer: function() {return Promise.resolve(a.decode(\"abc\"));}}});",
       sourceMap: undefined,
       moduleId: 'foo/bar.wasm',
       defined: 'raw!foo/bar.wasm',
@@ -374,7 +374,7 @@ test('trace traces npm html with dist alias', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/cjs/bar.html',
-      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\ndefine('text!foo/bar.html',['text!foo/dist/cjs/bar.html'],function(m){return m;});",
+      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});define('text!foo/bar.html',['text!foo/dist/cjs/bar.html'],function(m){return m;});",
       sourceMap: undefined,
       moduleId: 'foo/dist/cjs/bar.html',
       defined: ['text!foo/dist/cjs/bar.html', 'text!foo/bar.html'],
