@@ -1,3 +1,12 @@
+## [0.7.14](https://github.com/dumberjs/dumber/compare/v0.7.13...v0.7.14) (2018-12-17)
+
+
+### Features
+
+* basic support of bundling wasm ([3efd5dd](https://github.com/dumberjs/dumber/commit/3efd5dd))
+
+
+
 ## [0.7.13](https://github.com/dumberjs/dumber/compare/v0.7.12...v0.7.13) (2018-12-17)
 
 
