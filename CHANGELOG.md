@@ -1,3 +1,12 @@
+## [0.7.15](https://github.com/dumberjs/dumber/compare/v0.7.14...v0.7.15) (2018-12-17)
+
+
+### Bug Fixes
+
+* fix unknown encoding null for buffer.toString() ([fc61bcc](https://github.com/dumberjs/dumber/commit/fc61bcc))
+
+
+
 ## [0.7.14](https://github.com/dumberjs/dumber/compare/v0.7.13...v0.7.14) (2018-12-17)
 
 
