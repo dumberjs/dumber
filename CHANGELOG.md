@@ -1,3 +1,12 @@
+## [0.7.19](https://github.com/dumberjs/dumber/compare/v0.7.18...v0.7.19) (2018-12-17)
+
+
+### Bug Fixes
+
+* only recover missing main, not broken package.json ([6d08545](https://github.com/dumberjs/dumber/commit/6d08545))
+
+
+
 ## [0.7.18](https://github.com/dumberjs/dumber/compare/v0.7.17...v0.7.18) (2018-12-17)
 
 
