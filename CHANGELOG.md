@@ -1,3 +1,12 @@
+## [0.7.18](https://github.com/dumberjs/dumber/compare/v0.7.17...v0.7.18) (2018-12-17)
+
+
+### Bug Fixes
+
+* arrayBuffer() stub should return a promise ([4f03a1e](https://github.com/dumberjs/dumber/commit/4f03a1e))
+
+
+
 ## [0.7.17](https://github.com/dumberjs/dumber/compare/v0.7.16...v0.7.17) (2018-12-17)
 
 
