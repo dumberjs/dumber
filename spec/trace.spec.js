@@ -198,7 +198,7 @@ test('trace transforms wasm file', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.wasm',
-      contents: "define('raw!foo/bar.wasm',['base64-arraybuffer'],function(a){return {arrayBuffer: function() {return a.decode(\"abc\");}}});\n",
+      contents: "define('raw!foo/bar.wasm',['base64-arraybuffer'],function(a){return {arrayBuffer: function() {return Promise.resolve(a.decode(\"abc\"));}}});\n",
       sourceMap: undefined,
       moduleId: 'foo/bar.wasm',
       defined: 'raw!foo/bar.wasm',
