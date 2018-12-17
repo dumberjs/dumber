@@ -202,7 +202,7 @@ test('trace transforms wasm file', t => {
       sourceMap: undefined,
       moduleId: 'foo/bar.wasm',
       defined: 'raw!foo/bar.wasm',
-      deps: [],
+      deps: ['base64-arraybuffer'],
       packageName: undefined,
       shimed: undefined
     })

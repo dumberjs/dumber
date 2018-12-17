@@ -81,12 +81,18 @@ export default function (unit, opts = {}) {
     let wasmResult = wasm(moduleId, contents);
     contents = wasmResult.contents;
     defined = wasmResult.defined;
+    if (wasmResult.deps) {
+      wasmResult.deps.forEach(d => deps.add(resolveModuleId(moduleId, d)));
+    }
   } else {
     // use text! for everything else including unknown extname
     sourceMap = undefined;
     let textResult = text(moduleId, contents);
     contents = textResult.contents;
     defined = textResult.defined;
+    if (textResult.deps) {
+      textResult.deps.forEach(d => deps.add(resolveModuleId(moduleId, d)));
+    }
   }
 
   let p = Promise.resolve();

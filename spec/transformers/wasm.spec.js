@@ -7,7 +7,8 @@ test('wasm wraps wasm into amd module', t => {
 
   t.deepEqual(wasm('a.wasm', source), {
     defined: 'raw!a.wasm',
-    contents: target
+    contents: target,
+    deps: ['base64-arraybuffer']
   });
   t.end();
 });
