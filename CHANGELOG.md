@@ -1,3 +1,12 @@
+## [0.7.13](https://github.com/dumberjs/dumber/compare/v0.7.12...v0.7.13) (2018-12-17)
+
+
+### Features
+
+* option to inject css onto html head ([ca45a3c](https://github.com/dumberjs/dumber/commit/ca45a3c)), closes [#1](https://github.com/dumberjs/dumber/issues/1)
+
+
+
 ## [0.7.12](https://github.com/dumberjs/dumber/compare/v0.7.11...v0.7.12) (2018-12-15)
 
 
