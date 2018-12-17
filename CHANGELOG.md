@@ -1,3 +1,12 @@
+## [0.7.17](https://github.com/dumberjs/dumber/compare/v0.7.16...v0.7.17) (2018-12-17)
+
+
+### Bug Fixes
+
+* fix missing dep on base64-arraybuffer ([5a07d94](https://github.com/dumberjs/dumber/commit/5a07d94))
+
+
+
 ## [0.7.16](https://github.com/dumberjs/dumber/compare/v0.7.15...v0.7.16) (2018-12-17)
 
 
