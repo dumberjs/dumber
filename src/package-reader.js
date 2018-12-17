@@ -24,9 +24,8 @@ export default class PackageReader {
         this.version = metadata.version || 'N/A';
         this.browserReplacement = _browserReplacement(metadata.browser);
       })
-      .then(() => this._nodejsLoadAsDirectory(''))
       // when main file is missing, falls back to default index.js
-      .catch(() => 'index.js')
+      .then(() => this._nodejsLoadAsDirectory('').catch(() => 'index.js'))
       .then(mainPath => {
         const replacement = this.browserReplacement['./' + stripJsExtension(mainPath)];
         if (replacement) {
