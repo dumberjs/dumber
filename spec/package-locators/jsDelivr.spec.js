@@ -1,5 +1,6 @@
 import test from 'tape';
 import jsDelivrLocator from '../../src/package-locators/jsDelivr';
+import {decode} from 'base64-arraybuffer';
 
 function mkResponse (text) {
   return {
@@ -15,6 +16,12 @@ function mockFetch (url) {
           url.endsWith('foo@1.0.1/package.json')) {
         resolve(mkResponse('{"name":"foo","version":"1.0.1"}'));
 
+      } else if (url.endsWith('foo@1.0.1/fib.wasm')) {
+        const base64 = 'AGFzbQEAAAABBgFgAX8BfwMCAQAHBwEDZmliAAAKHwEdACAAQQJIBEBBAQ8LIABBAmsQACAAQQFrEABqDws=';
+        resolve({
+          ok: true,
+          arrayBuffer: () => Promise.resolve(decode(base64))
+        });
       } else if (url.endsWith('bar/package.json') ||
                  url.endsWith('bar@1.9.0/package.json')) {
         resolve(mkResponse('{"name":"bar","version":"1.9.0"}'));
@@ -28,9 +35,9 @@ function mockFetch (url) {
       } else if (url.endsWith('foo/dist') ||
           url.endsWith('foo@1.0.1/dist')) {
         resolve({ok: true, redirected: true});
+      } else {
+        resolve({statusText: 'Not Found'});
       }
-
-      resolve({statusText: 'Not Found'});
     }, 10);
   });
 }
@@ -62,7 +69,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func for existing package', t =
         err => t.fail(err.message)
       );
     },
-    () => t.fail('should not fail')
+    err => t.fail(err)
   ).then(() => t.end());
 });
 
@@ -81,7 +88,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func for fixed package version'
         err => t.fail(err.message)
       );
     },
-    () => t.fail('should not fail')
+    err => t.fail(err)
   ).then(() => t.end());
 });
 
@@ -101,7 +108,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func for alias package', t => {
         err => t.fail(err.message)
       );
     },
-    () => t.fail('should not fail')
+    err => t.fail(err)
   ).then(() => t.end());
 });
 
@@ -115,7 +122,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for e
         () => t.pass('rejects missing file')
       );
     },
-    () => t.fail('should not fail')
+    err => t.fail(err)
   ).then(() => t.end());
 });
 
@@ -134,7 +141,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func for existing scoped packag
         err => t.fail(err.message)
       );
     },
-    () => t.fail('should not fail')
+    err => t.fail(err)
   ).then(() => t.end());
 });
 
@@ -148,7 +155,7 @@ test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for e
         () => t.pass('rejects missing file')
       );
     },
-    () => t.fail('should not fail')
+    err => t.fail(err)
   ).then(() => t.end());
 });
 
@@ -162,6 +169,22 @@ test('jsDelivrNpmPackageLocator rejects read on dir', t => {
         err => t.equal(err.message, 'it is a directory')
       );
     },
-    () => t.fail('should not fail')
+    err => t.fail(err)
+  ).then(() => t.end());
+});
+
+test('jsDelivrNpmPackageLocator reads .wasm file to base64 string', t => {
+  locator({name: 'foo'})
+  .then(
+    fileRead => {
+      return fileRead('fib.wasm')
+      .then(
+        file => {
+          t.equal(file.contents, 'AGFzbQEAAAABBgFgAX8BfwMCAQAHBwEDZmliAAAKHwEdACAAQQJIBEBBAQ8LIABBAmsQACAAQQFrEABqDws=');
+        },
+        err => t.fail(err)
+      );
+    },
+    err => t.fail(err)
   ).then(() => t.end());
 });

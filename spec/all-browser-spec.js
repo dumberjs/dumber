@@ -1,4 +1,4 @@
-require('./package-locators/default.spec');
+// require('./package-locators/default.spec');
 require('./package-locators/jsDelivr.spec');
 require('./package-reader.spec');
 require('./package.spec');
@@ -12,6 +12,7 @@ require('./transformers/alias.spec');
 // require('./transformers/cjs-es.spec');
 require('./transformers/defines.spec');
 require('./transformers/text.spec');
+require('./transformers/wasm.spec');
 require('./shared.spec');
 require('./stub-module.spec');
 require('./inject-css.spec');

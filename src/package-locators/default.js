@@ -1,5 +1,6 @@
 import path from 'path';
 import {info, warn, resolvePackagePath, fsReadFile} from '../shared';
+import {ext} from 'dumber-module-loader/dist/id-utils';
 
 // default locator using nodejs to resolve package
 export default function (packageConfig, mock) {
@@ -18,7 +19,7 @@ export default function (packageConfig, mock) {
 
   return Promise.resolve(filePath => {
     const fp = path.join(packagePath, filePath);
-    const relativePath = path.relative(path.resolve(), path.resolve(fp));
+    const relativePath = path.relative(path.resolve(), path.resolve(fp)).replace(/\\/g, '/');
 
     if (hardCodedMain && (filePath === 'package.json' || filePath === './package.json')) {
       return Promise.resolve({
@@ -32,7 +33,7 @@ export default function (packageConfig, mock) {
       buffer => {
         return {
           path: relativePath,
-          contents: buffer.toString()
+          contents: buffer.toString(ext(filePath) === '.wasm' ? 'base64' : null)
         };
       },
       err => {

@@ -188,6 +188,28 @@ test('trace transforms text file', t => {
   });
 });
 
+test('trace transforms wasm file', t => {
+  const unit = {
+    path: 'src/foo/bar.wasm',
+    contents: 'abc',
+    moduleId: 'foo/bar.wasm'
+  }
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'src/foo/bar.wasm',
+      contents: "define('raw!foo/bar.wasm',['base64-arraybuffer'],function(a){return {arrayBuffer: function() {return a.decode(\"abc\");}});\n",
+      sourceMap: undefined,
+      moduleId: 'foo/bar.wasm',
+      defined: 'raw!foo/bar.wasm',
+      deps: [],
+      packageName: undefined,
+      shimed: undefined
+    })
+    t.end();
+  });
+});
+
 test('trace supports optional depsFinder returns deps directly', t => {
   const depsFinder = function (path, contents) {
     if (path.endsWith('.js')) return ['./x'];

@@ -1,8 +1,11 @@
 /* global fetch */
+import {ext} from 'dumber-module-loader/dist/id-utils';
+import {encode} from 'base64-arraybuffer';
+
 // use in browser only
 let prefix = '//cdn.jsdelivr.net/npm/';
 
-function fetchText(fetchApi, url) {
+function fetchContent(fetchApi, url) {
   return fetchApi(url)
   .then(function (response) {
     if (!response.ok) {
@@ -13,12 +16,16 @@ function fetchText(fetchApi, url) {
       // lists all files in the directory
       throw new Error('it is a directory');
     }
+
+    if (ext(url) === '.wasm') {
+      return response.arrayBuffer().then(buffer => encode(buffer));
+    }
     return response.text();
   });
 }
 
 function fetchJson(fetchApi, url) {
-  return fetchText(fetchApi, url).then(function(text) {
+  return fetchContent(fetchApi, url).then(function(text) {
     return JSON.parse(text);
   });
 }
@@ -61,7 +68,7 @@ export default function (packageConfig, mock) {
 
     return function(filePath) {
       const fp = packagePath + '/' + filePath;
-      return fetchText(_fetch, fp).then(function (text) {
+      return fetchContent(_fetch, fp).then(function (text) {
         return {
           path: fp,
           contents: text

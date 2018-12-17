@@ -1,5 +1,6 @@
 import test from 'tape';
 import path from 'path';
+import fs from 'fs';
 import {buildReadFile, mockLocator} from '../mock';
 import _defaultLocator from '../../src/package-locators/default';
 
@@ -11,7 +12,7 @@ test('defaultNpmPackageLocator falls back to main:index when package.json is mis
       return fileRead('package.json')
       .then(
         file => {
-          t.ok(path.resolve('node_modules/foo/package.json'));
+          t.equal(file.path, 'node_modules/foo/package.json');
           t.equal(file.contents, '{"name":"foo","main":"index"}');
         },
         err => t.fail(err.stack)
@@ -35,7 +36,7 @@ test('defaultNpmPackageLocator returns fileRead func for existing package', t =>
       return fileRead('package.json')
       .then(
         file => {
-          t.ok(path.resolve('node_modules/foo/package.json'));
+          t.equal(file.path, 'node_modules/foo/package.json');
           t.equal(file.contents, 'lorem');
         },
         err => t.fail(err.stack)
@@ -59,7 +60,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with hard coded
       return fileRead('package.json')
       .then(
         file => {
-          t.ok(path.resolve('node_modules/foo/package.json'));
+          t.equal(file.path, 'node_modules/foo/package.json');
           t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
         },
         err => t.fail(err.message)
@@ -83,7 +84,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
       return fileRead('package.json')
       .then(
         file => {
-          t.ok(path.resolve('packages/foo/package.json'));
+          t.equal(file.path, 'packages/foo/package.json');
           t.equal(file.contents, 'lorem');
         },
         err => t.fail(err.message)
@@ -107,7 +108,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
       return fileRead('package.json')
       .then(
         file => {
-          t.ok(path.resolve('packages/foo/package.json'));
+          t.equal(file.path, 'packages/foo/package.json');
           t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
         },
         err => t.fail(err.message)
@@ -129,7 +130,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
       return fileRead('package.json')
       .then(
         file => {
-          t.ok(path.resolve('packages/foo/package.json'));
+          t.equal(file.path, 'packages/foo/package.json');
           t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
         },
         err => t.fail(err.message)
@@ -154,7 +155,7 @@ test('defaultNpmPackageLocator can read parent node_modules folder', t => {
       return fileRead('package.json')
       .then(
         file => {
-          t.ok(path.resolve('node_modules/foo/package.json'));
+          t.equal(file.path, '../node_modules/foo/package.json');
           t.equal(file.contents, 'lorem');
         },
         err => t.fail(err.message)
@@ -199,7 +200,7 @@ test('defaultNpmPackageLocator returns fileRead func for existing scoped package
       return fileRead('package.json')
       .then(
         file => {
-          t.ok(path.resolve('node_modules/@bar/foo/package.json'));
+          t.equal(file.path, 'node_modules/@bar/foo/package.json');
           t.equal(file.contents, 'lorem');
         },
         err => t.fail(err.message)
@@ -227,6 +228,30 @@ test('defaultNpmPackageLocator returns fileRead func rejects missing file for ex
       );
     },
     () => t.fail('should not fail')
+  )
+  .then(() => {
+    t.end();
+  });
+});
+
+test('defaultNpmPackageLocator can read .wasm file into base64 string', t => {
+  const defaultLocator = mockLocator(buildReadFile({
+    'node_modules/foo/fib.wasm': fs.readFileSync(path.join(__dirname, '..', 'fib.wasm'))
+  }));
+
+  defaultLocator({name: 'foo'})
+  .then(
+    fileRead => {
+      return fileRead('fib.wasm')
+      .then(
+        file => {
+          t.equal(file.path, 'node_modules/foo/fib.wasm');
+          t.equal(file.contents, 'AGFzbQEAAAABBgFgAX8BfwMCAQAHBwEDZmliAAAKHwEdACAAQQJIBEBBAQ8LIABBAmsQACAAQQFrEABqDws=');
+        },
+        err => t.fail(err.stack)
+      );
+    },
+    err => t.fail(err.stack)
   )
   .then(() => {
     t.end();

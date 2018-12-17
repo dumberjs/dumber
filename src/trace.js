@@ -1,6 +1,7 @@
 'use strict';
 import alias from './transformers/alias';
 import text from './transformers/text';
+import wasm from './transformers/wasm';
 import cjsEs from './transformers/cjs-es';
 import defines from './transformers/defines';
 import mergeTransformed from './transformers/merge';
@@ -76,7 +77,10 @@ export default function (unit, opts = {}) {
     defined = defResult.defined;
     shimed = defResult.shimed;
   } else if (extname === '.wasm') {
-    // TODO wasm
+    sourceMap = undefined;
+    let wasmResult = wasm(moduleId, contents);
+    contents = wasmResult.contents;
+    defined = wasmResult.defined;
   } else {
     // use text! for everything else including unknown extname
     sourceMap = undefined;
