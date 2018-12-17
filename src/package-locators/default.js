@@ -33,7 +33,7 @@ export default function (packageConfig, mock) {
       buffer => {
         return {
           path: relativePath,
-          contents: buffer.toString(ext(filePath) === '.wasm' ? 'base64' : null)
+          contents: buffer.toString(ext(filePath) === '.wasm' ? 'base64' : undefined)
         };
       },
       err => {
