@@ -1,3 +1,12 @@
+## [0.7.23](https://github.com/dumberjs/dumber/compare/v0.7.22...v0.7.23) (2018-12-18)
+
+
+### Features
+
+* coloured console log in nodejs env ([e76d173](https://github.com/dumberjs/dumber/commit/e76d173))
+
+
+
 ## [0.7.22](https://github.com/dumberjs/dumber/compare/v0.7.21...v0.7.22) (2018-12-18)
 
 
