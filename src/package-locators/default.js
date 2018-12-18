@@ -1,5 +1,6 @@
 import path from 'path';
-import {info, warn, resolvePackagePath, fsReadFile} from '../shared';
+import {resolvePackagePath, fsReadFile} from '../shared';
+import {info, warn} from '../log';
 import {ext} from 'dumber-module-loader/dist/id-utils';
 
 // default locator using nodejs to resolve package

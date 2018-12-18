@@ -4,18 +4,6 @@ import crypto from 'crypto';
 import {ensureParsed} from 'ast-matcher';
 import './ensure-parser-set';
 
-export function info(message) {
-  console.info('[dumber] INFO: ' + message);
-}
-
-export function warn(message) {
-  console.warn('[dumber] WARN: ' + message);
-}
-
-export function error(message) {
-  console.error('[dumber] ERROR: ' + message);
-}
-
 export function stripJsExtension(d) {
    return d && d.endsWith('.js') ? d.slice(0, -3) : d;
 }

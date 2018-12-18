@@ -1,6 +1,7 @@
 import {ext, parse, resolveModuleId, relativeModuleId} from 'dumber-module-loader/dist/id-utils';
 import {stripJsExtension, isPackageName, stripSourceMappingUrl} from './shared';
 import replace from './transformers/replace';
+import {error} from './log';
 import path from 'path';
 
 export default class PackageReader {
@@ -168,7 +169,8 @@ export default class PackageReader {
         try {
           metadata = JSON.parse(file.contents);
         } catch (err) {
-          console.error(err);
+          error('Failed to parse ' + packageJsonPath);
+          error(err);
           return;
         }
         let metaMain;

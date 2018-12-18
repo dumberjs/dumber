@@ -1,4 +1,5 @@
-import {resolvePackagePath, warn} from './shared';
+import {resolvePackagePath} from './shared';
+import {warn} from './log';
 
 // stub core Node.js modules based on https://github.com/webpack/node-libs-browser/blob/master/index.js
 // no need stub for following modules, they got same name on npm package

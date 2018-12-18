@@ -4,8 +4,9 @@
   "description": "A dumb JavasScript bundler for Single Page Application, dumber than you and me",
   "main": "dist/index.js",
   "browser": {
-    "./cache/default.js": "./cache/local-storage.js",
-    "./package-locators/default.js": "./package-locators/jsDelivr.js"
+    "./dist/cache/default.js": "./dist/cache/local-storage.js",
+    "./dist/package-locators/default.js": "./dist/package-locators/jsDelivr.js",
+    "./dist/log.js": "./dist/log-browser.js"
   },
   "files": [
     "dist"

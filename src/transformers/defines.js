@@ -1,5 +1,5 @@
 import {globalIndentifiers} from '../parser';
-import {warn} from '../shared';
+import {warn} from '../log';
 import astMatcher from 'ast-matcher';
 const ensureParsed = astMatcher.ensureParsed;
 
