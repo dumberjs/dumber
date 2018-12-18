@@ -1,3 +1,12 @@
+## [0.7.21](https://github.com/dumberjs/dumber/compare/v0.7.20...v0.7.21) (2018-12-18)
+
+
+### Features
+
+* be smart on onRequire stub's module space ([3851939](https://github.com/dumberjs/dumber/commit/3851939))
+
+
+
 ## [0.7.20](https://github.com/dumberjs/dumber/compare/v0.7.19...v0.7.20) (2018-12-18)
 
 
