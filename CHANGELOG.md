@@ -1,3 +1,12 @@
+## [0.7.20](https://github.com/dumberjs/dumber/compare/v0.7.19...v0.7.20) (2018-12-18)
+
+
+### Bug Fixes
+
+* fix onRequire file path ([b0dc772](https://github.com/dumberjs/dumber/commit/b0dc772))
+
+
+
 ## [0.7.19](https://github.com/dumberjs/dumber/compare/v0.7.18...v0.7.19) (2018-12-17)
 
 
