@@ -260,7 +260,7 @@ export default class Bundler {
             // got full content of this module
             if (typeof result === 'string') {
               return this.capture({
-                path: '__on_require__/' + parsedId.bareId,
+                path: '__on_require__/' + parsedId.bareId + (parsedId.ext ? '' : '.js'),
                 contents: result,
                 moduleId: parsedId.bareId
               });

@@ -452,7 +452,7 @@ test('Bundler supports implementation returned by onRequire', t => {
             {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
-            {path: '__on_require__/foo', contents: "define('foo',[\"loo\"],1);", sourceMap: undefined},
+            {path: '__on_require__/foo.js', contents: "define('foo',[\"loo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
