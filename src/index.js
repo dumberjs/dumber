@@ -116,7 +116,11 @@ export default class Bundler {
       depsFinder: this._depsFinder
     }).then(
       tracedUnit => this._capture(tracedUnit),
-      err => error(err)
+      err => {
+        // just print error, but not stopping
+        error('Tracing failed for ' + unit.path);
+        error(err);
+      }
     );
   }
 
@@ -302,6 +306,7 @@ export default class Bundler {
           },
           // proceed normally after error
           err => {
+            error('onRequire call failed for ' + parsedId.bareId);
             error(err);
             todo.push(parsedId);
           }
@@ -341,6 +346,7 @@ export default class Bundler {
             this._ensureNpmAlias(tracedUnit, bareId);
           })
           .catch(err => {
+            error('Resolving failed for module ' + bareId);
             error(err);
           });
         }
