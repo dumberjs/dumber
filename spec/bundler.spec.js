@@ -427,7 +427,7 @@ test('Bundler replaces deps when onRequire returns array', t => {
   .then(t.end);
 });
 
-test('Bundler supports implementation returned by onRequire', t => {
+test('Bundler supports user space implementation returned by onRequire', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
     'node_modules/loo/package.json': '{"name":"loo","main":"loo"}',
@@ -454,6 +454,51 @@ test('Bundler supports implementation returned by onRequire', t => {
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {path: '__on_require__/foo.js', contents: "define('foo',[\"loo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
+test('Bundler supports package space implementation returned by onRequire', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/loo/package.json': '{"name":"loo","main":"loo"}',
+    'node_modules/loo/loo.js': '',
+    'node_modules/bar/package.json': '{"name":"bar","main":"bar"}',
+    'node_modules/bar/bar.js': 'foo',
+  };
+  const bundler = createBundler(fakeFs, {
+    onRequire(moduleId) {
+      // onRequire can return a Promise to resolve to false, array, or string.
+      if (moduleId === 'foo') return Promise.resolve("loo"); // "loo" will be processed by mockTrace
+    }
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'bar', moduleId: 'app'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;'},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"bar\"],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/bar/bar.js', contents: "define('bar/bar',[\"foo\"],1);define('bar',['bar/bar'],function(m){return m;});", sourceMap: undefined},
+            {path: '__on_require__/foo.js', contents: "define('foo',[\"loo\"],1);", sourceMap: undefined},
             {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
           ],

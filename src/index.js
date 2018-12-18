@@ -42,10 +42,11 @@ export default class Bundler {
     // turn on injection of css (inject onto html head)
     if (opts.injectCss || opts.injectCSS) this._injectCss = true;
 
-    this._unitsMap = {};
-    this._moduleId_done = new Set();
-    this._moduleIds_todo = new Set();
-    this._readersMap = {};
+    this._unitsMap = Object.create(null);
+    this._user_modules_done = new Set();
+    this._package_modules_done = new Set();
+    this._moduleIds_todo = Object.create(null);
+    this._readersMap = Object.create(null);
     this._locator = opts.packageLocator || defaultPackageLocator;
 
     // baseUrl default to "dist"
@@ -79,7 +80,7 @@ export default class Bundler {
   }
 
   packageReaderFor(packageConfig) {
-    if (this._readersMap.hasOwnProperty(packageConfig.name)) {
+    if (this._readersMap[packageConfig.name]) {
       return Promise.resolve(this._readersMap[packageConfig.name]);
     }
 
@@ -119,11 +120,27 @@ export default class Bundler {
     );
   }
 
-  _addToDone(id) {
+  _didUserModule(id) {
     if (typeof id === 'string') {
-      this._moduleId_done.add(id);
+      this._user_modules_done.add(id);
     } else if (Array.isArray(id)) {
-      id.forEach(d => this._moduleId_done.add(d));
+      id.forEach(d => this._user_modules_done.add(d));
+    }
+  }
+
+  _didPackageModule(id) {
+    if (typeof id === 'string') {
+      this._package_modules_done.add(id);
+    } else if (Array.isArray(id)) {
+      id.forEach(d => this._package_modules_done.add(d));
+    }
+  }
+
+  _addTodo(d, isPackageSpace) {
+    if (this._moduleIds_todo[d]) {
+      if (isPackageSpace) this._moduleIds_todo[d] = 2;
+    } else {
+      this._moduleIds_todo[d] = isPackageSpace ? 2 : 1
     }
   }
 
@@ -131,14 +148,17 @@ export default class Bundler {
     this._unitsMap[tracedUnit.path] = tracedUnit;
 
     // mark as done.
-    this._addToDone(tracedUnit.moduleId);
-    this._addToDone(tracedUnit.defined);
+    if (tracedUnit.packageName) {
+      this._didPackageModule(tracedUnit.moduleId);
+      this._didPackageModule(tracedUnit.defined);
+    } else {
+      this._didUserModule(tracedUnit.moduleId);
+      this._didUserModule(tracedUnit.defined);
+    }
 
-    // mark todo. beware we didn't check whether the id is in _moduleId_done.
+    // mark todo. beware we didn't check whether the id is in _user/package_modules_done.
     // they will be checked during resolve phase.
-
-    // console.log('_capture ' + tracedUnit.moduleId + ' deps ' + tracedUnit.deps);
-    tracedUnit.deps.forEach(d => this._moduleIds_todo.add(d));
+    tracedUnit.deps.forEach(d => this._addTodo(d, tracedUnit.packageName));
 
     const bundle = this.bundleOf(tracedUnit);
     // mark related bundle dirty
@@ -193,7 +213,7 @@ export default class Bundler {
   // to some browser replacement.
   // e.g. readable-stream/readable -> readable-stream/readable-browser
   _ensureNpmAlias(tracedUnit, id) {
-    if (this._moduleId_done.has(id)) return;
+    if (this._package_modules_done.has(id)) return;
 
     const defined = tracedUnit.defined;
     let toId;
@@ -212,7 +232,7 @@ export default class Bundler {
     if (toId !== id && toId !== tracedUnit.packageName) {
       const aliasResult = alias(id, toId);
       mergeTransformed(tracedUnit, aliasResult);
-      this._addToDone(aliasResult.defined);
+      this._didPackageModule(aliasResult.defined);
     }
   }
 
@@ -228,21 +248,31 @@ export default class Bundler {
   }
 
   resolve() {
+    // todo is always to be resolved in package space.
     let todo = [];
+
     return this._supportInjectCssIfNeeded()
     .then(() => this._resolvePrependsAndAppends())
     .then(() => this._resolveExplicitDepsIfNeeded())
     .then(() => {
       const consults = [];
-      const rawTodo = Array.from(this._moduleIds_todo);
-      this._moduleIds_todo.clear();
+      const rawTodo = JSON.parse(JSON.stringify(this._moduleIds_todo));
+      this._moduleIds_todo = Object.create(null);
 
-
-      // console.log('_moduleIds_todo', this._moduleIds_todo);
-      rawTodo.forEach(id => {
+      Object.keys(rawTodo).forEach(id => {
+        const isPackageSpace = rawTodo[id] === 2;
         const parsedId = parse(id);
         const possibleIds = nodejsIds(parsedId.bareId);
-        if (possibleIds.some(id => this._moduleId_done.has(id))) return;
+
+        const isAvailabe = possibleIds.some(id => {
+          if (isPackageSpace) {
+            return this._package_modules_done.has(id);
+          } else {
+            return this._user_modules_done.has(id) || this._package_modules_done.has(id);
+          }
+        });
+
+        if (isAvailabe) return;
 
         const j = new Promise(resolve => {
           resolve(this._onRequire && this._onRequire(parsedId.bareId, parsedId));
@@ -262,7 +292,8 @@ export default class Bundler {
               return this.capture({
                 path: '__on_require__/' + parsedId.bareId + (parsedId.ext ? '' : '.js'),
                 contents: result,
-                moduleId: parsedId.bareId
+                moduleId: parsedId.bareId,
+                packageName: isPackageSpace ? parsedId.parts[0] : ''
               });
             }
 
@@ -318,7 +349,7 @@ export default class Bundler {
       return p;
     })
     .then(() => {
-      if (this._moduleIds_todo.size) {
+      if (Object.keys(this._moduleIds_todo).length) {
         return this.resolve();
       }
     });
