@@ -45,7 +45,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.2.0",
     "ast-matcher": "^1.0.1",
     "base64-arraybuffer": "^0.1.5",
-    "cherow": "^1.6.8",
+    "cherow": "^1.6.9",
     "del": "^3.0.0",
     "dumber-module-loader": "^0.15.5",
     "escope": "^3.6.0",
