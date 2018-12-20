@@ -38,7 +38,7 @@ export default function(contents, forceWrap) {
   }
 
   if (cjsUsage && cjsUsage['global']) {
-    pre += 'var global = window;';
+    pre += 'var global = this;';
   }
 
   if (cjsUsage && cjsUsage['process']) {
