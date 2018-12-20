@@ -267,7 +267,8 @@ export default class Bundler {
               return this.capture({
                 path: '__on_require__/' + parsedId.bareId + (parsedId.ext ? '' : '.js'),
                 contents: result,
-                moduleId: parsedId.bareId
+                moduleId: parsedId.bareId,
+                packageName: parsedId.parts[0]
               });
             }
 
