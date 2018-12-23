@@ -1,3 +1,12 @@
+## [0.8.1](https://github.com/dumberjs/dumber/compare/v0.8.0...v0.8.1) (2018-12-23)
+
+
+### Bug Fixes
+
+* fix accidentally upgraded readable-stream ([f11b53d](https://github.com/dumberjs/dumber/commit/f11b53d))
+
+
+
 # [0.8.0](https://github.com/dumberjs/dumber/compare/v0.7.25...v0.8.0) (2018-12-23)
 
 
