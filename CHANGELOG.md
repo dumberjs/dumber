@@ -1,3 +1,17 @@
+# [0.8.0](https://github.com/dumberjs/dumber/compare/v0.7.25...v0.8.0) (2018-12-23)
+
+
+### Features
+
+* move appends to dedicated section to ensure appends after config ([0528bb9](https://github.com/dumberjs/dumber/commit/0528bb9))
+
+
+### BREAKING CHANGES
+
+* this requires gulp-dumber update
+
+
+
 ## [0.7.25](https://github.com/dumberjs/dumber/compare/v0.7.24...v0.7.25) (2018-12-23)
 
 
