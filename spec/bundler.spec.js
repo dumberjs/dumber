@@ -107,7 +107,9 @@ test('Bundler traces files', t => {
             {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
             {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
             {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+            {contents: 'define.switchToUserSpace();'}
+          ],
+          appendFiles: [
             {contents: 'after;'},
             {contents: 'var ape = 1;'},
           ],
@@ -195,7 +197,9 @@ test('Bundler traces files, split bundles', t => {
             {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
-            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
+            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined}
+          ],
+          appendFiles: [
             {contents: 'after;'},
             {contents: 'var ape = 1;'},
           ],
@@ -265,6 +269,8 @@ test('Bundler traces files, split bundles, case2', t => {
             {contents: 'var pre = 1;'},
             {contents: 'setup;'},
             {contents: 'dumber-module-loader;'},
+          ],
+          appendFiles: [
             {contents: 'after;'},
             {contents: 'var ape = 1;'},
           ],

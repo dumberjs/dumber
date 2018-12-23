@@ -448,9 +448,11 @@ export default class Bundler {
         package: Array.from(packageSpaceModuleIds).sort()
       };
 
-      if (bundle === this._entryBundle) {
+      if (bundle === this._entryBundle && this._appends.length) {
+        let appendFiles = [];
         // write appends
-        this._appends.forEach(f => files.push(f));
+        this._appends.forEach(f => appendFiles.push(f));
+        this._bundles[bundle].appendFiles = appendFiles;
       }
     });
 
