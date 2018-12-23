@@ -1,3 +1,17 @@
+## [0.8.2](https://github.com/dumberjs/dumber/compare/v0.8.1...v0.8.2) (2018-12-23)
+
+
+### Features
+
+* inject css on demand ([cf2f586](https://github.com/dumberjs/dumber/commit/cf2f586))
+
+
+### BREAKING CHANGES
+
+* option injectCss is now turned on by default
+
+
+
 ## [0.8.1](https://github.com/dumberjs/dumber/compare/v0.8.0...v0.8.1) (2018-12-23)
 
 
