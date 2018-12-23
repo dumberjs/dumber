@@ -1,5 +1,5 @@
 import trace from './trace';
-import {parse, nodejsIds} from 'dumber-module-loader/dist/id-utils';
+import {cleanPath, parse, nodejsIds, mapId} from 'dumber-module-loader/dist/id-utils';
 import alias from './transformers/alias';
 import defaultPackageLocator from './package-locators/default';
 import PackageReader from './package-reader';
@@ -42,6 +42,15 @@ export default class Bundler {
 
     // turn on injection of css (inject onto html head)
     if (opts.injectCss || opts.injectCSS) this._injectCss = true;
+
+    let _paths = {};
+    if (opts.paths) {
+      Object.keys(opts.paths).forEach(path => {
+        let alias = opts.paths[path];
+        _paths[cleanPath(path)] = cleanPath(alias);
+      });
+    }
+    this._paths = _paths;
 
     this._unitsMap = {};
     this._moduleId_done = new Set();
@@ -242,10 +251,8 @@ export default class Bundler {
       const rawTodo = Array.from(this._moduleIds_todo);
       this._moduleIds_todo.clear();
 
-
-      // console.log('_moduleIds_todo', this._moduleIds_todo);
       rawTodo.forEach(id => {
-        const parsedId = parse(id);
+        const parsedId = parse(mapId(id, this._paths));
         const possibleIds = nodejsIds(parsedId.bareId);
         if (possibleIds.some(id => this._moduleId_done.has(id))) return;
 
@@ -288,10 +295,7 @@ export default class Bundler {
       if (consults.length) return Promise.all(consults);
     })
     .then(() => {
-
       let p = Promise.resolve();
-
-      // console.log('todo', todo.map(t => t.cleanId));
 
       todo.forEach(td => {
         const bareId = td.bareId;
@@ -466,7 +470,7 @@ export default class Bundler {
 
     bundleWithConfig.config = {
       baseUrl: this._baseUrl,
-      // TODO paths:
+      paths: JSON.parse(JSON.stringify(this._paths)),
       bundles: bundlesConfig
     };
 

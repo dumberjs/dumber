@@ -113,7 +113,8 @@ test('Bundler traces files', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -149,7 +150,8 @@ test('Bundler can optionally skip dumber-module-loader', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -204,7 +206,8 @@ test('Bundler traces files, split bundles', t => {
                 user: [],
                 package: ['foo', 'foo/bar', 'foo/index', 'loo', 'loo/loo']
               }
-            }
+            },
+            paths: {}
           }
         },
         'vendor': {
@@ -276,7 +279,8 @@ test('Bundler traces files, split bundles, case2', t => {
                 user: ['app', 'page/one'],
                 package: ['loo', 'loo/loo']
               }
-            }
+            },
+            paths: {}
           }
         },
         'app': {
@@ -339,7 +343,8 @@ test('Bundler traces files, sorts shim', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -374,7 +379,8 @@ test('Bundler ignores module when onRequire returns false', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -417,7 +423,8 @@ test('Bundler replaces deps when onRequire returns array', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -459,7 +466,8 @@ test('Bundler supports implementation returned by onRequire', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -499,7 +507,8 @@ test('Bundler swallows onRequire exception', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -539,7 +548,8 @@ test('Bundler swallows onRequire promise rejection', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -617,7 +627,8 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
                 user: ['page/one'],
                 package: []
               }
-            }
+            },
+            paths: {}
           }
         },
         'app-bundle': {
@@ -671,7 +682,8 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
                 user: ['page/one'],
                 package: []
               }
-            }
+            },
+            paths: {}
           }
         },
         'page-bundle': {
@@ -721,7 +733,8 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
                 user: ['page/one'],
                 package: []
               }
-            }
+            },
+            paths: {}
           }
         },
         'app-bundle': {
@@ -768,7 +781,8 @@ test('Bundler supports inject css', t => {
           ],
           config: {
             baseUrl: '/dist',
-            bundles: {}
+            bundles: {},
+            paths: {}
           }
         }
       })
@@ -778,3 +792,48 @@ test('Bundler supports inject css', t => {
   .then(t.end);
 });
 
+test('Bundler traces files with paths mapping', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
+    'node_modules/foo/index.js': 'loo',
+  };
+  const bundler = createBundler(fakeFs, {
+    paths: {
+      'foo': 'common/foo',
+      '../src': ''
+    }
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/common/foo.js', contents: '', moduleId: 'common/foo'}))
+  .then(() => bundler.capture({path: 'test/app.spec.js', contents: '../src/app', moduleId: '../test/app.spec'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;'},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'test/app.spec.js', contents: "define('../test/app.spec',[\"../src/app\"],1);", sourceMap: undefined},
+            {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
+            {path: 'src/common/foo.js', contents: "define('common/foo',[],1);", sourceMap: undefined}
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {},
+            paths: {
+              'foo': 'common/foo',
+              '../src': ''
+            }
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
