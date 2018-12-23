@@ -39,7 +39,7 @@ export default function (packageConfig, mock) {
       },
       err => {
         if (filePath === 'package.json' || filePath === './package.json') {
-          warn('No package.json found at ' + relativePath);
+          warn('No package.json found at ' + name + '/' + relativePath);
           const mock = `{"name":${JSON.stringify(name)},"main":"index"}`;
           info('Fall back to ' + mock);
           return {

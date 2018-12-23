@@ -40,8 +40,12 @@ export default class Bundler {
       this._cache = cache;
     }
 
-    // turn on injection of css (inject onto html head)
-    if (opts.injectCss || opts.injectCSS) this._injectCss = true;
+    if (opts.hasOwnProperty('injectCss') && !opts.injectCss) {
+      this._injectCss = false;
+    } else {
+      // by default turn on injection of css (inject onto html head)
+      this._injectCss = true;
+    }
 
     let _paths = {};
     if (opts.paths) {
@@ -150,8 +154,6 @@ export default class Bundler {
 
     // mark todo. beware we didn't check whether the id is in _moduleId_done.
     // they will be checked during resolve phase.
-
-    // console.log('_capture ' + tracedUnit.moduleId + ' deps ' + tracedUnit.deps);
     tracedUnit.deps.forEach(d => this._moduleIds_todo.add(d));
 
     const bundle = this.bundleOf(tracedUnit);
@@ -173,7 +175,6 @@ export default class Bundler {
     this._dependencies.forEach(pkg => {
       p = p.then(() => this.packageReaderFor(pkg)).then(reader => {
         if (!pkg.lazyMain) {
-          // console.log('to readMain for ' + pkg.name);
           return reader.readMain()
           .then(unit => this.capture(unit))
           .then(tracedUnit => {
@@ -243,8 +244,7 @@ export default class Bundler {
 
   resolve() {
     let todo = [];
-    return this._supportInjectCssIfNeeded()
-    .then(() => this._resolvePrependsAndAppends())
+    return this._resolvePrependsAndAppends()
     .then(() => this._resolveExplicitDepsIfNeeded())
     .then(() => {
       const consults = [];
@@ -253,6 +253,9 @@ export default class Bundler {
 
       rawTodo.forEach(id => {
         const parsedId = parse(mapId(id, this._paths));
+        if (!parsedId.prefix && parsedId.ext === '.css' && !this._isInjectCssTurnedOn) {
+          consults.push(this._supportInjectCssIfNeeded());
+        }
         const possibleIds = nodejsIds(parsedId.bareId);
         if (possibleIds.some(id => this._moduleId_done.has(id))) return;
 

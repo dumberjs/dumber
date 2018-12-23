@@ -9,8 +9,9 @@ function mockTrace(unit) {
   const moduleId = unit.moduleId;
   const shim = unit.shim;
 
-  if (unit.moduleId === 'ext:css') {
+  if (unit.moduleId === 'ext:css' || unit.path.endsWith('.css')) {
     // don't mock ext:css trace
+    // don't mock css file
     return trace(unit);
   }
 
@@ -758,18 +759,18 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
   .then(t.end);
 });
 
-test('Bundler supports inject css', t => {
+test('Bundler supports inject css by default', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
     'node_modules/dumber/dist/inject-css.js': '',
   };
   const bundler = createBundler(fakeFs, {
-    injectCss: true
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: '', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'c.css', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -779,11 +780,50 @@ test('Bundler supports inject css', t => {
           files: [
             {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[],1);", sourceMap: undefined},
+            {path: 'src/app.js', contents: "define('app',[\"c.css\"],1);", sourceMap: undefined},
+            {path: 'src/c.css', contents: "define('text!c.css',function(){return \"lorem\";});", sourceMap: undefined},
             {path: '__stub__/ext-css.js', contents: "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/dumber/dist/inject-css.js', contents: "define('dumber/dist/inject-css',[],1);", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {},
+            paths: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
+test('Bundler can optionally turn off inject css', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
+    'node_modules/dumber/dist/inject-css.js': '',
+  };
+  const bundler = createBundler(fakeFs, {
+    injectCss: false
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'c.css', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;'},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"c.css\"],1);", sourceMap: undefined},
+            {path: 'src/c.css', contents: "define('text!c.css',function(){return \"lorem\";});", sourceMap: undefined}
           ],
           config: {
             baseUrl: '/dist',
