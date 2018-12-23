@@ -1,3 +1,22 @@
+## [0.7.25](https://github.com/dumberjs/dumber/compare/v0.7.24...v0.7.25) (2018-12-23)
+
+
+### Bug Fixes
+
+* simply put onRequire module content onto package space ([df28359](https://github.com/dumberjs/dumber/commit/df28359))
+
+
+### Features
+
+* support requirejs paths config ([f01f263](https://github.com/dumberjs/dumber/commit/f01f263))
+
+
+### Reverts
+
+* feat: be smart on onRequire stub's module space ([c403add](https://github.com/dumberjs/dumber/commit/c403add))
+
+
+
 ## [0.7.24](https://github.com/dumberjs/dumber/compare/v0.7.23...v0.7.24) (2018-12-19)
 
 
