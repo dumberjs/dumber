@@ -85,6 +85,7 @@ export default class Bundler {
     this.dirty = {[this._entryBundle]: true};
     // persist bundles in watch mode
     this._bundles = {};
+    this._inWatchMode = false;
   }
 
   clearCache() {
@@ -146,6 +147,13 @@ export default class Bundler {
   }
 
   _capture(tracedUnit) {
+    if (this._inWatchMode && !tracedUnit.packageName) {
+      if (this._unitsMap[tracedUnit.path]) {
+        info(`Update ${tracedUnit.path}`);
+      } else {
+        info(`Add ${tracedUnit.path}`);
+      }
+    }
     this._unitsMap[tracedUnit.path] = tracedUnit;
 
     // mark as done.
@@ -486,6 +494,8 @@ export default class Bundler {
     // reset dirty flags
     this.dirty = {[this._entryBundle]: true};
 
+    // turn on watch node after first "bundle()"
+    this._inWatchMode = true;
     return bundles;
   }
 }
