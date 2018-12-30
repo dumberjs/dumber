@@ -1,3 +1,12 @@
+## [0.8.4](https://github.com/dumberjs/dumber/compare/v0.8.3...v0.8.4) (2018-12-30)
+
+
+### Features
+
+* support lerna hoisting ([b355daf](https://github.com/dumberjs/dumber/commit/b355daf)), closes [#4](https://github.com/dumberjs/dumber/issues/4)
+
+
+
 ## [0.8.3](https://github.com/dumberjs/dumber/compare/v0.8.2...v0.8.3) (2018-12-24)
 
 
