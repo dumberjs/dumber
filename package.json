@@ -52,7 +52,8 @@
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
     "node-libs-browser": "^2.1.0",
-    "readable-stream": "^2.3.6"
+    "readable-stream": "^2.3.6",
+    "resolve": "^1.9.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

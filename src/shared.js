@@ -1,4 +1,5 @@
 import fs from 'fs';
+import resolve from 'resolve';
 import fetch from 'node-fetch';
 import crypto from 'crypto';
 import {ensureParsed} from 'ast-matcher';
@@ -16,12 +17,24 @@ export function isPackageName(path) {
 }
 
 export function resolvePackagePath(packageName) {
+  let metaPath;
+  // we resolve package.json instead of package's main file,
+  // as some npm package (like font-awesome v4) has no main file.
+  const packageJson = packageName + '/package.json';
+
   try {
-    let metaPath = require.resolve(packageName + '/package.json');
-    return metaPath.slice(0, -13);
+    try {
+      // try from dumber first
+      metaPath = require.resolve(packageJson);
+    } catch (e) {
+      // try from app's local folder, this is necessary to support lerna
+      // hoisting where dumber is out of app's local node_modules folder.
+      metaPath = resolve(packageJson, {basedir: process.cwd()});
+    }
   } catch (e) {
     throw new Error('cannot find npm package: ' + packageName);
   }
+  return metaPath.slice(0, -13);
 }
 
 export function fsReadFile(filePath) {
