@@ -1,3 +1,12 @@
+## [0.8.5](https://github.com/dumberjs/dumber/compare/v0.8.4...v0.8.5) (2019-01-02)
+
+
+### Bug Fixes
+
+* only skip cjs wrap if amd define is in use ([90f0749](https://github.com/dumberjs/dumber/commit/90f0749))
+
+
+
 ## [0.8.4](https://github.com/dumberjs/dumber/compare/v0.8.3...v0.8.4) (2018-12-30)
 
 
