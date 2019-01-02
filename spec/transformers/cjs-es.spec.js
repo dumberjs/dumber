@@ -16,6 +16,16 @@ test('cjsEs transform ignores amd code case 2', t => {
   t.end();
 });
 
+
+test('cjsEs transform does not ignore amd code with requirejs usage', t => {
+  const source = "module.exports = requirejs(['foo']);";
+  t.deepEqual(cjsEs(source), {
+    headLines: 1,
+    contents: 'define(function (require, exports, module) {\nmodule.exports = requirejs([\'foo\']);\n});\n'
+  });
+  t.end();
+});
+
 test('cjsEs transform wraps cjs code', t => {
   const source = 'exports.name = "foo";';
   const expected = 'define(function (require, exports, module) {\nexports.name = "foo";\n});\n';

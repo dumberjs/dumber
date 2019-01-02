@@ -25,7 +25,7 @@ export default function(contents, forceWrap) {
   let cjsUsage = usesCommonJs(ast, globalIds);
   let amdUsage = usesAmdOrRequireJs(ast, globalIds);
 
-  if (!forceWrap && (amdUsage || !cjsUsage)) {
+  if (!forceWrap && ((amdUsage && amdUsage.define) || !cjsUsage)) {
     // skip wrapping
     return { contents: contents };
   }
