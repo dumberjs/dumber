@@ -1,5 +1,5 @@
 export function info(message) {
-  console.info(`\x1b[36m[dumber] INFO:: ${message}\x1b[0m`);
+  console.info(`\x1b[36m[dumber] INFO: ${message}\x1b[0m`);
 }
 
 export function warn(message) {
