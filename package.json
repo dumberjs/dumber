@@ -47,7 +47,7 @@
     "base64-arraybuffer": "^0.1.5",
     "cherow": "^1.6.9",
     "del": "^3.0.0",
-    "dumber-module-loader": "^0.15.9",
+    "dumber-module-loader": "^0.15.11",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
@@ -63,11 +63,11 @@
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "del-cli": "^1.1.0",
-    "eslint": "^5.10.0",
+    "eslint": "^5.12.0",
     "nyc": "^13.1.0",
     "standard-changelog": "^2.0.6",
     "tap-dot": "^2.0.0",
-    "tape": "^4.9.1",
+    "tape": "^4.9.2",
     "tape-run": "^5.0.0"
   }
 }
