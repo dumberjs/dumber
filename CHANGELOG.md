@@ -1,3 +1,12 @@
+## [0.8.7](https://github.com/dumberjs/dumber/compare/v0.8.6...v0.8.7) (2019-01-13)
+
+
+### Features
+
+* support mapping and tracing plugin module ([bb32149](https://github.com/dumberjs/dumber/commit/bb32149))
+
+
+
 ## [0.8.6](https://github.com/dumberjs/dumber/compare/v0.8.5...v0.8.6) (2019-01-06)
 
 
