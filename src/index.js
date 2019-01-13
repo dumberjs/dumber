@@ -263,7 +263,15 @@ export default class Bundler {
         const parsedId = parse(mapId(id, this._paths));
         if (!parsedId.prefix && parsedId.ext === '.css' && !this._isInjectCssTurnedOn) {
           consults.push(this._supportInjectCssIfNeeded());
+        } else if (parsedId.prefix &&
+                   parsedId.prefix !== 'text!' &&
+                   parsedId.prefix !== 'json!' &&
+                   parsedId.prefix !== 'raw!') {
+          // Trace any unknown plugin module.
+          // For simplicity, push it to next resolve cycle.
+          this._moduleIds_todo.add(parsedId.prefix.slice(0, -1));
         }
+
         const possibleIds = nodejsIds(parsedId.bareId);
         if (possibleIds.some(id => this._moduleId_done.has(id))) return;
 

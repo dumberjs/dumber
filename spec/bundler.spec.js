@@ -843,16 +843,20 @@ test('Bundler traces files with paths mapping', t => {
     'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
     'node_modules/foo/index.js': 'loo',
+    'node_modules/bar/package.json': JSON.stringify({name: 'bar', main: 'index'}),
+    'node_modules/bar/index.js': '',
+    'node_modules/bar/el.js': '',
   };
   const bundler = createBundler(fakeFs, {
     paths: {
       'foo': 'common/foo',
+      'el': 'bar/el',
       '../src': ''
     }
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'el!foo', moduleId: 'app'}))
   .then(() => bundler.capture({path: 'src/common/foo.js', contents: '', moduleId: 'common/foo'}))
   .then(() => bundler.capture({path: 'test/app.spec.js', contents: '../src/app', moduleId: '../test/app.spec'}))
   .then(() => bundler.resolve())
@@ -865,14 +869,18 @@ test('Bundler traces files with paths mapping', t => {
             {contents: 'dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'test/app.spec.js', contents: "define('../test/app.spec',[\"../src/app\"],1);", sourceMap: undefined},
-            {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
-            {path: 'src/common/foo.js', contents: "define('common/foo',[],1);", sourceMap: undefined}
+            {path: 'src/app.js', contents: "define('app',[\"el!foo\"],1);", sourceMap: undefined},
+            {path: 'src/common/foo.js', contents: "define('common/foo',[],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/bar/el.js', contents: "define('bar/el',[],1);", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
           ],
           config: {
             baseUrl: '/dist',
             bundles: {},
             paths: {
               'foo': 'common/foo',
+              'el': 'bar/el',
               '../src': ''
             }
           }
