@@ -1,5 +1,5 @@
 import test from 'tape';
-import {stripJsExtension, isPackageName, contentOrFile, generateHash, stripSourceMappingUrl} from '../src/shared';
+import {stripJsExtension, isPackageName, contentOrFile, generateHash, stripSourceMappingUrl, getSourceMap} from '../src/shared';
 import {buildReadFile} from './mock';
 
 test('stripJsExtension keeps other extension', t => {
@@ -47,7 +47,10 @@ test('contentOrFile returns passed js content, ensures end with semicolon', t =>
 
   contentOrFile(content)
   .then(
-    result => t.equal(result.contents, 'var a = 1;'),
+    result => {
+      t.equal(result.contents, 'var a = 1;');
+      t.notOk(result.path);
+    },
     err => t.fail(err.message)
   )
   .then(t.end);
@@ -58,7 +61,10 @@ test('contentOrFile reads remote js content', t => {
 
   contentOrFile(url)
   .then(
-    result => t.ok(result.contents.includes('hostname')),
+    result => {
+      t.ok(result.contents.includes('hostname'));
+      t.notOk(result.path);
+    },
     err => t.fail(err.message)
   )
   .then(t.end);
@@ -80,7 +86,10 @@ test('contentOrFile reads local js file', t => {
 
   contentOrFile(path, {readFile: buildReadFile({'a.js': 'var a;\n//# sourceMappingURL=abc'})})
   .then(
-    result => t.equal(result.contents, 'var a;'),
+    result => {
+      t.equal(result.contents, 'var a;');
+      t.equal(result.path, path);
+    },
     err => t.fail(err.message)
   )
   .then(t.end);
@@ -131,3 +140,73 @@ test('stripSourceMappingUrl strips css sourcemapping url', t => {
   t.end();
 });
 
+test('getSourceMap ignores file without sourceMap', t => {
+  t.notOk(getSourceMap('', 'foo.js'));
+  t.notOk(getSourceMap('var a = 1;', 'foo.js'));
+  t.end();
+});
+
+test('getSourceMap gets inline sourceMap', t => {
+  const contents = 'var a = 1;\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYnVpbGQvZm9vLm1pbi5qcyIsInNvdXJjZXMiOlsic3JjL2Zvby5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSIsInNvdXJjZVJvb3QiOiIvIn0=';
+  const sourceMap = {"version":3,"file":"build/foo.min.js","sources":["src/foo.js"],"names":[],"mappings":"AAAA","sourceRoot":"/"};
+  t.deepEqual(getSourceMap(contents, 'foo.js'), sourceMap);
+  t.end();
+});
+
+test('getSourceMap ignores broken inline sourceMap', t => {
+  const contents = 'var a = 1;\n//# sourceMappingURL=data:application/json;base64,abc=';
+  t.notOk(getSourceMap(contents, 'foo.js'));
+  t.end();
+});
+
+if (typeof global.document === 'undefined') {
+  // no test in browser
+  test('getSourceMap gets referenced sourceMap file content', t => {
+    let contents = `
+  .header {
+    background: #444;
+    border: solid;
+    padding: 10px;
+    border-radius: 10px 5px 10px 5px;
+    color: #b4b472; }
+
+  #main li {
+    color: green;
+    margin: 10px;
+    padding: 10px;
+    font-size: 18px; }
+
+  `;
+    contents += '\n//# sourceMappingURL=map-file-comment.css.map\n';
+    const sourceMap = {
+      "version": "3",
+      "mappings": "AAAA,wBAAyB;EACvB,UAAU,EAAE,IAAI;EAChB,MAAM,EAAE,KAAK;EACb,OAAO,EAAE,IAAI;EACb,aAAa,EAAE,iBAAiB;EAChC,KAAK,EAAE,OAAkB;;AAG3B,wBAAyB;EACvB,OAAO,EAAE,IAAI;;ACTf,gBAAiB;EACf,UAAU,EAAE,IAAI;EAChB,KAAK,EAAE,MAAM;;AAGf,kBAAmB;EACjB,MAAM,EAAE,IAAI;EACZ,OAAO,EAAE,IAAI;EACb,UAAU,EAAE,KAAK;EACjB,aAAa,EAAE,GAAG;EAClB,KAAK,EAAE,KAAK;;AAEd,kBAAmB;EACjB,KAAK,EAAE,KAAK;;AAGd,mBAAoB;EAClB,KAAK,EAAE,KAAK;EACZ,MAAM,EAAE,IAAI;EACZ,OAAO,EAAE,IAAI;EACb,SAAS,EAAE,IAAI",
+      "sources": ["./client/sass/core.scss","./client/sass/main.scss"],
+      "file": "map-file-comment.css"
+    };
+
+    t.deepEqual(getSourceMap(contents, 'spec/map-file-comment.css'), sourceMap);
+    t.end();
+  });
+
+  test('getSourceMap ignores missing sourceMap file', t => {
+    let contents = `
+  .header {
+    background: #444;
+    border: solid;
+    padding: 10px;
+    border-radius: 10px 5px 10px 5px;
+    color: #b4b472; }
+
+  #main li {
+    color: green;
+    margin: 10px;
+    padding: 10px;
+    font-size: 18px; }
+
+  `;
+    contents += '\n//# sourceMappingURL=missing.css.map\n';
+    t.notOk(getSourceMap(contents, 'spec/map-file-comment.css'));
+    t.end();
+  });
+}

@@ -9,6 +9,9 @@ export default function(contents, forceWrap) {
   let ast = ensureParsed(contents);
 
   if (usesEsm(ast)) {
+    // TODO to support sourceMap merging with incoming file
+    // https://github.com/gulp-sourcemaps/vinyl-sourcemaps-apply/blob/master/index.js
+    // It means we need to get rid of the naive headLines that only inserts rows to sourceMap.
     const cjs = transform(contents, {
       babelrc: false,
       sourceMaps: false,

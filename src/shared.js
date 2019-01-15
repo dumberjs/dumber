@@ -1,8 +1,10 @@
 import fs from 'fs';
+import path from 'path';
 import resolve from 'resolve';
 import fetch from 'node-fetch';
 import crypto from 'crypto';
 import {ensureParsed} from 'ast-matcher';
+import convert from 'convert-source-map';
 import './ensure-parser-set';
 
 export function stripJsExtension(d) {
@@ -55,6 +57,7 @@ export function contentOrFile(pathOrContent, mock) {
   }
 
   let p;
+  let filePath;
   // pathOrContent is a path
   if (pathOrContent.match(/^https?:\/\//)) {
     // remote url
@@ -69,6 +72,7 @@ export function contentOrFile(pathOrContent, mock) {
       return text;
     });
   } else if (pathOrContent.endsWith('.js')) {
+    filePath = pathOrContent;
     p = _readFile(pathOrContent)
     .then(buffer => buffer.toString());
   } else {
@@ -79,7 +83,9 @@ export function contentOrFile(pathOrContent, mock) {
   }
 
   return p.then(text => ({
-    contents: ensureSemicolon(stripSourceMappingUrl(text || ''))
+    path: filePath,
+    contents: ensureSemicolon(stripSourceMappingUrl(text || '')),
+    sourceMap: getSourceMap(text, filePath)
   }));
 }
 
@@ -90,6 +96,21 @@ export function generateHash(bufOrStr) {
 export function stripSourceMappingUrl(contents) {
   return contents.replace(/\/\/(#|@)\s*sourceMappingURL=\S+\s*$/gm, '')
     .replace(/\/\*(#|@)\s*sourceMappingURL=\S+\s*\*\//g, '');
+}
+
+export function getSourceMap(contents, filePath) {
+  try {
+    let converter = convert.fromSource(contents);
+    if (converter) return converter.sourcemap;
+
+    if (filePath) {
+      const parsed = path.parse(filePath);
+      converter = convert.fromMapFileSource(contents, parsed.dir);
+      if (converter) return converter.sourcemap;
+    }
+  } catch (err) {
+    return;
+  }
 }
 
 export function ensureSemicolon(contents) {

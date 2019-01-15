@@ -1,5 +1,5 @@
 import {ext, parse, resolveModuleId, relativeModuleId} from 'dumber-module-loader/dist/id-utils';
-import {stripJsExtension, isPackageName, stripSourceMappingUrl} from './shared';
+import {stripJsExtension, isPackageName, stripSourceMappingUrl, getSourceMap} from './shared';
 import replace from './transformers/replace';
 import {error} from './log';
 import path from 'path';
@@ -113,7 +113,8 @@ export default class PackageReader {
         // not handling sourcemaps from npm packages, at least for now
         contents: stripSourceMappingUrl(file.contents),
         moduleId,
-        packageName: this.name
+        packageName: this.name,
+        sourceMap: getSourceMap(file.contents, file.path)
       };
     });
   }
