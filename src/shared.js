@@ -104,8 +104,7 @@ export function getSourceMap(contents, filePath) {
     if (converter) return converter.sourcemap;
 
     if (filePath) {
-      const parsed = path.parse(filePath);
-      converter = convert.fromMapFileSource(contents, parsed.dir);
+      converter = convert.fromMapFileSource(contents, path.dirname(filePath));
       if (converter) return converter.sourcemap;
     }
   } catch (err) {
