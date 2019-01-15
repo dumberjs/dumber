@@ -1,3 +1,17 @@
+## [0.8.8](https://github.com/dumberjs/dumber/compare/v0.8.7...v0.8.8) (2019-01-15)
+
+
+### Bug Fixes
+
+* normalise file path for windows ([fff914d](https://github.com/dumberjs/dumber/commit/fff914d))
+
+
+### Features
+
+* support sourceMap from npm package ([956a946](https://github.com/dumberjs/dumber/commit/956a946))
+
+
+
 ## [0.8.7](https://github.com/dumberjs/dumber/compare/v0.8.6...v0.8.7) (2019-01-13)
 
 
