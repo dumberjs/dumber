@@ -83,7 +83,7 @@ export function contentOrFile(pathOrContent, mock) {
   }
 
   return p.then(text => ({
-    path: filePath,
+    path: filePath && filePath.replace(/\\/g, '/'),
     contents: ensureSemicolon(stripSourceMappingUrl(text || '')),
     sourceMap: getSourceMap(text, filePath)
   }));
