@@ -1,3 +1,12 @@
+## [0.8.9](https://github.com/dumberjs/dumber/compare/v0.8.8...v0.8.9) (2019-01-16)
+
+
+### Features
+
+* inline sourcesContent for all npm package sourceMap ([f30e695](https://github.com/dumberjs/dumber/commit/f30e695))
+
+
+
 ## [0.8.8](https://github.com/dumberjs/dumber/compare/v0.8.7...v0.8.8) (2019-01-15)
 
 
