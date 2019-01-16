@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 import crypto from 'crypto';
 import {ensureParsed} from 'ast-matcher';
 import convert from 'convert-source-map';
+import {join as sourcePathJoin} from 'source-map/lib/util';
 import './ensure-parser-set';
 
 export function stripJsExtension(d) {
@@ -99,17 +100,45 @@ export function stripSourceMappingUrl(contents) {
 }
 
 export function getSourceMap(contents, filePath) {
-  try {
-    let converter = convert.fromSource(contents);
-    if (converter) return converter.sourcemap;
+  const dir = filePath && path.dirname(filePath);
 
-    if (filePath) {
-      converter = convert.fromMapFileSource(contents, path.dirname(filePath));
+  const sourceMap = (() => {
+    try {
+      let converter = convert.fromSource(contents);
       if (converter) return converter.sourcemap;
+
+      if (filePath) {
+        converter = convert.fromMapFileSource(contents, dir);
+        if (converter) return converter.sourcemap;
+      }
+    } catch (err) {
+      return;
     }
-  } catch (err) {
-    return;
+  })();
+
+  if (sourceMap && sourceMap.sources) {
+    const {sourceRoot} = sourceMap;
+    if (sourceRoot) {
+      // get rid of sourceRoot
+      if (sourceRoot !== '/') {
+        sourceMap.sources = sourceMap.sources.map(s => sourcePathJoin(sourceRoot, s));
+      }
+      delete sourceMap.sourceRoot;
+    }
+
+    if (!sourceMap.sourcesContent) {
+      // bring in sources content inline
+      try {
+        sourceMap.sourcesContent = sourceMap.sources.map(s =>
+          fs.readFileSync(path.resolve(dir, s))
+        );
+      } catch (err) {
+        //
+      }
+    }
   }
+
+  return sourceMap;
 }
 
 export function ensureSemicolon(contents) {

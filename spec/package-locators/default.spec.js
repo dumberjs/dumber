@@ -236,7 +236,7 @@ test('defaultNpmPackageLocator returns fileRead func rejects missing file for ex
 
 test('defaultNpmPackageLocator can read .wasm file into base64 string', t => {
   const defaultLocator = mockLocator(buildReadFile({
-    'node_modules/foo/fib.wasm': fs.readFileSync(path.join(__dirname, '..', 'fib.wasm'))
+    'node_modules/foo/fib.wasm': fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'fib.wasm'))
   }));
 
   defaultLocator({name: 'foo'})

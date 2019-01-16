@@ -148,7 +148,7 @@ test('getSourceMap ignores file without sourceMap', t => {
 
 test('getSourceMap gets inline sourceMap', t => {
   const contents = 'var a = 1;\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYnVpbGQvZm9vLm1pbi5qcyIsInNvdXJjZXMiOlsic3JjL2Zvby5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSIsInNvdXJjZVJvb3QiOiIvIn0=';
-  const sourceMap = {"version":3,"file":"build/foo.min.js","sources":["src/foo.js"],"names":[],"mappings":"AAAA","sourceRoot":"/"};
+  const sourceMap = {"version":3,"file":"build/foo.min.js","sources":["src/foo.js"],"names":[],"mappings":"AAAA"};
   t.deepEqual(getSourceMap(contents, 'foo.js'), sourceMap);
   t.end();
 });
@@ -158,55 +158,3 @@ test('getSourceMap ignores broken inline sourceMap', t => {
   t.notOk(getSourceMap(contents, 'foo.js'));
   t.end();
 });
-
-if (typeof global.document === 'undefined') {
-  // no test in browser
-  test('getSourceMap gets referenced sourceMap file content', t => {
-    let contents = `
-  .header {
-    background: #444;
-    border: solid;
-    padding: 10px;
-    border-radius: 10px 5px 10px 5px;
-    color: #b4b472; }
-
-  #main li {
-    color: green;
-    margin: 10px;
-    padding: 10px;
-    font-size: 18px; }
-
-  `;
-    contents += '\n//# sourceMappingURL=map-file-comment.css.map\n';
-    const sourceMap = {
-      "version": "3",
-      "mappings": "AAAA,wBAAyB;EACvB,UAAU,EAAE,IAAI;EAChB,MAAM,EAAE,KAAK;EACb,OAAO,EAAE,IAAI;EACb,aAAa,EAAE,iBAAiB;EAChC,KAAK,EAAE,OAAkB;;AAG3B,wBAAyB;EACvB,OAAO,EAAE,IAAI;;ACTf,gBAAiB;EACf,UAAU,EAAE,IAAI;EAChB,KAAK,EAAE,MAAM;;AAGf,kBAAmB;EACjB,MAAM,EAAE,IAAI;EACZ,OAAO,EAAE,IAAI;EACb,UAAU,EAAE,KAAK;EACjB,aAAa,EAAE,GAAG;EAClB,KAAK,EAAE,KAAK;;AAEd,kBAAmB;EACjB,KAAK,EAAE,KAAK;;AAGd,mBAAoB;EAClB,KAAK,EAAE,KAAK;EACZ,MAAM,EAAE,IAAI;EACZ,OAAO,EAAE,IAAI;EACb,SAAS,EAAE,IAAI",
-      "sources": ["./client/sass/core.scss","./client/sass/main.scss"],
-      "file": "map-file-comment.css"
-    };
-
-    t.deepEqual(getSourceMap(contents, 'spec/map-file-comment.css'), sourceMap);
-    t.end();
-  });
-
-  test('getSourceMap ignores missing sourceMap file', t => {
-    let contents = `
-  .header {
-    background: #444;
-    border: solid;
-    padding: 10px;
-    border-radius: 10px 5px 10px 5px;
-    color: #b4b472; }
-
-  #main li {
-    color: green;
-    margin: 10px;
-    padding: 10px;
-    font-size: 18px; }
-
-  `;
-    contents += '\n//# sourceMappingURL=missing.css.map\n';
-    t.notOk(getSourceMap(contents, 'spec/map-file-comment.css'));
-    t.end();
-  });
-}
