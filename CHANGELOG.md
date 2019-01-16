@@ -1,3 +1,12 @@
+## [0.8.11](https://github.com/dumberjs/dumber/compare/v0.8.10...v0.8.11) (2019-01-16)
+
+
+### Bug Fixes
+
+* fix sourcesContent format ([d23a56e](https://github.com/dumberjs/dumber/commit/d23a56e))
+
+
+
 ## [0.8.10](https://github.com/dumberjs/dumber/compare/v0.8.9...v0.8.10) (2019-01-16)
 
 
