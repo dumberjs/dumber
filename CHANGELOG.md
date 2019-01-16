@@ -1,3 +1,12 @@
+## [0.8.10](https://github.com/dumberjs/dumber/compare/v0.8.9...v0.8.10) (2019-01-16)
+
+
+### Bug Fixes
+
+* bring in missing dep ([3b91373](https://github.com/dumberjs/dumber/commit/3b91373))
+
+
+
 ## [0.8.9](https://github.com/dumberjs/dumber/compare/v0.8.8...v0.8.9) (2019-01-16)
 
 
