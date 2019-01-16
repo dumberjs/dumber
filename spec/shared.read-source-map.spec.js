@@ -12,6 +12,7 @@ test('getSourceMap gets referenced sourceMap file content', t => {
   t.deepEqual(sourceMap.sources, ['src/x.js']);
   t.ok(sourceMap.sourcesContent);
   t.equal(sourceMap.sourcesContent.length, 1);
+  t.equal(typeof sourceMap.sourcesContent[0], 'string');
   t.ok(sourceMap.sourcesContent[0].includes('_.trim'));
   t.end();
 });

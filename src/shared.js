@@ -130,7 +130,7 @@ export function getSourceMap(contents, filePath) {
       // bring in sources content inline
       try {
         sourceMap.sourcesContent = sourceMap.sources.map(s =>
-          fs.readFileSync(path.resolve(dir, s))
+          fs.readFileSync(path.resolve(dir, s), 'utf8')
         );
       } catch (err) {
         //
