@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import {ensureParsed} from 'ast-matcher';
 import convert from 'convert-source-map';
 import {join as sourcePathJoin} from 'source-map/lib/util';
+import url from 'url';
 import './ensure-parser-set';
 
 export function stripJsExtension(d) {
@@ -60,8 +61,8 @@ export function contentOrFile(pathOrContent, mock) {
   // pathOrContent is a path
   if (pathOrContent.match(/^https?:\/\//)) {
     // remote url
-    const url = new URL(pathOrContent);
-    const remotePath = url.hostname + url.pathname;
+    const remote = url.parse(pathOrContent);
+    const remotePath = remote.hostname + remote.pathname;
 
     return fetch(pathOrContent)
     .then(response => {
