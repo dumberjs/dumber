@@ -98,7 +98,7 @@ test('Bundler traces files', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'var pre = 1;', path: undefined, sourceMap: undefined},
+            {contents: 'var pre = 1;'},
             {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
             {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
@@ -112,7 +112,7 @@ test('Bundler traces files', t => {
           ],
           appendFiles: [
             {contents: 'after;', path: 'local/after.js', sourceMap: undefined},
-            {contents: 'var ape = 1;', path: undefined, sourceMap: undefined},
+            {contents: 'var ape = 1;'},
           ],
           config: {
             baseUrl: '/dist',
@@ -147,7 +147,7 @@ test('Bundler can optionally skip dumber-module-loader', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dev-dumber-module-loader;', path: undefined, sourceMap: undefined},
+            {contents: 'dev-dumber-module-loader;'},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[],1);", sourceMap: undefined}
           ],
@@ -193,7 +193,7 @@ test('Bundler traces files, split bundles', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'var pre = 1;', path: undefined, sourceMap: undefined},
+            {contents: 'var pre = 1;'},
             {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
             {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
@@ -202,7 +202,7 @@ test('Bundler traces files, split bundles', t => {
           ],
           appendFiles: [
             {contents: 'after;', path: 'local/after.js', sourceMap: undefined},
-            {contents: 'var ape = 1;', path: undefined, sourceMap: undefined},
+            {contents: 'var ape = 1;'},
           ],
           config: {
             baseUrl: '/dist',
@@ -267,13 +267,13 @@ test('Bundler traces files, split bundles, case2', t => {
       t.deepEqual(bundleMap, {
         'main': {
           files: [
-            {contents: 'var pre = 1;', path: undefined, sourceMap: undefined},
+            {contents: 'var pre = 1;'},
             {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
             {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
           ],
           appendFiles: [
             {contents: 'after;', path: 'local/after.js', sourceMap: undefined},
-            {contents: 'var ape = 1;', path: undefined, sourceMap: undefined},
+            {contents: 'var ape = 1;'},
           ],
           config: {
             baseUrl: 'scripts',

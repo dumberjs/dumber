@@ -48,8 +48,7 @@ test('contentOrFile returns passed js content, ensures end with semicolon', t =>
   contentOrFile(content)
   .then(
     result => {
-      t.equal(result.contents, 'var a = 1;');
-      t.notOk(result.path);
+      t.deepEqual(result, {contents: 'var a = 1;'});
     },
     err => t.fail(err.message)
   )
@@ -63,7 +62,8 @@ test('contentOrFile reads remote js content', t => {
   .then(
     result => {
       t.ok(result.contents.includes('hostname'));
-      t.notOk(result.path);
+      t.notOk(result.sourceMap);
+      t.equal(result.path, 'cdn.jsdelivr.net/npm/os-browserify@0.3.0/browser.js');
     },
     err => t.fail(err.message)
   )
@@ -89,6 +89,7 @@ test('contentOrFile reads local js file', t => {
     result => {
       t.equal(result.contents, 'var a;');
       t.equal(result.path, path);
+      t.notOk(result.sourceMap);
     },
     err => t.fail(err.message)
   )

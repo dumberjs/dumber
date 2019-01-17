@@ -57,12 +57,13 @@ export function contentOrFile(pathOrContent, mock) {
     return Promise.reject(new Error('No content or file provided'));
   }
 
-  let p;
-  let filePath;
   // pathOrContent is a path
   if (pathOrContent.match(/^https?:\/\//)) {
     // remote url
-    p = fetch(pathOrContent)
+    const url = new URL(pathOrContent);
+    const remotePath = url.hostname + url.pathname;
+
+    return fetch(pathOrContent)
     .then(response => {
       if (response.ok) return response.text();
       else throw new Error(response.statusText)
@@ -71,23 +72,29 @@ export function contentOrFile(pathOrContent, mock) {
       ensureParsed(text);
       // pathOrContent is code
       return text;
-    });
-  } else if (pathOrContent.endsWith('.js')) {
-    filePath = pathOrContent;
-    p = _readFile(pathOrContent)
-    .then(buffer => buffer.toString());
-  } else {
-    p = new Promise(resolve => {
-      ensureParsed(pathOrContent);
-      resolve(pathOrContent);
-    });
+    })
+    .then(text => ({
+      path: remotePath,
+      contents: ensureSemicolon(stripSourceMappingUrl(text || '')),
+    }));
   }
 
-  return p.then(text => ({
-    path: filePath && filePath.replace(/\\/g, '/'),
-    contents: ensureSemicolon(stripSourceMappingUrl(text || '')),
-    sourceMap: getSourceMap(text, filePath)
-  }));
+  if (pathOrContent.endsWith('.js')) {
+    return _readFile(pathOrContent)
+    .then(buffer => buffer.toString())
+    .then(text => ({
+      path: pathOrContent.replace(/\\/g, '/'),
+      contents: ensureSemicolon(stripSourceMappingUrl(text || '')),
+      sourceMap: getSourceMap(text, pathOrContent)
+    }));
+  }
+
+  return new Promise(resolve => {
+    ensureParsed(pathOrContent);
+    resolve({
+      contents: ensureSemicolon(stripSourceMappingUrl(pathOrContent || ''))
+    });
+  });
 }
 
 export function generateHash(bufOrStr) {
