@@ -1,3 +1,17 @@
+## [0.8.13](https://github.com/dumberjs/dumber/compare/v0.8.12...v0.8.13) (2019-01-17)
+
+
+### Bug Fixes
+
+* fix compatibility with nodejs v8 where URL is not available as global var ([2578785](https://github.com/dumberjs/dumber/commit/2578785))
+
+
+### Features
+
+* improve efficiency by skipping unchanged files in watch mode ([53caf61](https://github.com/dumberjs/dumber/commit/53caf61))
+
+
+
 ## [0.8.12](https://github.com/dumberjs/dumber/compare/v0.8.11...v0.8.12) (2019-01-17)
 
 
