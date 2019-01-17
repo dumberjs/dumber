@@ -6,7 +6,7 @@ import PackageReader from './package-reader';
 import Package from './package';
 import stubModule from './stub-module';
 import {info, error, warn} from './log';
-import {stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
+import {generateHash, stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
 import * as cache from './cache/default';
 import path from 'path';
 import mergeTransformed from './transformers/merge';
@@ -120,6 +120,23 @@ export default class Bundler {
   }
 
   capture(unit) {
+    const hash = generateHash(JSON.stringify(unit));
+
+    if (this._inWatchMode && !unit.packageName) {
+      if (this._unitsMap[unit.path]) {
+        const oldHash = this._unitsMap[unit.path].hash;
+
+        if (oldHash === hash) {
+          // ignore unchanged file in watch mode
+          return Promise.resolve(this._unitsMap[unit.path]);
+        }
+
+        info(`Update ${unit.path}`);
+      } else {
+        info(`Add ${unit.path}`);
+      }
+    }
+
     if (unit.packageName) {
       unit.shim = this.shimFor(unit.packageName);
     }
@@ -129,7 +146,10 @@ export default class Bundler {
       cache: this._cache,
       depsFinder: this._depsFinder
     }).then(
-      tracedUnit => this._capture(tracedUnit),
+      tracedUnit => {
+        tracedUnit.hash = hash;
+        return this._capture(tracedUnit);
+      },
       err => {
         // just print error, but not stopping
         error('Tracing failed for ' + unit.path);
@@ -147,13 +167,6 @@ export default class Bundler {
   }
 
   _capture(tracedUnit) {
-    if (this._inWatchMode && !tracedUnit.packageName) {
-      if (this._unitsMap[tracedUnit.path]) {
-        info(`Update ${tracedUnit.path}`);
-      } else {
-        info(`Add ${tracedUnit.path}`);
-      }
-    }
     this._unitsMap[tracedUnit.path] = tracedUnit;
 
     // mark as done.
