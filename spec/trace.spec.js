@@ -57,7 +57,7 @@ test('trace traces js', t => {
       sourceMap: undefined,
       moduleId: 'foo/bar',
       defined: 'foo/bar',
-      deps: ['a', 'text!foo/b.css'],
+      deps: ['a', 'text!./b.css'],
       packageName: undefined,
       shimed: undefined
     })
@@ -81,7 +81,7 @@ test('trace traces js and update sourceMap', t => {
       sourceMap: {mappings: ";;TEST;"},
       moduleId: 'foo/bar',
       defined: 'foo/bar',
-      deps: ['foo/a'],
+      deps: ['./a'],
       packageName: undefined,
       shimed: undefined
     })
@@ -235,7 +235,7 @@ test('trace supports optional depsFinder returns deps directly', t => {
   ])
   .then(result => {
     const [traced1, traced2] = result;
-    t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
+    t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
     t.end();
   });
@@ -268,7 +268,7 @@ test('trace supports optional depsFinder returns deps in promise', t => {
   ])
   .then(result => {
     const [traced1, traced2] = result;
-    t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
+    t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
     t.end();
   });
@@ -316,7 +316,7 @@ test('trace supports cache', t => {
   ])
   .then(result => {
     const [traced1, traced2] = result;
-    t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
+    t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
 
     return Promise.all([
@@ -334,7 +334,7 @@ test('trace supports cache', t => {
   })
   .then(result => {
     const [traced1, traced2] = result;
-    t.deepEqual(traced1.deps, ['foo/b', 'foo/x']);
+    t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
     t.end();
   });
@@ -355,7 +355,7 @@ test('trace traces npm js with dist alias', t => {
       sourceMap: undefined,
       moduleId: 'foo/dist/bar',
       defined: ['foo/dist/bar', 'foo/bar'],
-      deps: ['a', 'text!foo/dist/b.css'],
+      deps: ['a', 'text!./b.css'],
       packageName: 'foo',
       shimed: undefined
     })

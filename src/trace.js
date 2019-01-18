@@ -5,7 +5,7 @@ import wasm from './transformers/wasm';
 import cjsEs from './transformers/cjs-es';
 import defines from './transformers/defines';
 import mergeTransformed from './transformers/merge';
-import {ext, parse, resolveModuleId} from 'dumber-module-loader/dist/id-utils';
+import {ext, parse} from 'dumber-module-loader/dist/id-utils';
 import {generateHash} from './shared';
 
 const DIST_FOLDERS = ['dist', 'dists', 'output', 'out', 'lib', 'libs'];
@@ -71,7 +71,7 @@ export default function (unit, opts = {}) {
     }
 
     if (defResult.deps) {
-      defResult.deps.forEach(d => deps.add(resolveModuleId(moduleId, d)));
+      defResult.deps.forEach(d => deps.add(d));
     }
 
     contents = defResult.contents;
@@ -83,7 +83,7 @@ export default function (unit, opts = {}) {
     contents = wasmResult.contents;
     defined = wasmResult.defined;
     if (wasmResult.deps) {
-      wasmResult.deps.forEach(d => deps.add(resolveModuleId(moduleId, d)));
+      wasmResult.deps.forEach(d => deps.add(d));
     }
   } else {
     // use text! for everything else including unknown extname
@@ -92,7 +92,7 @@ export default function (unit, opts = {}) {
     contents = textResult.contents;
     defined = textResult.defined;
     if (textResult.deps) {
-      textResult.deps.forEach(d => deps.add(resolveModuleId(moduleId, d)));
+      textResult.deps.forEach(d => deps.add(d));
     }
   }
 
@@ -103,7 +103,7 @@ export default function (unit, opts = {}) {
     p = p.then(() => depsFinder(path, unit.contents))
     .then(newDeps => {
       if (newDeps && newDeps.length) {
-        newDeps.forEach(d => deps.add(resolveModuleId(moduleId, d)));
+        newDeps.forEach(d => deps.add(d));
       }
     });
   }

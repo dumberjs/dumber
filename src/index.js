@@ -1,5 +1,5 @@
 import trace from './trace';
-import {cleanPath, parse, nodejsIds, mapId} from 'dumber-module-loader/dist/id-utils';
+import {cleanPath, parse, nodejsIds, mapId, resolveModuleId} from 'dumber-module-loader/dist/id-utils';
 import alias from './transformers/alias';
 import defaultPackageLocator from './package-locators/default';
 import PackageReader from './package-reader';
@@ -173,9 +173,15 @@ export default class Bundler {
     this._addToDone(tracedUnit.moduleId);
     this._addToDone(tracedUnit.defined);
 
+    const {moduleId, packageName} = tracedUnit;
+
     // mark todo. beware we didn't check whether the id is in _moduleId_done.
     // they will be checked during resolve phase.
-    tracedUnit.deps.forEach(d => this._moduleIds_todo.add(d));
+    tracedUnit.deps.forEach(d => {
+      // ignore relative dep on local source
+      if (!packageName && moduleId.startsWith('.')) return;
+      this._moduleIds_todo.add(resolveModuleId(moduleId, d));
+    });
 
     const bundle = this.bundleOf(tracedUnit);
     // mark related bundle dirty
