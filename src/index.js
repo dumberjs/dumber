@@ -173,14 +173,12 @@ export default class Bundler {
     this._addToDone(tracedUnit.moduleId);
     this._addToDone(tracedUnit.defined);
 
-    const {moduleId, packageName} = tracedUnit;
-
     // mark todo. beware we didn't check whether the id is in _moduleId_done.
     // they will be checked during resolve phase.
     tracedUnit.deps.forEach(d => {
       // ignore relative dep on local source
-      if (!packageName && moduleId.startsWith('.')) return;
-      this._moduleIds_todo.add(resolveModuleId(moduleId, d));
+      if (!tracedUnit.packageName && d.startsWith('.')) return;
+      this._moduleIds_todo.add(resolveModuleId(tracedUnit.moduleId, d));
     });
 
     const bundle = this.bundleOf(tracedUnit);
