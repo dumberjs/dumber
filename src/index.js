@@ -72,7 +72,7 @@ export default class Bundler {
     if (!opts.skipModuleLoader) {
       this._prepends.push(
         // load dumber-module-loader after prepends
-        path.join(path.relative(process.cwd(), _resolve('dumber-module-loader')), 'dist', 'index.js')
+        path.join(path.relative(process.cwd(), _resolve('dumber-module-loader')), 'dist', 'index.debug.js')
       );
     }
 

@@ -76,7 +76,7 @@ test('Bundler traces files', t => {
   const fakeFs = {
     'local/setup.js': 'setup',
     'local/after.js': 'after',
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
     'node_modules/foo/index.js': 'loo',
     'node_modules/foo/bar.js': '',
@@ -100,7 +100,7 @@ test('Bundler traces files', t => {
           files: [
             {contents: 'var pre = 1;'},
             {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
             {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
@@ -168,7 +168,7 @@ test('Bundler traces files, split bundles', t => {
   const fakeFs = {
     'local/setup.js': 'setup',
     'local/after.js': 'after',
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
     'node_modules/foo/index.js': 'loo',
     'node_modules/foo/bar.js': '',
@@ -195,7 +195,7 @@ test('Bundler traces files, split bundles', t => {
           files: [
             {contents: 'var pre = 1;'},
             {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
             {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined}
@@ -235,7 +235,7 @@ test('Bundler traces files, split bundles, case2', t => {
   const fakeFs = {
     'local/setup.js': 'setup',
     'local/after.js': 'after',
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
     'node_modules/foo/index.js': 'loo',
     'node_modules/foo/bar.js': '',
@@ -269,7 +269,7 @@ test('Bundler traces files, split bundles, case2', t => {
           files: [
             {contents: 'var pre = 1;'},
             {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
           ],
           appendFiles: [
             {contents: 'after;', path: 'local/after.js', sourceMap: undefined},
@@ -317,7 +317,7 @@ test('Bundler traces files, split bundles, case2', t => {
 
 test('Bundler traces files, sorts shim', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/jquery/package.json': JSON.stringify({name: 'jquery', main: 'dist/jquery'}),
     'node_modules/jquery/dist/jquery.js': 'define("jquery",[],1);',
     'node_modules/bootstrap/package.json':  JSON.stringify({name: 'bootstrap', main: './dist/bootstrap'}),
@@ -338,7 +338,7 @@ test('Bundler traces files, sorts shim', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"fs\",\"bootstrap\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
@@ -363,7 +363,7 @@ test('Bundler traces files, sorts shim', t => {
 
 test('Bundler ignores module when onRequire returns false', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
   };
   const bundler = createBundler(fakeFs, {
     onRequire(moduleId) {
@@ -380,7 +380,7 @@ test('Bundler ignores module when onRequire returns false', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
           ],
@@ -399,7 +399,7 @@ test('Bundler ignores module when onRequire returns false', t => {
 
 test('Bundler replaces deps when onRequire returns array', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/bar/package.json': '{"name":"bar"}',
     'node_modules/bar/index.js': '',
     'node_modules/loo/package.json': '{"name":"loo","main":"loo"}',
@@ -420,7 +420,7 @@ test('Bundler replaces deps when onRequire returns array', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
@@ -443,7 +443,7 @@ test('Bundler replaces deps when onRequire returns array', t => {
 
 test('Bundler supports implementation returned by onRequire', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/loo/package.json': '{"name":"loo","main":"loo"}',
     'node_modules/loo/loo.js': '',
   };
@@ -463,7 +463,7 @@ test('Bundler supports implementation returned by onRequire', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
@@ -486,7 +486,7 @@ test('Bundler supports implementation returned by onRequire', t => {
 
 test('Bundler swallows onRequire exception', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': '{"name":"foo","main":"foo"}',
     'node_modules/foo/foo.js': '',
   };
@@ -505,7 +505,7 @@ test('Bundler swallows onRequire exception', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
@@ -527,7 +527,7 @@ test('Bundler swallows onRequire exception', t => {
 
 test('Bundler swallows onRequire promise rejection', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': '{"name":"foo","main":"foo"}',
     'node_modules/foo/foo.js': '',
   };
@@ -546,7 +546,7 @@ test('Bundler swallows onRequire promise rejection', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
@@ -589,7 +589,7 @@ test('Bundler can customise cache implementation', t => {
 
 test('Bundler traces files, split bundles, continuously update bundles in watch mode', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
     'node_modules/foo/index.js': '',
     'node_modules/foo/bar.js': '',
@@ -617,7 +617,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined}
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined}
           ],
           config: {
             baseUrl: '/dist',
@@ -669,7 +669,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'}
@@ -720,7 +720,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'}
@@ -761,7 +761,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
 
 test('Bundler supports inject css by default', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
     'node_modules/dumber/dist/inject-css.js': '',
   };
@@ -778,7 +778,7 @@ test('Bundler supports inject css by default', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"c.css\"],1);", sourceMap: undefined},
             {path: 'src/c.css', contents: "define('text!c.css',function(){return \"lorem\";});", sourceMap: undefined},
@@ -802,7 +802,7 @@ test('Bundler supports inject css by default', t => {
 
 test('Bundler can optionally turn off inject css', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
     'node_modules/dumber/dist/inject-css.js': '',
   };
@@ -820,7 +820,7 @@ test('Bundler can optionally turn off inject css', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'src/app.js', contents: "define('app',[\"c.css\"],1);", sourceMap: undefined},
             {path: 'src/c.css', contents: "define('text!c.css',function(){return \"lorem\";});", sourceMap: undefined}
@@ -840,7 +840,7 @@ test('Bundler can optionally turn off inject css', t => {
 
 test('Bundler traces files with paths mapping', t => {
   const fakeFs = {
-    'node_modules/dumber-module-loader/dist/index.js': 'dumber-module-loader',
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
     'node_modules/foo/index.js': 'loo',
     'node_modules/bar/package.json': JSON.stringify({name: 'bar', main: 'index'}),
@@ -866,7 +866,7 @@ test('Bundler traces files with paths mapping', t => {
       t.deepEqual(bundleMap, {
         'entry-bundle': {
           files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.js', sourceMap: undefined},
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'},
             {path: 'test/app.spec.js', contents: "define('../test/app.spec',[\"../src/app\"],1);", sourceMap: undefined},
             {path: 'src/app.js', contents: "define('app',[\"el!foo\"],1);", sourceMap: undefined},
