@@ -48,11 +48,11 @@
     "cherow": "^1.6.9",
     "convert-source-map": "^1.6.0",
     "del": "^3.0.0",
-    "dumber-module-loader": "^0.15.13",
+    "dumber-module-loader": "^0.15.17",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
-    "node-libs-browser": "^2.1.0",
+    "node-libs-browser": "^2.2.0",
     "readable-stream": "^2.3.6",
     "resolve": "^1.9.0",
     "source-map": "^0.6.1"
