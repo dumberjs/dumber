@@ -1,3 +1,13 @@
+## [0.8.16](https://github.com/dumberjs/dumber/compare/v0.8.15...v0.8.16) (2019-01-18)
+
+
+### Bug Fixes
+
+* better cache key with file path ([2f1a554](https://github.com/dumberjs/dumber/commit/2f1a554))
+* sync mode for fallback resolve ([35eaffe](https://github.com/dumberjs/dumber/commit/35eaffe))
+
+
+
 ## [0.8.15](https://github.com/dumberjs/dumber/compare/v0.8.14...v0.8.15) (2019-01-18)
 
 
