@@ -1,3 +1,12 @@
+## [0.8.18](https://github.com/dumberjs/dumber/compare/v0.8.17...v0.8.18) (2019-01-18)
+
+
+### Bug Fixes
+
+* fix typo ([fc388c5](https://github.com/dumberjs/dumber/commit/fc388c5))
+
+
+
 ## [0.8.17](https://github.com/dumberjs/dumber/compare/v0.8.16...v0.8.17) (2019-01-18)
 
 
