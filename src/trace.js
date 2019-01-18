@@ -31,6 +31,7 @@ export default function (unit, opts = {}) {
 
   if (cache) {
     const key = [
+      path,
       moduleId,
       packageName,
       JSON.stringify(shim),
