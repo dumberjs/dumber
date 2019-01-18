@@ -33,7 +33,7 @@ export function resolvePackagePath(packageName) {
     } catch (e) {
       // try from app's local folder, this is necessary to support lerna
       // hoisting where dumber is out of app's local node_modules folder.
-      metaPath = resolve(packageJson, {basedir: process.cwd()});
+      metaPath = resolve.sync(packageJson, {basedir: process.cwd()});
     }
   } catch (e) {
     throw new Error('cannot find npm package: ' + packageName);
