@@ -23,10 +23,17 @@ export default function (packageConfig, mock) {
     const relativePath = path.relative(path.resolve(), path.resolve(fp)).replace(/\\/g, '/');
 
     if (hardCodedMain && (filePath === 'package.json' || filePath === './package.json')) {
-      return Promise.resolve({
+      // read version from existing package.json
+      return _readFile(fp)
+      .then(buffer => JSON.parse(buffer.toString()))
+      .then(
+        meta => meta.version,
+        () => 'N/A'
+      )
+      .then(version => ({
         path: relativePath,
-        contents: JSON.stringify({name: name, main: hardCodedMain})
-      });
+        contents: JSON.stringify({name, version, main: hardCodedMain})
+      }));
     }
 
     return _readFile(fp)

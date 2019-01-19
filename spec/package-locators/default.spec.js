@@ -51,7 +51,7 @@ test('defaultNpmPackageLocator returns fileRead func for existing package', t =>
 
 test('defaultNpmPackageLocator returns fileRead func for package with hard coded main', t => {
   const defaultLocator = mockLocator(buildReadFile({
-    'node_modules/foo/package.json': '{"name":"foo","main":"index.js"}'
+    'node_modules/foo/package.json': '{"name":"foo","main":"index.js","version":"2.1.0"}'
   }));
 
   defaultLocator({name: 'foo', main: 'lib/main'})
@@ -61,7 +61,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with hard coded
       .then(
         file => {
           t.equal(file.path, 'node_modules/foo/package.json');
-          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main', version: '2.1.0'});
         },
         err => t.fail(err.message)
       );
@@ -99,7 +99,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
 
 test('defaultNpmPackageLocator returns fileRead func for package with custom path and hard coded main', t => {
   const defaultLocator = mockLocator(buildReadFile({
-    'packages/foo/package.json': '{"name":"foo","main":"index.js"}'
+    'packages/foo/package.json': '{"name":"foo","main":"index.js","version":"1.2.0"}'
   }));
 
   defaultLocator({name: 'foo', location: 'packages/foo', main: 'lib/main'})
@@ -109,7 +109,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
       .then(
         file => {
           t.equal(file.path, 'packages/foo/package.json');
-          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main', version: '1.2.0'});
         },
         err => t.fail(err.message)
       );
@@ -131,7 +131,7 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
       .then(
         file => {
           t.equal(file.path, 'packages/foo/package.json');
-          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main'});
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main', version: 'N/A'});
         },
         err => t.fail(err.message)
       );

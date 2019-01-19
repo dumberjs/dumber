@@ -58,6 +58,8 @@ export default function (packageConfig, mock) {
     packagePath += '@' + version;
   }
 
+  // TODO support hard coded main
+
   return fetchJson(_fetch, packagePath + '/package.json')
   .then(function (packageInfo) {
     if (!version) {
