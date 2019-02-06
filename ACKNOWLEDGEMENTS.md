@@ -1,4 +1,4 @@
-This software used some code from [requirejs](https://github.com/requirejs/requirejs), [aurelia-pal](https://github.com/aurelia/pal), [aurelia-cli](https://github.com/aurelia/cli), [style-loader](https://github.com/webpack-contrib/style-loader), and [node-libs-browser](https://github.com/webpack/node-libs-browser).
+This software used some code from [requirejs](https://github.com/requirejs/requirejs), [aurelia-pal](https://github.com/aurelia/pal), [aurelia-cli](https://github.com/aurelia/cli), [aurelia-templating-resources](https://github.com/aurelia/templating-resources), [style-loader](https://github.com/webpack-contrib/style-loader), and [node-libs-browser](https://github.com/webpack/node-libs-browser).
 
 Below are the required notices from them.
 
