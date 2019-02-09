@@ -35,7 +35,7 @@ export default function(contents, forceWrap) {
 
   let pre = '';
   if (cjsUsage && (cjsUsage.dirname || cjsUsage.filename)) {
-    pre += 'var __filename = module.filename || \'\', ' +
+    pre += 'var __filename = module.uri || \'\', ' +
           '__dirname = ' +
           '__filename.slice(0, __filename.lastIndexOf(\'/\') + 1);';
   }

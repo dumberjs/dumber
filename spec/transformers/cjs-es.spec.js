@@ -53,7 +53,7 @@ test('cjsEs transform wraps cjs code with require call', t => {
 test('cjsEs transform wraps cjs code with __dirname', t => {
   const source = 'exports.name = __dirname;';
   const expected = 'define(function (require, exports, module) {' +
-                   'var __filename = module.filename || \'\', __dirname = __filename.slice(0, __filename.lastIndexOf(\'/\') + 1);\n' +
+                   'var __filename = module.uri || \'\', __dirname = __filename.slice(0, __filename.lastIndexOf(\'/\') + 1);\n' +
                    'exports.name = __dirname;\n});\n';
 
   t.deepEqual(cjsEs(source), {headLines: 1, contents: expected});
@@ -63,7 +63,7 @@ test('cjsEs transform wraps cjs code with __dirname', t => {
 test('cjsEs transform wraps cjs code with __filename', t => {
   const source = 'exports.name = __filename;';
   const expected = 'define(function (require, exports, module) {' +
-                   'var __filename = module.filename || \'\', __dirname = __filename.slice(0, __filename.lastIndexOf(\'/\') + 1);\n' +
+                   'var __filename = module.uri || \'\', __dirname = __filename.slice(0, __filename.lastIndexOf(\'/\') + 1);\n' +
                    'exports.name = __filename;\n});\n';
 
   t.deepEqual(cjsEs(source), {headLines: 1, contents: expected});
