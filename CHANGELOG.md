@@ -1,3 +1,12 @@
+## [0.9.1](https://github.com/dumberjs/dumber/compare/v0.9.0...v0.9.1) (2019-02-10)
+
+
+### Bug Fixes
+
+* fix a regression of missing css injection on local css ([67e8532](https://github.com/dumberjs/dumber/commit/67e8532))
+
+
+
 # [0.9.0](https://github.com/dumberjs/dumber/compare/v0.8.18...v0.9.0) (2019-02-09)
 
 
