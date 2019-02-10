@@ -176,9 +176,13 @@ export default class Bundler {
     // mark todo. beware we didn't check whether the id is in _moduleId_done.
     // they will be checked during resolve phase.
     tracedUnit.deps.forEach(d => {
+      const parsedId = parse(resolveModuleId(tracedUnit.moduleId, d));
+      if (!parsedId.prefix && parsedId.ext === '.css') {
+        this._needCssInjection = true;
+      }
       // ignore relative dep on local source
       if (!tracedUnit.packageName && d.startsWith('.')) return;
-      this._moduleIds_todo.add(resolveModuleId(tracedUnit.moduleId, d));
+      this._moduleIds_todo.add(parsedId.cleanId);
     });
 
     const bundle = this.bundleOf(tracedUnit);
@@ -257,7 +261,7 @@ export default class Bundler {
   }
 
   _supportInjectCssIfNeeded() {
-    if (!this._injectCss || this._isInjectCssTurnedOn) return Promise.resolve();
+    if (!this._needCssInjection || !this._injectCss || this._isInjectCssTurnedOn) return Promise.resolve();
     this._isInjectCssTurnedOn = true;
 
     return this.capture({
@@ -271,6 +275,7 @@ export default class Bundler {
     let todo = [];
     return this._resolvePrependsAndAppends()
     .then(() => this._resolveExplicitDepsIfNeeded())
+    .then(() => this._supportInjectCssIfNeeded())
     .then(() => {
       const consults = [];
       const rawTodo = Array.from(this._moduleIds_todo);
@@ -278,9 +283,8 @@ export default class Bundler {
 
       rawTodo.forEach(id => {
         const parsedId = parse(mapId(id, this._paths));
-        if (!parsedId.prefix && parsedId.ext === '.css' && !this._isInjectCssTurnedOn) {
-          consults.push(this._supportInjectCssIfNeeded());
-        } else if (parsedId.prefix &&
+
+        if (parsedId.prefix &&
                    parsedId.prefix !== 'text!' &&
                    parsedId.prefix !== 'json!' &&
                    parsedId.prefix !== 'raw!') {

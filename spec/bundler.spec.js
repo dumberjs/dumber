@@ -800,6 +800,47 @@ test('Bundler supports inject css by default', t => {
   .then(t.end);
 });
 
+test('Bundler supports inject css (relative path) by default', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
+    'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
+    'node_modules/dumber/dist/inject-css.js': '',
+  };
+  const bundler = createBundler(fakeFs, {
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: './c.css', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"./c.css\"],1);", sourceMap: undefined},
+            {path: 'src/c.css', contents: "define('text!c.css',function(){return \"lorem\";});", sourceMap: undefined},
+            {path: '__stub__/ext-css.js', contents: "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/dumber/dist/inject-css.js', contents: "define('dumber/dist/inject-css',[],1);", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {},
+            paths: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
 test('Bundler can optionally turn off inject css', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
