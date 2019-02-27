@@ -110,7 +110,6 @@ export default class PackageReader {
 
       return {
         path: file.path.replace(/\\/g, '/'),
-        // not handling sourcemaps from npm packages, at least for now
         contents: stripSourceMappingUrl(file.contents),
         moduleId,
         packageName: this.name,
