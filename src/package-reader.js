@@ -51,7 +51,7 @@ export default class PackageReader {
 
       const findResource = () => {
         if (i >= len) {
-          return Promise.reject(new Error(`could not find ${resource} in package ${this.name}`));
+          return Promise.reject(new Error(`could not find "${resource}" in package ${this.name}`));
         }
 
         let resParts = parts.slice(0, i);
@@ -171,7 +171,7 @@ export default class PackageReader {
         } catch (err) {
           error('Failed to parse ' + packageJsonPath);
           error(err);
-          return;
+          throw err;
         }
         let metaMain;
         // try 1.browser > 2.module > 3.main

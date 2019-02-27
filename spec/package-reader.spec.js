@@ -515,6 +515,25 @@ test('packageReader reads directory package.json', t => {
   });
 });
 
+test('packageReader complains broken directory package.json', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
+    'node_modules/foo/index.js': 'lorem',
+    'node_modules/foo/lib/package.json': 'broken',
+    'node_modules/foo/lib/es/index.js': 'es',
+    'node_modules/foo/lib/index.js': 'index'
+  }).then(r => {
+    r.readResource('lib').then(
+      () => {
+        t.fail('should not load');
+      },
+      err => {
+        t.pass(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
 test('packageReader reads browser replacement in package.json', t => {
   getReader('foo', {
     'node_modules/foo/package.json': `{
