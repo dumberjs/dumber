@@ -193,6 +193,7 @@ export default class PackageReader {
         }
 
         let mainFile = metaMain || 'index';
+        // path.join also cleans up leading './'.
         const mainResourcePath = path.join(dirPath, mainFile);
 
         return this._nodejsLoadAsFile(mainResourcePath)
