@@ -13,6 +13,8 @@ import {stripJsExtension, isPackageName} from '../shared';
 const amdDep = astMatcher('define([__anl_deps], __any)');
 const namedAmdDep = astMatcher('define(__str, [__anl_deps], __any)');
 const cjsDep = astMatcher('require(__any_dep)');
+const isUMD = astMatcher('typeof define === "function" && define.amd');
+const isUMD2 = astMatcher('typeof define == "function" && define.amd');
 
 export default function(contents, replacement) {
   const toReplace = [];
@@ -47,6 +49,12 @@ export default function(contents, replacement) {
   };
 
   const parsed = ensureParsed(contents);
+
+  if (isUMD(parsed) || isUMD2(parsed)) {
+    // Skip lib in umd format, because browersify umd build could
+    // use require('./file.js') which we should not strip .js
+    return contents;
+  }
 
   const amdMatch = amdDep(parsed);
   if (amdMatch) {
