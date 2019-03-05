@@ -385,3 +385,43 @@ test('trace traces npm html with dist alias', t => {
     t.end();
   });
 });
+
+test('trace patches momentjs to expose global var "moment"', t => {
+  const moment = `//! moment.js
+
+;(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    global.moment = factory()
+}(this, (function () {})));`;
+
+  const transformedMoment = `//! moment.js
+
+;(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? (function(){var m=factory();if(typeof moment === 'undefined'){window.moment=m;} define('moment/moment',function(){return m;})})() :
+    global.moment = factory()
+}(this, (function () {})));`;
+
+  const unit = {
+    path: 'node_modules/moment/moment.js',
+    contents: moment,
+    sourceMap: undefined,
+    moduleId: 'moment/moment',
+    packageName: 'moment'
+  }
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/moment/moment.js',
+      contents: transformedMoment,
+      sourceMap: undefined,
+      moduleId: 'moment/moment',
+      defined: 'moment/moment',
+      deps: [],
+      packageName: 'moment',
+      shimed: undefined
+    })
+    t.end();
+  });
+});

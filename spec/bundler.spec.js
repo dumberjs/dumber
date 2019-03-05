@@ -361,6 +361,49 @@ test('Bundler traces files, sorts shim', t => {
   .then(t.end);
 });
 
+test('Bundler traces files, always sort jquery and moment on top', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
+    'node_modules/jquery/package.json': JSON.stringify({name: 'jquery', main: 'dist/jquery'}),
+    'node_modules/jquery/dist/jquery.js': 'define("jquery",[],1);',
+    'node_modules/moment/package.json': JSON.stringify({name: 'moment', main: './moment'}),
+    'node_modules/moment/moment.js': '',
+    'node_modules/aaa/package.json':  JSON.stringify({name: 'aaa', main: './aaa'}),
+    'node_modules/aaa/aaa.js': '',
+  };
+  const bundler = createBundler(fakeFs);
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'aaa jquery moment', moduleId: 'app'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"aaa\",\"jquery\",\"moment\"],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/jquery/dist/jquery.js', contents: 'define("jquery",[],1);', sourceMap: undefined},
+            {path: 'node_modules/moment/moment.js', contents: "define('moment/moment',[],1);define('moment',['moment/moment'],function(m){return m;});", sourceMap: undefined},
+            {path: 'node_modules/aaa/aaa.js', contents: "define('aaa/aaa',[],1);define('aaa',['aaa/aaa'],function(m){return m;});", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {},
+            paths: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
 test('Bundler ignores module when onRequire returns false', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',

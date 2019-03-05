@@ -27,6 +27,14 @@ export default function (unit, opts = {}) {
     return Promise.reject(new Error('module "' + moduleId + '" is not in package "' + packageName + '"'));
   }
 
+  if (packageName === 'moment') {
+    // Expose moment to global var to improve compatibility with some legacy libs.
+    // It also load momentjs up immediately.
+    contents = contents.replace(/\bdefine\((\w+)\)/, (match, factoryName) =>
+      `(function(){var m=${factoryName}();if(typeof moment === 'undefined'){window.moment=m;} define(function(){return m;})})()`
+    );
+  }
+
   let hash;
 
   if (cache) {

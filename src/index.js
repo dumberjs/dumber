@@ -410,7 +410,24 @@ export default class Bundler {
     };
 
     units.forEach(visit);
-    return sorted;
+
+    // Special treatment for jquery and moment, put them in front of everything else,
+    // so that jquery and moment can create global vars as early as possible.
+    // This improves compatibility with some legacy jquery plugins.
+    // Note as of momentjs version 2.10.0, momentjs no longer exports global object
+    // in AMD module environment. There is special code in src/trace.js
+    // to bring up global var "moment".
+    const special = [];
+    while (true) { // eslint-disable-line no-constant-condition
+      const idx = sorted.findIndex(unit =>
+        unit.packageName === 'jquery' || unit.packageName === 'moment'
+      );
+
+      if (idx === -1) break;
+      special.push(...sorted.splice(idx, 1));
+    }
+
+    return [...special, ...sorted];
   }
 
   // return promise of a map
