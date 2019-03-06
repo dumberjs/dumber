@@ -5,8 +5,8 @@ import {error} from './log';
 import path from 'path';
 
 export default class PackageReader {
-  constructor(locator) {
-    this.locator = locator;
+  constructor(loadFile) {
+    this.loadFile = loadFile;
     this._readFile = this._readFile.bind(this);
   }
 
@@ -18,7 +18,7 @@ export default class PackageReader {
   ensureMainPath() {
     if (this.hasOwnProperty('mainPath')) return Promise.resolve();
 
-    return this.locator('package.json')
+    return this.loadFile('package.json')
       .then(file => {
         let metadata = JSON.parse(file.contents);
         this.name = metadata.name;
@@ -80,7 +80,7 @@ export default class PackageReader {
 
   // readFile contents, cleanup dep, normalise browser replacement
   _readFile(filePath) {
-    return this.locator(filePath).then(file => {
+    return this.loadFile(filePath).then(file => {
       const moduleId = this.name + '/' + parse(stripJsExtension(filePath)).bareId;
 
       if (ext(filePath) === '.js') {
@@ -121,15 +121,15 @@ export default class PackageReader {
   // https://nodejs.org/dist/latest-v10.x/docs/api/modules.html
   // after "high-level algorithm in pseudocode of what require.resolve() does"
   _nodejsLoadAsFile(filePath) {
-    return this.locator(filePath).then(
+    return this.loadFile(filePath).then(
       () => filePath,
       () => {
         const jsFilePath = filePath + '.js';
-        return this.locator(jsFilePath).then(
+        return this.loadFile(jsFilePath).then(
           () => jsFilePath,
           () => {
             const jsonFilePath = filePath + '.json';
-            return this.locator(jsonFilePath).then(
+            return this.loadFile(jsonFilePath).then(
               () => jsonFilePath
             );
           }
@@ -145,11 +145,11 @@ export default class PackageReader {
 
   _nodejsLoadIndex(dirPath) {
     const indexJsFilePath = path.join(dirPath, 'index.js');
-    return this.locator(indexJsFilePath).then(
+    return this.loadFile(indexJsFilePath).then(
       () => indexJsFilePath,
       () => {
         const indexJsonFilePath = path.join(dirPath, 'index.json');
-        return this.locator(indexJsonFilePath).then(
+        return this.loadFile(indexJsonFilePath).then(
           () => indexJsonFilePath
         );
       }
@@ -163,7 +163,7 @@ export default class PackageReader {
 
   _nodejsLoadAsDirectory(dirPath) {
     const packageJsonPath = path.join(dirPath, 'package.json');
-    return this.locator(packageJsonPath).then(
+    return this.loadFile(packageJsonPath).then(
       file => {
         let metadata;
         try {

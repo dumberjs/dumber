@@ -1,7 +1,7 @@
 import trace from './trace';
 import {cleanPath, parse, nodejsIds, mapId, resolveModuleId} from 'dumber-module-loader/dist/id-utils';
 import alias from './transformers/alias';
-import defaultPackageLocator from './package-locators/default';
+import defaultPackageFileReader from './package-file-reader/default';
 import PackageReader from './package-reader';
 import Package from './package';
 import stubModule from './stub-module';
@@ -60,7 +60,7 @@ export default class Bundler {
     this._moduleId_done = new Set();
     this._moduleIds_todo = new Set();
     this._readersMap = {};
-    this._locator = opts.packageLocator || defaultPackageLocator;
+    this._fileReader = opts.packageFileReader || defaultPackageFileReader;
 
     // baseUrl default to "dist"
     this._baseUrl = opts.baseUrl || '/dist';
@@ -98,8 +98,8 @@ export default class Bundler {
       return Promise.resolve(this._readersMap[packageConfig.name]);
     }
 
-    return this._locator(packageConfig).then(locator => {
-      const reader = new PackageReader(locator);
+    return this._fileReader(packageConfig).then(fileReader => {
+      const reader = new PackageReader(fileReader);
       this._readersMap[packageConfig.name] = reader;
       return reader.ensureMainPath();
     }).then(reader => {

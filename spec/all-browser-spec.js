@@ -1,5 +1,5 @@
-// require('./package-locators/default.spec');
-require('./package-locators/jsDelivr.spec');
+// require('./package-file-reader/default.spec');
+require('./package-file-reader/jsDelivr.spec');
 require('./package-reader.spec');
 require('./package.spec');
 require('./parser.uses-amd-or-requirejs.spec');

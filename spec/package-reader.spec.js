@@ -1,11 +1,11 @@
 import test from 'tape';
 import PackageReader from '../src/package-reader';
 import Package from '../src/package';
-import {mockLocator, buildReadFile} from './mock';
+import {mockPackageFileReader, buildReadFile} from './mock';
 
 function getReader(name, fakeFs) {
   const fakeReader = buildReadFile(fakeFs);
-  return mockLocator(fakeReader)(new Package(name)).then(locator => new PackageReader(locator));
+  return mockPackageFileReader(fakeReader)(new Package(name)).then(fileReader => new PackageReader(fileReader));
 }
 
 test('packageReader falls back to main:index when package.json is missing', t => {

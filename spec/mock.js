@@ -1,5 +1,5 @@
 import path from 'path';
-import _defaultLocator from '../src/package-locators/default';
+import _defaultReader from '../src/package-file-reader/default';
 
 export function mockResolve(path) {
   return 'node_modules/' + path;
@@ -13,6 +13,6 @@ export function buildReadFile(fakeFs = {}) {
   };
 }
 
-export function mockLocator(fakeReader) {
-  return packageConfig => _defaultLocator(packageConfig, {resolve: mockResolve, readFile: fakeReader});
+export function mockPackageFileReader(fakeReader) {
+  return packageConfig => _defaultReader(packageConfig, {resolve: mockResolve, readFile: fakeReader});
 }

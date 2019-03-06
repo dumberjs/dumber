@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "browser": {
     "./dist/cache/default.js": "./dist/cache/local-storage.js",
-    "./dist/package-locators/default.js": "./dist/package-locators/jsDelivr.js",
+    "./dist/package-file-reader/default.js": "./dist/package-file-reader/jsDelivr.js",
     "./dist/log.js": "./dist/log-browser.js"
   },
   "files": [

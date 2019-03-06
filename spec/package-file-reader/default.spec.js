@@ -1,12 +1,12 @@
 import test from 'tape';
 import path from 'path';
 import fs from 'fs';
-import {buildReadFile, mockLocator} from '../mock';
-import _defaultLocator from '../../src/package-locators/default';
+import {buildReadFile, mockPackageFileReader} from '../mock';
+import _defaultFileReader from '../../src/package-file-reader/default';
 
-test('defaultNpmPackageLocator falls back to main:index when package.json is missing', t => {
-  const defaultLocator = mockLocator(buildReadFile());
-  defaultLocator({name: 'foo'})
+test('defaultNpmPackageFileReader falls back to main:index when package.json is missing', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile());
+  defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -25,12 +25,12 @@ test('defaultNpmPackageLocator falls back to main:index when package.json is mis
   });
 });
 
-test('defaultNpmPackageLocator returns fileRead func for existing package', t => {
-  const defaultLocator = mockLocator(buildReadFile({
+test('defaultNpmPackageFileReader returns fileRead func for existing package', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/package.json': 'lorem'
   }));
 
-  defaultLocator({name: 'foo'})
+  defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -49,12 +49,12 @@ test('defaultNpmPackageLocator returns fileRead func for existing package', t =>
   });
 });
 
-test('defaultNpmPackageLocator returns fileRead func for package with hard coded main', t => {
-  const defaultLocator = mockLocator(buildReadFile({
+test('defaultNpmPackageFileReader returns fileRead func for package with hard coded main', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/package.json': '{"name":"foo","main":"index.js","version":"2.1.0"}'
   }));
 
-  defaultLocator({name: 'foo', main: 'lib/main'})
+  defaultFileReader({name: 'foo', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -73,12 +73,12 @@ test('defaultNpmPackageLocator returns fileRead func for package with hard coded
   });
 });
 
-test('defaultNpmPackageLocator returns fileRead func for package with custom path', t => {
-  const defaultLocator = mockLocator(buildReadFile({
+test('defaultNpmPackageFileReader returns fileRead func for package with custom path', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
     'packages/foo/package.json': 'lorem'
   }));
 
-  defaultLocator({name: 'foo', location: 'packages/foo'})
+  defaultFileReader({name: 'foo', location: 'packages/foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -97,12 +97,12 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
   });
 });
 
-test('defaultNpmPackageLocator returns fileRead func for package with custom path and hard coded main', t => {
-  const defaultLocator = mockLocator(buildReadFile({
+test('defaultNpmPackageFileReader returns fileRead func for package with custom path and hard coded main', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
     'packages/foo/package.json': '{"name":"foo","main":"index.js","version":"1.2.0"}'
   }));
 
-  defaultLocator({name: 'foo', location: 'packages/foo', main: 'lib/main'})
+  defaultFileReader({name: 'foo', location: 'packages/foo', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -121,10 +121,10 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
   });
 });
 
-test('defaultNpmPackageLocator returns fileRead func for package with custom path and hard coded main, with missing real package.json', t => {
-  const defaultLocator = mockLocator(buildReadFile());
+test('defaultNpmPackageFileReader returns fileRead func for package with custom path and hard coded main, with missing real package.json', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile());
 
-  defaultLocator({name: 'foo', location: 'packages/foo', main: 'lib/main'})
+  defaultFileReader({name: 'foo', location: 'packages/foo', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -143,8 +143,8 @@ test('defaultNpmPackageLocator returns fileRead func for package with custom pat
   });
 });
 
-test('defaultNpmPackageLocator can read parent node_modules folder', t => {
-  _defaultLocator({name: 'foo'}, {
+test('defaultNpmPackageFileReader can read parent node_modules folder', t => {
+  _defaultFileReader({name: 'foo'}, {
     resolve: function(path) { return '../node_modules/' + path; },
     readFile: buildReadFile({
       '../node_modules/foo/package.json': 'lorem'
@@ -168,12 +168,12 @@ test('defaultNpmPackageLocator can read parent node_modules folder', t => {
   });
 });
 
-test('defaultNpmPackageLocator returns fileRead func rejects missing file for existing package', t => {
-  const defaultLocator = mockLocator(buildReadFile({
+test('defaultNpmPackageFileReader returns fileRead func rejects missing file for existing package', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/package.json': 'lorem'
   }));
 
-  defaultLocator({name: 'foo'})
+  defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('nope')
@@ -189,12 +189,12 @@ test('defaultNpmPackageLocator returns fileRead func rejects missing file for ex
   });
 });
 
-test('defaultNpmPackageLocator returns fileRead func for existing scoped package', t => {
-  const defaultLocator = mockLocator(buildReadFile({
+test('defaultNpmPackageFileReader returns fileRead func for existing scoped package', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/@bar/foo/package.json': 'lorem'
   }));
 
-  defaultLocator({name: '@bar/foo'})
+  defaultFileReader({name: '@bar/foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -213,12 +213,12 @@ test('defaultNpmPackageLocator returns fileRead func for existing scoped package
   });
 });
 
-test('defaultNpmPackageLocator returns fileRead func rejects missing file for existing scoped package', t => {
-  const defaultLocator = mockLocator(buildReadFile({
+test('defaultNpmPackageFileReader returns fileRead func rejects missing file for existing scoped package', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/@bar/foo/package.json': 'lorem'
   }));
 
-  defaultLocator({name: '@bar/foo'})
+  defaultFileReader({name: '@bar/foo'})
   .then(
     fileRead => {
       return fileRead('nope')
@@ -234,12 +234,12 @@ test('defaultNpmPackageLocator returns fileRead func rejects missing file for ex
   });
 });
 
-test('defaultNpmPackageLocator can read .wasm file into base64 string', t => {
-  const defaultLocator = mockLocator(buildReadFile({
+test('defaultNpmPackageFileReader can read .wasm file into base64 string', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/fib.wasm': fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'fib.wasm'))
   }));
 
-  defaultLocator({name: 'foo'})
+  defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('fib.wasm')

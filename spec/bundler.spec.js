@@ -2,7 +2,7 @@ import test from 'tape';
 import Bundler from '../src/index';
 import trace from '../src/trace';
 import {contentOrFile} from '../src/shared';
-import {mockResolve, buildReadFile, mockLocator} from './mock';
+import {mockResolve, buildReadFile, mockPackageFileReader} from './mock';
 
 function mockTrace(unit) {
   const contents = unit.contents;
@@ -63,7 +63,7 @@ function mockContentOrFile(fakeReader) {
 
 function createBundler(fakeFs = {}, opts = {}) {
   const fakeReader = buildReadFile(fakeFs);
-  opts.packageLocator = mockLocator(fakeReader);
+  opts.packageFileReader = mockPackageFileReader(fakeReader);
 
   return new Bundler(opts, {
     trace: mockTrace,

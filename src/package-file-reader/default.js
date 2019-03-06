@@ -3,7 +3,7 @@ import {resolvePackagePath, fsReadFile} from '../shared';
 import {info, warn} from '../log';
 import {ext} from 'dumber-module-loader/dist/id-utils';
 
-// default locator using nodejs to resolve package
+// default fileReader using nodejs to resolve package
 export default function (packageConfig, mock) {
   let name = packageConfig.name;
   // decoupling for testing

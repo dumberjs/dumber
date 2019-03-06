@@ -1,5 +1,5 @@
 import test from 'tape';
-import jsDelivrLocator from '../../src/package-locators/jsDelivr';
+import jsDelivrFileReader from '../../src/package-file-reader/jsDelivr';
 import {decode} from 'base64-arraybuffer';
 
 function mkResponse (text) {
@@ -42,20 +42,20 @@ function mockFetch (url) {
   });
 }
 
-const locator = function (packageConfig) {
-  return jsDelivrLocator(packageConfig, {fetch: mockFetch});
+const fileReader = function (packageConfig) {
+  return jsDelivrFileReader(packageConfig, {fetch: mockFetch});
 }
 
-test('jsDelivrNpmPackageLocator rejects missing package', t => {
-  locator({name: 'nope'})
+test('jsDelivrNpmPackageFileReader rejects missing package', t => {
+  fileReader({name: 'nope'})
   .then(
     () => t.fail('should not pass'),
     () => t.pass('reject missing package')
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageLocator returns fileRead func for existing package', t => {
-  locator({name: 'foo'})
+test('jsDelivrNpmPackageFileReader returns fileRead func for existing package', t => {
+  fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -73,8 +73,8 @@ test('jsDelivrNpmPackageLocator returns fileRead func for existing package', t =
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageLocator returns fileRead func for fixed package version', t => {
-  locator({name: 'bar', version: '2.0.0-rc1'})
+test('jsDelivrNpmPackageFileReader returns fileRead func for fixed package version', t => {
+  fileReader({name: 'bar', version: '2.0.0-rc1'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -92,8 +92,8 @@ test('jsDelivrNpmPackageLocator returns fileRead func for fixed package version'
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageLocator returns fileRead func for alias package', t => {
-  const l = locator({name: 'bar', location: 'foo', version: '1.0.1'});
+test('jsDelivrNpmPackageFileReader returns fileRead func for alias package', t => {
+  const l = fileReader({name: 'bar', location: 'foo', version: '1.0.1'});
 
   l.then(
     fileRead => {
@@ -112,8 +112,8 @@ test('jsDelivrNpmPackageLocator returns fileRead func for alias package', t => {
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for existing package', t => {
-  locator({name: 'foo'})
+test('jsDelivrNpmPackageFileReader returns fileRead func rejects missing file for existing package', t => {
+  fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('nope.js')
@@ -126,8 +126,8 @@ test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for e
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageLocator returns fileRead func for existing scoped package', t => {
-  locator({name: '@scoped/pkg'})
+test('jsDelivrNpmPackageFileReader returns fileRead func for existing scoped package', t => {
+  fileReader({name: '@scoped/pkg'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -145,8 +145,8 @@ test('jsDelivrNpmPackageLocator returns fileRead func for existing scoped packag
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for existing scoped package', t => {
-  locator({name: '@scoped/pkg'})
+test('jsDelivrNpmPackageFileReader returns fileRead func rejects missing file for existing scoped package', t => {
+  fileReader({name: '@scoped/pkg'})
   .then(
     fileRead => {
       return fileRead('nope.js')
@@ -159,8 +159,8 @@ test('jsDelivrNpmPackageLocator returns fileRead func rejects missing file for e
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageLocator rejects read on dir', t => {
-  locator({name: 'foo'})
+test('jsDelivrNpmPackageFileReader rejects read on dir', t => {
+  fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('dist')
@@ -173,8 +173,8 @@ test('jsDelivrNpmPackageLocator rejects read on dir', t => {
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageLocator reads .wasm file to base64 string', t => {
-  locator({name: 'foo'})
+test('jsDelivrNpmPackageFileReader reads .wasm file to base64 string', t => {
+  fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('fib.wasm')
