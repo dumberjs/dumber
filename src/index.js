@@ -1,5 +1,5 @@
 import trace from './trace';
-import {cleanPath, parse, nodejsIds, mapId, resolveModuleId} from 'dumber-module-loader/dist/id-utils';
+import {cleanPath, parse, mapId} from 'dumber-module-loader/dist/id-utils';
 import alias from './transformers/alias';
 import defaultPackageFileReader from './package-file-reader/default';
 import PackageReader from './package-reader';
@@ -10,6 +10,8 @@ import {generateHash, stripJsExtension, resolvePackagePath, contentOrFile} from 
 import * as cache from './cache/default';
 import path from 'path';
 import mergeTransformed from './transformers/merge';
+import ModulesDone from './modules-done';
+import ModulesTodo from './modules-todo';
 
 // Bundler does
 // 1. capture: capture units (unit is a file like object plus meta data)
@@ -57,8 +59,10 @@ export default class Bundler {
     this._paths = _paths;
 
     this._unitsMap = {};
-    this._moduleId_done = new Set();
-    this._moduleIds_todo = new Set();
+
+    this._modules_done = new ModulesDone();
+    this._modules_todo = new ModulesTodo(this._modules_done);
+
     this._readersMap = {};
     this._fileReader = opts.packageFileReader || defaultPackageFileReader;
 
@@ -86,6 +90,10 @@ export default class Bundler {
     // persist bundles in watch mode
     this._bundles = {};
     this._inWatchMode = false;
+
+    this._onAcquire = this._onAcquire.bind(this);
+    this._supportInjectCssIfNeeded = this._supportInjectCssIfNeeded.bind(this);
+    this._resolveExplicitDepsIfNeeded = this._resolveExplicitDepsIfNeeded.bind(this);
   }
 
   clearCache() {
@@ -158,32 +166,13 @@ export default class Bundler {
     );
   }
 
-  _addToDone(id) {
-    if (typeof id === 'string') {
-      this._moduleId_done.add(id);
-    } else if (Array.isArray(id)) {
-      id.forEach(d => this._moduleId_done.add(d));
-    }
-  }
-
   _capture(tracedUnit) {
     this._unitsMap[tracedUnit.path] = tracedUnit;
 
     // mark as done.
-    this._addToDone(tracedUnit.moduleId);
-    this._addToDone(tracedUnit.defined);
-
-    // mark todo. beware we didn't check whether the id is in _moduleId_done.
-    // they will be checked during resolve phase.
-    tracedUnit.deps.forEach(d => {
-      const parsedId = parse(resolveModuleId(tracedUnit.moduleId, d));
-      if (!parsedId.prefix && parsedId.ext === '.css') {
-        this._needCssInjection = true;
-      }
-      // ignore relative dep on local source
-      if (!tracedUnit.packageName && d.startsWith('.')) return;
-      this._moduleIds_todo.add(parsedId.cleanId);
-    });
+    this._modules_done.addUnit(tracedUnit);
+    // process deps.
+    this._modules_todo.process(tracedUnit);
 
     const bundle = this.bundleOf(tracedUnit);
     // mark related bundle dirty
@@ -237,8 +226,6 @@ export default class Bundler {
   // to some browser replacement.
   // e.g. readable-stream/readable -> readable-stream/readable-browser
   _ensureNpmAlias(tracedUnit, id) {
-    if (this._moduleId_done.has(id)) return;
-
     const defined = tracedUnit.defined;
     let toId;
     if (Array.isArray(defined)) {
@@ -256,12 +243,14 @@ export default class Bundler {
     if (toId !== id && toId !== tracedUnit.packageName) {
       const aliasResult = alias(id, toId);
       mergeTransformed(tracedUnit, aliasResult);
-      this._addToDone(aliasResult.defined);
+      this._modules_done.addUnit(tracedUnit);
     }
   }
 
   _supportInjectCssIfNeeded() {
-    if (!this._needCssInjection || !this._injectCss || this._isInjectCssTurnedOn) return Promise.resolve();
+    if (!this._modules_todo.needCssInjection || !this._injectCss || this._isInjectCssTurnedOn) {
+      return Promise.resolve();
+    }
     this._isInjectCssTurnedOn = true;
 
     return this.capture({
@@ -272,107 +261,96 @@ export default class Bundler {
   }
 
   resolve() {
-    let todo = [];
     return this._resolvePrependsAndAppends()
-    .then(() => this._resolveExplicitDepsIfNeeded())
-    .then(() => this._supportInjectCssIfNeeded())
-    .then(() => {
-      const consults = [];
-      const rawTodo = Array.from(this._moduleIds_todo);
-      this._moduleIds_todo.clear();
-
-      rawTodo.forEach(id => {
-        const parsedId = parse(mapId(id, this._paths));
-
-        if (parsedId.prefix &&
-                   parsedId.prefix !== 'text!' &&
-                   parsedId.prefix !== 'json!' &&
-                   parsedId.prefix !== 'raw!') {
-          // Trace any unknown plugin module.
-          // For simplicity, push it to next resolve cycle.
-          this._moduleIds_todo.add(parsedId.prefix.slice(0, -1));
+      .then(this._resolveExplicitDepsIfNeeded)
+      .then(() => this._modules_todo.acquire(this._onAcquire))
+      .then(this._supportInjectCssIfNeeded)
+      .then(() => {
+        // recursively resolve
+        if (this._modules_todo.hasTodo()) {
+          return this.resolve();
         }
-
-        const possibleIds = nodejsIds(parsedId.bareId);
-        if (possibleIds.some(id => this._moduleId_done.has(id))) return;
-
-        const j = new Promise(resolve => {
-          resolve(this._onRequire && this._onRequire(parsedId.bareId, parsedId));
-        }).then(
-          result => {
-            // ignore this module id
-            if (result === false) return;
-
-            // require other module ids instead
-            if (Array.isArray(result) && result.length) {
-              result.forEach(d => todo.push(parse(d)));
-              return;
-            }
-
-            // got full content of this module
-            if (typeof result === 'string') {
-              return this.capture({
-                path: '__on_require__/' + parsedId.bareId + (parsedId.ext ? '' : '.js'),
-                contents: result,
-                moduleId: parsedId.bareId,
-                packageName: parsedId.parts[0]
-              });
-            }
-
-            // process normally if result is not recognizable
-            todo.push(parsedId);
-          },
-          // proceed normally after error
-          err => {
-            error('onRequire call failed for ' + parsedId.bareId);
-            error(err);
-            todo.push(parsedId);
-          }
-        );
-        consults.push(j);
       });
+  }
 
-      if (consults.length) return Promise.all(consults);
-    })
-    .then(() => {
-      let p = Promise.resolve();
+  // trace missing dep
+  _onAcquire(id, opts) {
+    const checkUserSpace = opts.user;
+    const checkPackageSpace = opts.package;
+    const requiredBy = opts.requiredBy;
+    const parsedId = parse(mapId(id, this._paths));
 
-      todo.forEach(td => {
-        const bareId = td.bareId;
-        const packageName = td.parts[0];
-        const resource = bareId.slice(packageName.length + 1);
+    // TODO add a callback point to fillup missing local dep.
+    // This is needed by dumberify.
+    if (checkUserSpace && !checkPackageSpace) {
+      // detected missing local dep
+      warn(`local dependency ${parsedId.bareId} (requiredBy ${requiredBy.join(', ')}) is missing`);
+    }
 
-        const stub = stubModule(bareId);
-        if (stub) info('Stub module ' + bareId);
+    return new Promise(resolve => {
+      resolve(this._onRequire && this._onRequire(parsedId.bareId, parsedId));
+    }).then(
+      result => {
+        // ignore this module id
+        if (result === false) return true;
 
-        if (typeof stub === 'string') {
-          p = p.then(() => this.capture({
-            // not a real file path
-            path:'__stub__/' + bareId + '.js',
-            contents: stub,
-            moduleId: bareId,
-            packageName
-          }));
-        } else {
-          p = p.then(() => this.packageReaderFor(stub || {name: packageName}))
-          .then(reader => resource ? reader.readResource(resource) : reader.readMain())
-          .then(unit => this.capture(unit))
-          .then(tracedUnit => {
-            this._ensureNpmAlias(tracedUnit, bareId);
-          })
-          .catch(err => {
-            error('Resolving failed for module ' + bareId);
-            error(err);
+        // require other module ids instead
+        if (Array.isArray(result) && result.length) {
+          this._modules_todo.process({
+            moduleId: parsedId.bareId,
+            packageName: (!checkUserSpace && checkPackageSpace) ? parsedId.parts[0] : undefined,
+            deps: result
           });
+          return true;
         }
-      });
 
-      return p;
-    })
-    .then(() => {
-      if (this._moduleIds_todo.size) {
-        return this.resolve();
+        // got full content of this module
+        if (typeof result === 'string') {
+          return this.capture({
+            path: '__on_require__/' + parsedId.bareId + (parsedId.ext ? '' : '.js'),
+            contents: result,
+            moduleId: parsedId.bareId,
+            packageName: parsedId.parts[0]
+          }).then(() => true);
+        }
+
+        // process normally if result is not recognizable
+      },
+      // proceed normally after error
+      err => {
+        error('onRequire call failed for ' + parsedId.bareId);
+        error(err);
       }
+    ).then(didRequire => {
+      if (didRequire === true) return;
+
+      const bareId = parsedId.bareId;
+      const packageName = parsedId.parts[0];
+      const resource = bareId.slice(packageName.length + 1);
+
+      const stub = stubModule(bareId);
+      if (stub) info('Stub module ' + bareId);
+
+      if (typeof stub === 'string') {
+        return this.capture({
+          // not a real file path
+          path:'__stub__/' + bareId + '.js',
+          contents: stub,
+          moduleId: bareId,
+          packageName
+        });
+      }
+
+      return this.packageReaderFor(stub || {name: packageName})
+        .then(reader => resource ? reader.readResource(resource) : reader.readMain())
+        .then(unit => this.capture(unit))
+        .then(tracedUnit => {
+          this._ensureNpmAlias(tracedUnit, bareId);
+        })
+        .catch(err => {
+          error('Resolving failed for module ' + bareId);
+          error(err);
+        });
     });
   }
 

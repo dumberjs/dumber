@@ -975,3 +975,46 @@ test('Bundler traces files with paths mapping', t => {
   )
   .then(t.end);
 });
+
+test('Bundler allow same modules in both user and package space', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
+    'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
+    'node_modules/foo/index.js': 'util',
+    'node_modules/foo/bar.js': '',
+    'node_modules/util/package.json':  JSON.stringify({name: 'util', main: './util'}),
+    'node_modules/util/util.js': '',
+  };
+  const bundler = createBundler(fakeFs);
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo ./util', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/util.js', contents: '', moduleId: 'util'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"foo\",\"./util\"],1);", sourceMap: undefined},
+            {path: 'src/util.js', contents: "define('util',[],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"util\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
+            {path: 'node_modules/util/util.js', contents: "define('util/util',[],1);define('util',['util/util'],function(m){return m;});", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'}
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {},
+            paths: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});

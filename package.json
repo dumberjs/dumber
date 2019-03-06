@@ -12,15 +12,15 @@
     "dist"
   ],
   "scripts": {
-    "lint": "eslint src spec",
+    "lint": "eslint src test",
     "preversion": "npm test",
     "version": "standard-changelog && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
     "prepare": "del-cli dist && babel src -d dist",
-    "nodejs-test": "tape -r @babel/register \"spec/**/*.spec.js\" | tap-dot",
-    "coverage": "nyc --reporter=lcov tape -r @babel/register \"spec/**/*.spec.js\" | tap-dot",
-    "browser-test": "browserify -t babelify spec/all-browser-spec.js | tape-run | tap-dot",
+    "nodejs-test": "tape -r @babel/register \"test/**/*.spec.js\" | tap-dot",
+    "coverage": "nyc --reporter=lcov tape -r @babel/register \"test/**/*.spec.js\" | tap-dot",
+    "browser-test": "browserify -t babelify test/all-browser-spec.js | tape-run | tap-dot",
     "test": "npm run nodejs-test && npm run browser-test"
   },
   "repository": {

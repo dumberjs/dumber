@@ -16,3 +16,5 @@ require('./transformers/wasm.spec');
 require('./shared.spec');
 require('./stub-module.spec');
 require('./inject-css.spec');
+require('./modules-done.spec');
+require('./modules-todo.spec');
