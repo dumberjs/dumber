@@ -4,7 +4,7 @@ export default function (unit, transformed) {
     if (!Array.isArray(newDefined)) newDefined = [newDefined];
 
     if (!unit.defined) {
-      unit.defined = []
+      unit.defined = [];
     } else if (typeof unit.defined === 'string') {
       unit.defined = [unit.defined];
     }
