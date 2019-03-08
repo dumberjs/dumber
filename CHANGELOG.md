@@ -1,3 +1,19 @@
+## [0.9.2](https://github.com/dumberjs/dumber/compare/v0.9.1...v0.9.2) (2019-03-08)
+
+
+### Bug Fixes
+
+* improve compatibility with legacy libs that depends on jquery on momentjs ([323518d](https://github.com/dumberjs/dumber/commit/323518d))
+* skip deps cleanup (remove .js) for UMD file ([c574e29](https://github.com/dumberjs/dumber/commit/c574e29)), closes [#8](https://github.com/dumberjs/dumber/issues/8)
+* throw error on broken directory package.json ([b1d859f](https://github.com/dumberjs/dumber/commit/b1d859f))
+
+
+### Features
+
+* support duplicated module name in both user and package spaces ([6309efe](https://github.com/dumberjs/dumber/commit/6309efe)), closes [#5](https://github.com/dumberjs/dumber/issues/5)
+
+
+
 ## [0.9.1](https://github.com/dumberjs/dumber/compare/v0.9.0...v0.9.1) (2019-02-10)
 
 
