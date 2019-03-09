@@ -976,7 +976,7 @@ test('Bundler traces files with paths mapping', t => {
   .then(t.end);
 });
 
-test('Bundler allow same modules in both user and package space', t => {
+test('Bundler allows same modules in both user and package space', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
@@ -1004,6 +1004,96 @@ test('Bundler allow same modules in both user and package space', t => {
             {contents: 'define.switchToPackageSpace();'},
             {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"util\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
             {path: 'node_modules/util/util.js', contents: "define('util/util',[],1);define('util',['util/util'],function(m){return m;});", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'}
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {},
+            paths: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
+test('Bundler supports deps alias', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
+    'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
+    'node_modules/foo/index.js': '',
+    'node_modules/foo/bar.js': ''
+  };
+  const bundler = createBundler(fakeFs, {
+    deps: [{
+      name: 'bar',
+      location: 'node_modules/foo'
+    }]
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'bar', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/foo.js', contents: 'bar/bar', moduleId: 'foo'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"bar\"],1);", sourceMap: undefined},
+            {path: 'src/foo.js', contents: "define('foo',[\"bar/bar\"],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);define('bar/bar',['foo/bar'],function(m){return m;});", sourceMap: undefined},
+            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('bar',['foo/index'],function(m){return m;});", sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'}
+          ],
+          config: {
+            baseUrl: '/dist',
+            bundles: {},
+            paths: {}
+          }
+        }
+      })
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
+test('Bundler supports package alias with lazyMain mode', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
+    'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
+    'node_modules/foo/index.js': '',
+    'node_modules/foo/bar.js': ''
+  };
+  const bundler = createBundler(fakeFs, {
+    deps: [{
+      name: 'bar',
+      location: 'node_modules/foo',
+      lazyMain: true
+    }]
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: 'bar/bar', moduleId: 'app'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        'entry-bundle': {
+          files: [
+            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
+            {contents: 'define.switchToUserSpace();'},
+            {path: 'src/app.js', contents: "define('app',[\"bar/bar\"],1);", sourceMap: undefined},
+            {contents: 'define.switchToPackageSpace();'},
+            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);define('bar/bar',['foo/bar'],function(m){return m;});", sourceMap: undefined},
             {contents: 'define.switchToUserSpace();'}
           ],
           config: {
