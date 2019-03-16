@@ -1,4 +1,4 @@
-// replace transform is used by package-reader on every npm package
+// replace transform on every npm package
 
 // browser replacement
 // https://github.com/defunctzombie/package-browser-field-spec
@@ -6,9 +6,10 @@
 //
 // also dep string cleanup
 // remove tailing '/', '.js'
-import astMatcher, {ensureParsed, traverse} from 'ast-matcher';
+import astMatcher, {ensureParsed} from 'ast-matcher';
 import '../ensure-parser-set';
 import {stripJsExtension, isPackageName} from '../shared';
+import modifyCode from 'modify-code';
 
 const amdDep = astMatcher('define([__anl_deps], __any)');
 const namedAmdDep = astMatcher('define(__str, [__anl_deps], __any)');
@@ -16,8 +17,18 @@ const cjsDep = astMatcher('require(__any_dep)');
 const isUMD = astMatcher('typeof define === "function" && define.amd');
 const isUMD2 = astMatcher('typeof define == "function" && define.amd');
 
-export default function(contents, replacement) {
-  const toReplace = [];
+export default function(unit) {
+  const {contents, replacement, sourceMap, path} = unit;
+  const parsed = ensureParsed(contents);
+
+  if (isUMD(parsed) || isUMD2(parsed)) {
+    // Skip lib in umd format, because browersify umd build could
+    // use require('./file.js') which we should not strip .js
+    return;
+  }
+
+  const filename = sourceMap && sourceMap.file || path;
+  const m = modifyCode(contents, filename);
 
   const _find = node => {
     if (node.type !== 'Literal') return;
@@ -40,21 +51,13 @@ export default function(contents, replacement) {
     }
 
     if (node.value !== dep) {
-      toReplace.push({
-        start: node.start, // .start for cherow, .range[0] for esprima
-        end: node.end, // .end cherow, .range[1] for esprima
-        text: `'${dep}'`
-      });
+      m.replace(
+        node.start, // .start for cherow, .range[0] for esprima
+        node.end, // .end cherow, .range[1] for esprima
+        `'${dep}'`
+      );
     }
   };
-
-  const parsed = ensureParsed(contents);
-
-  if (isUMD(parsed) || isUMD2(parsed)) {
-    // Skip lib in umd format, because browersify umd build could
-    // use require('./file.js') which we should not strip .js
-    return contents;
-  }
 
   const amdMatch = amdDep(parsed);
   if (amdMatch) {
@@ -77,23 +80,17 @@ export default function(contents, replacement) {
     });
   }
 
-  // es6 import statement
-  traverse(parsed, node => {
-    if (node.type === 'ImportDeclaration') {
-      _find(node.source);
-    }
-  })
+  // esm format is normalized by ./esm-to-cjs.js
+  // don't need to deal with esm here
 
-  // reverse sort by "start"
-  toReplace.sort((a, b) => b.start - a.start).forEach(r => {
-    contents = modify(contents, r);
-  });
+  const result = m.transform();
+  if (result.code === contents) {
+    // no change
+    return;
+  }
 
-  return contents;
-}
-
-function modify(contents, replacement) {
-  return contents.slice(0, replacement.start) +
-    replacement.text +
-    contents.slice(replacement.end);
+  return {
+    contents: result.code,
+    sourceMap: result.map
+  };
 }

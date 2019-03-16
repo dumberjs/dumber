@@ -102,7 +102,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for alias package', t =
         file => {
           t.equal(file.path, '//cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
           const info = JSON.parse(file.contents);
-          t.equal(info.name, 'foo');
+          t.equal(info.name, 'bar');
           t.equal(info.version, '1.0.1');
         },
         err => t.fail(err.message)

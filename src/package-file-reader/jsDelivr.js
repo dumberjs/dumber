@@ -25,9 +25,7 @@ function fetchContent(fetchApi, url) {
 }
 
 function fetchJson(fetchApi, url) {
-  return fetchContent(fetchApi, url).then(function(text) {
-    return JSON.parse(text);
-  });
+  return fetchContent(fetchApi, url).then(text => JSON.parse(text));
 }
 
 // use jsDelivr to find npm package files
@@ -70,11 +68,15 @@ export default function (packageConfig, mock) {
 
     return function(filePath) {
       const fp = packagePath + '/' + filePath;
-      return fetchContent(_fetch, fp).then(function (text) {
-        return {
-          path: fp,
-          contents: text
+      return fetchContent(_fetch, fp).then(text => {
+        if (filePath === 'package.json' || filePath === './package.json') {
+          const meta = JSON.parse(text);
+          if (meta.name !== name) {
+            meta.name = name;
+            text = JSON.stringify(meta);
+          }
         }
+        return {path: fp, contents: text};
       });
     }
   });

@@ -1,38 +1,25 @@
 'use strict';
+import hackMoment from './transformers/hack-moment';
 import alias from './transformers/alias';
+import conventionalAlias from './transformers/conventional-alias';
 import text from './transformers/text';
 import wasm from './transformers/wasm';
-import cjsEs from './transformers/cjs-es';
-import defines from './transformers/defines';
-import mergeTransformed from './transformers/merge';
-import {ext, parse} from 'dumber-module-loader/dist/id-utils';
+import esmToCjs from './transformers/esm-to-cjs';
+import replace from './transformers/replace';
+import cjsToAmd from './transformers/cjs-to-amd';
+import nameAmdDefine from './transformers/name-amd-define';
+import shimAmd from './transformers/shim-amd';
+import transform from './transform';
+import {ext} from 'dumber-module-loader/dist/id-utils';
 import {generateHash} from './shared';
 
-const DIST_FOLDERS = ['dist', 'dists', 'output', 'out', 'lib', 'libs'];
-const DIST_FAVORS = ['amd', 'cjs', 'commonjs', 'es2015', 'native-modules', 'umd'];
-
 // depsFinder is optional
-export default function (unit, opts = {}) {
+export default function(unit, opts = {}) {
   const {cache, depsFinder} = opts;
-
-  const path = unit.path;
-  let contents = unit.contents;
-  let sourceMap = unit.sourceMap;
-  const moduleId = unit.moduleId;
-  const packageName = unit.packageName;
-  let shim = unit.shim;
-  let shimed;
+  const {contents, path, sourceMap, moduleId, packageName, shim} = unit;
 
   if (packageName && (moduleId !== packageName && !moduleId.startsWith(packageName + '/'))) {
     return Promise.reject(new Error('module "' + moduleId + '" is not in package "' + packageName + '"'));
-  }
-
-  if (packageName === 'moment') {
-    // Expose moment to global var to improve compatibility with some legacy libs.
-    // It also load momentjs up immediately.
-    contents = contents.replace(/\bdefine\((\w+)\)/, (match, factoryName) =>
-      `(function(){var m=${factoryName}();if(typeof moment === 'undefined'){window.moment=m;} define(function(){return m;})})()`
-    );
   }
 
   let hash;
@@ -44,115 +31,53 @@ export default function (unit, opts = {}) {
       packageName,
       JSON.stringify(shim),
       depsFinder ? depsFinder.toString() : '',
-      contents
+      contents,
+      sourceMap
     ].join('|');
     hash = generateHash(key);
     const cached = cache.getCache(hash);
     if (cached) {
+      console.log('GOT CACHED');
       return Promise.resolve(cached);
     }
   }
 
-  let deps = new Set();
-  let defined;
-  let extname = ext(path);
-
+  const transformers = [];
+  const extname = ext(path);
   if (extname === '.js') {
-    const forceCjsWrap = !!path.match(/\/(cjs|commonjs)\//i);
-    let cjsEsResult = cjsEs(contents, forceCjsWrap);
-
-    // mimic requirejs runtime behaviour,
-    // if no module defined, add an empty shim
-    if (!shim && !forceCjsWrap && cjsEsResult.contents === contents) {
-      // when defines transformer did make a named define,
-      // this shim placeholder will be ignore by the transformer.
-      shim = { deps: [] };
-    }
-
-    let defResult = defines(moduleId, cjsEsResult.contents, shim);
-
-    let headLines = (cjsEsResult.headLines || 0) + (defResult.headLines || 0);
-    if (headLines && sourceMap) {
-      let prefix = '';
-      for (let i = 0; i < headLines; i += 1) prefix += ';';
-      sourceMap.mappings = prefix + sourceMap.mappings;
-    }
-
-    if (defResult.deps) {
-      defResult.deps.forEach(d => deps.add(d));
-    }
-
-    contents = defResult.contents;
-    defined = defResult.defined;
-    shimed = defResult.shimed;
+    transformers.push(
+      hackMoment,
+      esmToCjs,
+      replace,
+      cjsToAmd,
+      nameAmdDefine,
+      shimAmd
+    );
   } else if (extname === '.wasm') {
-    sourceMap = undefined;
-    let wasmResult = wasm(moduleId, contents);
-    contents = wasmResult.contents;
-    defined = wasmResult.defined;
-    if (wasmResult.deps) {
-      wasmResult.deps.forEach(d => deps.add(d));
-    }
+    transformers.push(wasm);
   } else {
     // use text! for everything else including unknown extname
-    sourceMap = undefined;
-    let textResult = text(moduleId, contents);
-    contents = textResult.contents;
-    defined = textResult.defined;
-    if (textResult.deps) {
-      textResult.deps.forEach(d => deps.add(d));
-    }
+    transformers.push(text);
   }
 
-  let p = Promise.resolve();
+  // for alias to npm package main, browser replacement
+  transformers.push(alias);
+  // for alias like: foo/index -> foo/dist/cjs/index
+  transformers.push(conventionalAlias, alias);
 
-  // customised deps finder
-  if (depsFinder) {
-    p = p.then(() => depsFinder(path, unit.contents))
-    .then(newDeps => {
-      if (newDeps && newDeps.length) {
-        newDeps.forEach(d => deps.add(d));
-      }
-    });
-  }
-
-  return p.then(() => {
-    const traced = {
-      path: path,
-      contents: contents,
-      sourceMap: sourceMap,
-      moduleId: unit.moduleId,
-      defined: defined,
-      deps: Array.from(deps).sort(),
-      packageName: packageName,
-      shimed: shimed
-    };
-
-    // conventional alias mainly for aurelia
-    // aurelia-foo/dist/cjs/bar -> aurelia-foo/bar
-
-    // only for npm file and defined a single module
-    if (packageName && typeof defined === 'string') {
-      const {parts, cleanId} = parse(unit.moduleId);
-      let toSkip = 0;
-
-      if (parts.length > 2 && DIST_FOLDERS.indexOf(parts[1].toLowerCase()) !== -1) {
-        toSkip = 1;
-        if (parts.length > 3 && DIST_FAVORS.indexOf(parts[2].toLowerCase()) !== -1) {
-          toSkip = 2;
-        }
-      }
-
-      if (toSkip) {
-        const shortId = packageName + '/' + parts.slice(toSkip + 1).join('/');
-        mergeTransformed(traced, alias(shortId, cleanId));
-      }
+  transformers.push(function(unit) {
+    // customised deps finder to find addtional deps
+    if (depsFinder) {
+      return new Promise(resolve => {
+        // note it works on original contents, not transformed contents
+        resolve(depsFinder(unit.path, contents));
+      }).then(deps => ({deps}));
     }
-
-    if (cache) {
-      cache.setCache(hash, traced);
-    }
-
-    return traced;
   });
+
+  return transform(unit, ...transformers)
+    .then(traced => {
+      if (cache) cache.setCache(hash, traced);
+      return traced;
+    });
 }

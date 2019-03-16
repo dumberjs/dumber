@@ -2,8 +2,7 @@ import test from 'tape';
 import ModulesTodo from '../src/modules-todo';
 
 test('ModulesTodo process traced unit', t => {
-  const modulesDone = {has() {return false;}};
-  const md = new ModulesTodo(modulesDone);
+  const md = new ModulesTodo();
   md.process({
     moduleId: 'foo',
     deps: ['text!./foo.html', 'bar', 'some-plugin!./readme.md']
@@ -27,8 +26,7 @@ test('ModulesTodo process traced unit', t => {
 });
 
 test('ModulesTodo sequentially calls acquire callback', t => {
-  const modulesDone = {has() {return false;}};
-  const md = new ModulesTodo(modulesDone);
+  const md = new ModulesTodo();
   md.process({
     moduleId: 'foo',
     deps: ['text!./foo.html', 'bar']
@@ -56,49 +54,6 @@ test('ModulesTodo sequentially calls acquire callback', t => {
         {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo']},
         {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index']},
         {id: 'bar', user: true, package: true, requiredBy: ['foo']}
-      ]);
-      t.notOk(md.needCssInjection);
-      t.notOk(md.hasTodo());
-    },
-    err => {
-      t.fail(err);
-    }
-  ).then(t.end);
-});
-
-test('ModulesTodo skips modules done', t => {
-  const modulesDone = {has(id, checkUserSpace, checkPackageSpace) {
-    if (id === 'bar' && checkPackageSpace) return true;
-    if (id === 'bar/lo' && checkUserSpace) return true;
-    return false;
-  }};
-  const md = new ModulesTodo(modulesDone);
-  md.process({
-    moduleId: 'foo',
-    deps: ['text!./foo.html', 'bar']
-  });
-  md.process({
-    moduleId: 'bar/index',
-    packageName: 'bar',
-    deps: ['./lo']
-  });
-
-  const log = [];
-
-  function cb(id, opts) {
-    return new Promise(resolve => {
-      log.push({id, ...opts});
-      setTimeout(resolve, 20);
-    });
-  }
-
-  t.ok(md.hasTodo());
-
-  md.acquire(cb).then(
-    () => {
-      t.deepEqual(log, [
-        {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo']},
-        {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index']}
       ]);
       t.notOk(md.needCssInjection);
       t.notOk(md.hasTodo());

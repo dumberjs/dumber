@@ -18,8 +18,8 @@
     "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
     "prepare": "del-cli dist && babel src -d dist",
-    "nodejs-test": "tape -r @babel/register \"test/**/*.spec.js\" | tap-dot",
-    "coverage": "nyc --reporter=lcov tape -r @babel/register \"test/**/*.spec.js\" | tap-dot",
+    "nodejs-test": "tape -r @babel/register test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
+    "coverage": "nyc --reporter=lcov tape -r @babel/register test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
     "browser-test": "browserify -t babelify test/all-browser-spec.js | tape-run | tap-dot",
     "test": "npm run nodejs-test && npm run browser-test"
   },
@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/dumberjs/dumber#readme",
   "dependencies": {
-    "@babel/core": "^7.2.2",
+    "@babel/core": "^7.3.4",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-modules-commonjs": "^7.2.0",
     "ast-matcher": "^1.0.2",
@@ -51,6 +51,7 @@
     "dumber-module-loader": "^0.16.0",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
+    "modify-code": "^0.2.1",
     "node-fetch": "^2.3.0",
     "node-libs-browser": "^2.2.0",
     "readable-stream": "^2.3.6",
@@ -59,17 +60,18 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
-    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-env": "^7.3.4",
     "@babel/register": "^7.0.0",
     "babel-eslint": "^10.0.1",
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "del-cli": "^1.1.0",
     "eslint": "^5.15.1",
-    "nyc": "^13.2.0",
-    "standard-changelog": "^2.0.6",
+    "nyc": "^13.3.0",
+    "sourcemap-codec": "^1.4.4",
+    "standard-changelog": "^2.0.7",
     "tap-dot": "^2.0.0",
-    "tape": "^4.9.2",
+    "tape": "^4.10.1",
     "tape-run": "^5.0.0"
   }
 }

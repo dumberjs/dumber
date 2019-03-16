@@ -2,40 +2,102 @@ import test from 'tape';
 import alias from '../../src/transformers/alias';
 
 test('alias creates aliases for js module', t => {
-  t.deepEqual(alias('from/id', 'to/id'), {
-    defined: 'from/id',
-    contents: "define('from/id',['to/id'],function(m){return m;});"
+  t.deepEqual(alias({
+    alias: 'from/id',
+    defined: ['to/id'],
+    contents: 'lorem'
+  }), {
+    alias: null,
+    defined: ['from/id'],
+    contents: "lorem\n;define('from/id',['to/id'],function(m){return m;});"
   });
-  t.deepEqual(alias('from/id.js', 'to/id'), {
-    defined: 'from/id',
-    contents: "define('from/id',['to/id'],function(m){return m;});"
+  t.deepEqual(alias({
+    alias: 'from/id.js',
+    defined: ['to/id'],
+    contents: 'lorem'
+  }), {
+    alias: null,
+    defined: ['from/id'],
+    contents: "lorem\n;define('from/id',['to/id'],function(m){return m;});"
   });
-  t.deepEqual(alias('from/id', 'to/id.js'), {
-    defined: 'from/id',
-    contents: "define('from/id',['to/id'],function(m){return m;});"
+  t.deepEqual(alias({
+    alias: 'from/id',
+    defined: ['to/id.js'],
+    contents: 'lorem'
+  }), {
+    alias: null,
+    defined: ['from/id'],
+    contents: "lorem\n;define('from/id',['to/id'],function(m){return m;});"
   });
-  t.deepEqual(alias('from/id.js', 'to/id.js'), {
-    defined: 'from/id',
-    contents: "define('from/id',['to/id'],function(m){return m;});"
+  t.deepEqual(alias({
+    alias: 'from/id.js',
+    defined: ['to/id.js'],
+    contents: 'lorem'
+  }), {
+    alias: null,
+    defined: ['from/id'],
+    contents: "lorem\n;define('from/id',['to/id'],function(m){return m;});"
   });
   t.end();
 });
 
 test('alias creates aliases for other modules', t => {
-  t.deepEqual(alias('from/id.json', 'to/id.json'), {
-    defined: 'text!from/id.json',
-    contents: "define('text!from/id.json',['text!to/id.json'],function(m){return m;});"
+  t.deepEqual(alias({
+    alias: 'from/id.json',
+    defined: ['text!to/id.json'],
+    contents: 'lorem'
+  }), {
+    alias: null,
+    defined: ['text!from/id.json'],
+    contents: "lorem\n;define('text!from/id.json',['text!to/id.json'],function(m){return m;});"
   });
-  t.deepEqual(alias('from/id.css', 'to/id.css'), {
-    defined: 'text!from/id.css',
-    contents: "define('text!from/id.css',['text!to/id.css'],function(m){return m;});"
+  t.deepEqual(alias({
+    alias: 'text!from/id.css',
+    defined: ['text!to/id.css'],
+    contents: 'lorem'
+  }), {
+    alias: null,
+    defined: ['text!from/id.css'],
+    contents: "lorem\n;define('text!from/id.css',['text!to/id.css'],function(m){return m;});"
+  });
+  t.deepEqual(alias({
+    alias: 'from/id.wasm',
+    defined: ['raw!to/id.wasm'],
+    contents: 'lorem'
+  }), {
+    alias: null,
+    defined: ['raw!from/id.wasm'],
+    contents: "lorem\n;define('raw!from/id.wasm',['raw!to/id.wasm'],function(m){return m;});"
   });
   t.end();
 });
 
 test('alias rejects alias between ids with different extname', t => {
-  t.throws(() => alias('from', 'to.json'));
-  t.throws(() => alias('from.js', 'to.json'));
-  t.throws(() => alias('from.html', 'to.htm'));
+  t.throws(() => alias({
+    alias: 'from/id',
+    defined: ['to/id.json'],
+    contents: 'lorem'
+  }));
+  t.throws(() => alias({
+    alias: 'from/id.js',
+    defined: ['to/id.json'],
+    contents: 'lorem'
+  }));
+  t.throws(() => alias({
+    alias: 'from/id.html',
+    defined: ['to/id.htm'],
+    contents: 'lorem'
+  }));
+  t.end();
+});
+
+test('alias ignores same alias', t => {
+  t.deepEqual(alias({
+    alias: 'to/id',
+    defined: ['to/id'],
+    contents: 'lorem'
+  }), {
+    alias: null
+  });
   t.end();
 });

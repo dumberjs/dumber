@@ -27,7 +27,7 @@ test('defaultNpmPackageFileReader falls back to main:index when package.json is 
 
 test('defaultNpmPackageFileReader returns fileRead func for existing package', t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
-    'node_modules/foo/package.json': 'lorem'
+    'node_modules/foo/package.json': '{"name":"foo"}'
   }));
 
   defaultFileReader({name: 'foo'})
@@ -37,7 +37,7 @@ test('defaultNpmPackageFileReader returns fileRead func for existing package', t
       .then(
         file => {
           t.equal(file.path, 'node_modules/foo/package.json');
-          t.equal(file.contents, 'lorem');
+          t.equal(file.contents, '{"name":"foo"}');
         },
         err => t.fail(err.stack)
       );
@@ -75,7 +75,7 @@ test('defaultNpmPackageFileReader returns fileRead func for package with hard co
 
 test('defaultNpmPackageFileReader returns fileRead func for package with custom path', t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
-    'packages/foo/package.json': 'lorem'
+    'packages/foo/package.json': '{"name":"foo"}'
   }));
 
   defaultFileReader({name: 'foo', location: 'packages/foo'})
@@ -85,7 +85,7 @@ test('defaultNpmPackageFileReader returns fileRead func for package with custom 
       .then(
         file => {
           t.equal(file.path, 'packages/foo/package.json');
-          t.equal(file.contents, 'lorem');
+          t.equal(file.contents, '{"name":"foo"}');
         },
         err => t.fail(err.message)
       );
@@ -147,7 +147,7 @@ test('defaultNpmPackageFileReader can read parent node_modules folder', t => {
   _defaultFileReader({name: 'foo'}, {
     resolve: function(path) { return '../node_modules/' + path; },
     readFile: buildReadFile({
-      '../node_modules/foo/package.json': 'lorem'
+      '../node_modules/foo/package.json': '{"name":"foo"}'
     })
   })
   .then(
@@ -156,7 +156,7 @@ test('defaultNpmPackageFileReader can read parent node_modules folder', t => {
       .then(
         file => {
           t.equal(file.path, '../node_modules/foo/package.json');
-          t.equal(file.contents, 'lorem');
+          t.equal(file.contents, '{"name":"foo"}');
         },
         err => t.fail(err.message)
       );
@@ -170,7 +170,7 @@ test('defaultNpmPackageFileReader can read parent node_modules folder', t => {
 
 test('defaultNpmPackageFileReader returns fileRead func rejects missing file for existing package', t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
-    'node_modules/foo/package.json': 'lorem'
+    'node_modules/foo/package.json': '{"name":"foo"}'
   }));
 
   defaultFileReader({name: 'foo'})
@@ -191,7 +191,7 @@ test('defaultNpmPackageFileReader returns fileRead func rejects missing file for
 
 test('defaultNpmPackageFileReader returns fileRead func for existing scoped package', t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
-    'node_modules/@bar/foo/package.json': 'lorem'
+    'node_modules/@bar/foo/package.json': '{"name":"@bar/foo"}'
   }));
 
   defaultFileReader({name: '@bar/foo'})
@@ -201,7 +201,7 @@ test('defaultNpmPackageFileReader returns fileRead func for existing scoped pack
       .then(
         file => {
           t.equal(file.path, 'node_modules/@bar/foo/package.json');
-          t.equal(file.contents, 'lorem');
+          t.equal(file.contents, '{"name":"@bar/foo"}');
         },
         err => t.fail(err.message)
       );
@@ -215,7 +215,7 @@ test('defaultNpmPackageFileReader returns fileRead func for existing scoped pack
 
 test('defaultNpmPackageFileReader returns fileRead func rejects missing file for existing scoped package', t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
-    'node_modules/@bar/foo/package.json': 'lorem'
+    'node_modules/@bar/foo/package.json': '{"name":"@bar/foo"}'
   }));
 
   defaultFileReader({name: '@bar/foo'})
@@ -257,3 +257,28 @@ test('defaultNpmPackageFileReader can read .wasm file into base64 string', t => 
     t.end();
   });
 });
+
+test('defaultNpmPackageFileReader returns fileRead func for package alias', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
+    'node_modules/foo/package.json': '{"name":"foo","main":"index"}'
+  }));
+
+  defaultFileReader({name: 'bar', location: 'node_modules/foo'})
+  .then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.equal(file.path, 'node_modules/foo/package.json');
+          t.equal(file.contents, '{"name":"bar","main":"index"}');
+        },
+        err => t.fail(err.message)
+      );
+    },
+    () => t.fail('should not fail')
+  )
+  .then(() => {
+    t.end();
+  });
+});
+

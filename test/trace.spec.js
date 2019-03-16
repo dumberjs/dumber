@@ -1,5 +1,13 @@
 import test from 'tape';
-import trace from '../src/trace';
+import _trace from '../src/trace';
+
+function trace(unit, opts) {
+  return _trace(unit, opts).then(unit => {
+    // don't test source map details
+    unit.sourceMap.mappings = '';
+    return unit;
+  })
+}
 
 test('trace rejects not-matching packageName and moduleId', t => {
   const unit = {
@@ -26,12 +34,18 @@ test('trace does not reject moduleId which is same as packageName', t => {
       t.deepEqual(traced, {
         path: '__stub__/fs.js',
         contents: "define('fs',function(){});",
-        sourceMap: undefined,
+        sourceMap: {
+          version: 3,
+          names: [],
+          sources: ['__stub__/fs.js'],
+          file: '__stub__/fs.js',
+          mappings: '',
+          sourcesContent: ['define(function(){});']
+        },
         moduleId: 'fs',
-        defined: 'fs',
+        defined: ['fs'],
         deps: [],
-        packageName: 'fs',
-        shimed: undefined
+        packageName: 'fs'
       });
       t.end();
     },
@@ -54,12 +68,17 @@ test('trace traces js', t => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.js',
       contents: "define('foo/bar',['a','text!./b.css'],function() {});",
-      sourceMap: undefined,
+      sourceMap: {
+        version: 3,
+        names: [],
+        sources: ['src/foo/bar.js'],
+        file: 'src/foo/bar.js',
+        mappings: '',
+        sourcesContent: ["define(['a','text!./b.css'],function() {});"]
+      },
       moduleId: 'foo/bar',
-      defined: 'foo/bar',
-      deps: ['a', 'text!./b.css'],
-      packageName: undefined,
-      shimed: undefined
+      defined: ['foo/bar'],
+      deps: ['a', 'text!./b.css']
     })
     t.end();
   });
@@ -69,7 +88,14 @@ test('trace traces js and update sourceMap', t => {
   const unit = {
     path: 'src/foo/bar.js',
     contents: "exports.bar = require('./a');",
-    sourceMap: {mappings: ";TEST;"},
+    sourceMap: {
+      version: 3,
+      names: [],
+      sources: ['foo/bar.js'],
+      file: 'foo/bar.js',
+      mappings: '',
+      sourcesContent: ["exports.bar = require('./a');"]
+    },
     moduleId: 'foo/bar'
   }
 
@@ -78,12 +104,17 @@ test('trace traces js and update sourceMap', t => {
       path: 'src/foo/bar.js',
       contents: "define('foo/bar',['require','exports','module','./a'],function (require, exports, module) {\n" +
                 "exports.bar = require('./a');\n});\n",
-      sourceMap: {mappings: ";;TEST;"},
+      sourceMap: {
+        version: 3,
+        names: [],
+        sources: ['foo/bar.js'],
+        file: 'foo/bar.js',
+        mappings: '',
+        sourcesContent: ["exports.bar = require('./a');"]
+      },
       moduleId: 'foo/bar',
-      defined: 'foo/bar',
-      deps: ['./a'],
-      packageName: undefined,
-      shimed: undefined
+      defined: ['foo/bar'],
+      deps: ['./a']
     })
     t.end();
   });
@@ -93,7 +124,14 @@ test('trace traces shimed js and update sourceMap', t => {
   const unit = {
     path: 'node_modules/bar/bar.js',
     contents: "var Bar = 1;",
-    sourceMap: {mappings: ";TEST;"},
+    sourceMap: {
+      version: 3,
+      names: [],
+      sources: ['node_modules/bar/bar.js'],
+      file: 'node_modules/bar/bar.js',
+      mappings: '',
+      sourcesContent: ["var Bar = 1;"]
+    },
     moduleId: 'bar/bar',
     packageName: 'bar',
     shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true}
@@ -103,16 +141,24 @@ test('trace traces shimed js and update sourceMap', t => {
     t.deepEqual(traced, {
       path: 'node_modules/bar/bar.js',
       contents: '(function(root) {\n' +
-                'define("bar/bar", [\'foo\'], function() {\n' +
+                'define(\'bar/bar\',[\'foo\'],function() {\n' +
                 '  return (function() {\n' +
                 'var Bar = 1;;\n' +
                 'return root.Bar = Bar;\n' +
                 '  }).apply(root, arguments);\n});\n}(this));\n',
-      sourceMap: {mappings: ";;;;TEST;"},
+      sourceMap: {
+        version: 3,
+        names: [],
+        sources: ['node_modules/bar/bar.js'],
+        file: 'node_modules/bar/bar.js',
+        mappings: '',
+        sourcesContent: ["var Bar = 1;"]
+      },
       moduleId: 'bar/bar',
-      defined: 'bar/bar',
+      defined: ['bar/bar'],
       deps: ['foo'],
       packageName: 'bar',
+      shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true},
       shimed: true
     })
     t.end();
@@ -123,7 +169,14 @@ test('trace forces shim on old js and update sourceMap', t => {
   const unit = {
     path: 'node_modules/bar/bar.js',
     contents: "var Bar = 1;",
-    sourceMap: {mappings: ";TEST;"},
+    sourceMap: {
+      version: 3,
+      names: [],
+      sources: ['node_modules/bar/bar.js'],
+      file: 'node_modules/bar/bar.js',
+      mappings: '',
+      sourcesContent: ["var Bar = 1;"]
+    },
     moduleId: 'bar/bar',
     packageName: 'bar'
   }
@@ -132,10 +185,17 @@ test('trace forces shim on old js and update sourceMap', t => {
     t.deepEqual(traced, {
       path: 'node_modules/bar/bar.js',
       contents: 'var Bar = 1;;\n' +
-                'define("bar/bar", function(){});\n',
-      sourceMap: {mappings: ";TEST;"},
+                'define(\'bar/bar\',function(){});\n',
+      sourceMap: {
+        version: 3,
+        names: [],
+        sources: ['node_modules/bar/bar.js'],
+        file: 'node_modules/bar/bar.js',
+        mappings: '',
+        sourcesContent: ["var Bar = 1;"]
+      },
       moduleId: 'bar/bar',
-      defined: 'bar/bar',
+      defined: ['bar/bar'],
       deps: [],
       packageName: 'bar',
       shimed: true
@@ -155,12 +215,17 @@ test('trace transforms json', t => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.json',
       contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});",
-      sourceMap: undefined,
+      sourceMap: {
+        version: 3,
+        file: 'src/foo/bar.json',
+        sources: [ 'src/foo/bar.json' ],
+        mappings: '',
+        names: [],
+        sourcesContent: [ '{"a":1}' ]
+      },
       moduleId: 'foo/bar.json',
-      defined: 'text!foo/bar.json',
-      deps: [],
-      packageName: undefined,
-      shimed: undefined
+      defined: ['text!foo/bar.json'],
+      deps: []
     })
     t.end();
   });
@@ -177,12 +242,17 @@ test('trace transforms text file', t => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.html',
       contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});",
-      sourceMap: undefined,
+      sourceMap: {
+        version: 3,
+        file: 'src/foo/bar.html',
+        sources: [ 'src/foo/bar.html' ],
+        mappings: '',
+        names: [],
+        sourcesContent: [ '<p></p>' ]
+      },
       moduleId: 'foo/bar.html',
-      defined: 'text!foo/bar.html',
-      deps: [],
-      packageName: undefined,
-      shimed: undefined
+      defined: ['text!foo/bar.html'],
+      deps: []
     })
     t.end();
   });
@@ -199,12 +269,17 @@ test('trace transforms wasm file', t => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.wasm',
       contents: "define('raw!foo/bar.wasm',['base64-arraybuffer'],function(a){return {arrayBuffer: function() {return Promise.resolve(a.decode(\"abc\"));}}});",
-      sourceMap: undefined,
+      sourceMap: {
+        version: 3,
+        file: 'src/foo/bar.wasm',
+        sources: [ 'src/foo/bar.wasm' ],
+        mappings: '',
+        names: [],
+        sourcesContent: [ 'abc' ]
+      },
       moduleId: 'foo/bar.wasm',
-      defined: 'raw!foo/bar.wasm',
-      deps: ['base64-arraybuffer'],
-      packageName: undefined,
-      shimed: undefined
+      defined: ['raw!foo/bar.wasm'],
+      deps: ['base64-arraybuffer']
     })
     t.end();
   });
@@ -346,18 +421,25 @@ test('trace traces npm js with dist alias', t => {
     contents: "define(['a','text!./b.css'],function() {});",
     moduleId: 'foo/dist/bar',
     packageName: 'foo'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.js',
-      contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});define('foo/bar',['foo/dist/bar'],function(m){return m;});",
-      sourceMap: undefined,
+      contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});\n;define('foo/bar',['foo/dist/bar'],function(m){return m;});",
+      sourceMap: {
+        version: 3,
+        sources: [ 'node_modules/foo/dist/bar.js' ],
+        names: [],
+        mappings: '',
+        file: 'node_modules/foo/dist/bar.js',
+        sourcesContent: [ 'define([\'a\',\'text!./b.css\'],function() {});' ]
+      },
       moduleId: 'foo/dist/bar',
       defined: ['foo/dist/bar', 'foo/bar'],
       deps: ['a', 'text!./b.css'],
       packageName: 'foo',
-      shimed: undefined
+      alias: null
     })
     t.end();
   });
@@ -374,13 +456,20 @@ test('trace traces npm html with dist alias', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/cjs/bar.html',
-      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});define('text!foo/bar.html',['text!foo/dist/cjs/bar.html'],function(m){return m;});",
-      sourceMap: undefined,
+      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\n;define('text!foo/bar.html',['text!foo/dist/cjs/bar.html'],function(m){return m;});",
+      sourceMap: {
+        version: 3,
+        sources: [ 'node_modules/foo/dist/cjs/bar.html' ],
+        names: [],
+        mappings: '',
+        file: 'node_modules/foo/dist/cjs/bar.html',
+        sourcesContent: [ '<p></p>' ]
+      },
       moduleId: 'foo/dist/cjs/bar.html',
       defined: ['text!foo/dist/cjs/bar.html', 'text!foo/bar.html'],
       deps: [],
       packageName: 'foo',
-      shimed: undefined
+      alias: null
     })
     t.end();
   });
@@ -415,12 +504,18 @@ test('trace patches momentjs to expose global var "moment"', t => {
     t.deepEqual(traced, {
       path: 'node_modules/moment/moment.js',
       contents: transformedMoment,
-      sourceMap: undefined,
       moduleId: 'moment/moment',
-      defined: 'moment/moment',
+      defined: ['moment/moment'],
       deps: [],
       packageName: 'moment',
-      shimed: undefined
+      sourceMap: {
+        version: 3,
+        sources: [ 'node_modules/moment/moment.js' ],
+        names: [],
+        mappings: '',
+        file: 'node_modules/moment/moment.js',
+        sourcesContent: [ '//! moment.js\n\n;(function (global, factory) {\n    typeof exports === \'object\' && typeof module !== \'undefined\' ? module.exports = factory() :\n    typeof define === \'function\' && define.amd ? (function(){var m=factory();if(typeof moment === \'undefined\'){window.moment=m;} define(function(){return m;})})() :\n    global.moment = factory()\n}(this, (function () {})));' ]
+      }
     })
     t.end();
   });

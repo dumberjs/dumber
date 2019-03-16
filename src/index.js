@@ -1,6 +1,5 @@
 import trace from './trace';
 import {cleanPath, parse, mapId} from 'dumber-module-loader/dist/id-utils';
-import alias from './transformers/alias';
 import defaultPackageFileReader from './package-file-reader/default';
 import PackageReader from './package-reader';
 import Package from './package';
@@ -9,7 +8,6 @@ import {info, error, warn} from './log';
 import {generateHash, stripJsExtension, resolvePackagePath, contentOrFile} from './shared';
 import * as cache from './cache/default';
 import path from 'path';
-import mergeTransformed from './transformers/merge';
 import ModulesDone from './modules-done';
 import ModulesTodo from './modules-todo';
 
@@ -167,7 +165,9 @@ export default class Bundler {
   }
 
   _capture(tracedUnit) {
-    this._unitsMap[tracedUnit.path] = tracedUnit;
+    let key = tracedUnit.path;
+    if (tracedUnit.packageName) key = tracedUnit.packageName + ':' + key;
+    this._unitsMap[key] = tracedUnit;
 
     // mark as done.
     this._modules_done.addUnit(tracedUnit);
@@ -194,10 +194,7 @@ export default class Bundler {
       p = p.then(() => this.packageReaderFor(pkg)).then(reader => {
         if (!pkg.lazyMain) {
           return reader.readMain()
-          .then(unit => this.capture(unit))
-          .then(tracedUnit => {
-            this._ensureNpmAlias(tracedUnit, pkg.name);
-          });
+          .then(unit => this.capture(unit));
         }
       });
     });
@@ -220,31 +217,6 @@ export default class Bundler {
       this._prepends = prepends;
       this._appends = appends;
     })
-  }
-
-  // this ensures alias to package main, and alias to direct require
-  // to some browser replacement.
-  // e.g. readable-stream/readable -> readable-stream/readable-browser
-  _ensureNpmAlias(tracedUnit, id) {
-    const defined = tracedUnit.defined;
-    let toId;
-    if (Array.isArray(defined)) {
-      const ds = defined.map(d => parse(d).bareId);
-      if (ds.indexOf(id) !== -1) return;
-      toId = ds[0];
-    } else if (typeof defined === 'string') {
-      toId = parse(defined).bareId;
-    }
-
-    // alias to main is also created here
-    if (!toId) warn('no defined module found in ' + tracedUnit.path);
-
-    // only create alias when defined id is not same as package name
-    if (toId !== id && toId !== tracedUnit.packageName) {
-      const aliasResult = alias(id, toId);
-      mergeTransformed(tracedUnit, aliasResult);
-      this._modules_done.addUnit(tracedUnit);
-    }
   }
 
   _supportInjectCssIfNeeded() {
@@ -280,11 +252,16 @@ export default class Bundler {
     const requiredBy = opts.requiredBy;
     const parsedId = parse(mapId(id, this._paths));
 
+    if (this._modules_done.has(parsedId.bareId, checkUserSpace, checkPackageSpace)) {
+      return Promise.resolve();
+    }
+
     // TODO add a callback point to fillup missing local dep.
     // This is needed by dumberify.
     if (checkUserSpace && !checkPackageSpace) {
       // detected missing local dep
       warn(`local dependency ${parsedId.bareId} (requiredBy ${requiredBy.join(', ')}) is missing`);
+      return Promise.resolve();
     }
 
     return new Promise(resolve => {
@@ -344,9 +321,6 @@ export default class Bundler {
       return this.packageReaderFor(stub || {name: packageName})
         .then(reader => resource ? reader.readResource(resource) : reader.readMain())
         .then(unit => this.capture(unit))
-        .then(tracedUnit => {
-          this._ensureNpmAlias(tracedUnit, bareId);
-        })
         .catch(err => {
           error('Resolving failed for module ' + bareId);
           error(err);
@@ -357,8 +331,8 @@ export default class Bundler {
   _unitsForBundle(bundle) {
     let units = [];
 
-    Object.keys(this._unitsMap).forEach(filePath => {
-      const unit = this._unitsMap[filePath];
+    Object.keys(this._unitsMap).forEach(key => {
+      const unit = this._unitsMap[key];
       if (unit.bundle === bundle) units.push(unit);
     });
 

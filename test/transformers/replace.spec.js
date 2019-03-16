@@ -7,7 +7,10 @@ test('replace transform ignores empty replacement', t => {
     require('./bar');
   })`;
 
-  t.equal(replace(source, {}), source);
+  t.notOk(replace({
+    contents: source,
+    path: 'src/foo.js'
+  }));
   t.end();
 });
 
@@ -24,7 +27,13 @@ test('replace transform cleanup dep, even with empty replacement', t => {
     require('o/a');
   })`;
 
-  t.equal(replace(source, {}), result);
+  const unit = replace({
+    contents: source,
+    path: 'src/foo.js'
+  });
+
+  t.equal(unit.contents, result);
+  t.equal(unit.sourceMap.file, 'src/foo.js');
   t.end();
 });
 
@@ -47,7 +56,13 @@ test('replace transform does replacement', t => {
     require('./shims/client-only');
   })`;
 
-  t.equal(replace(source, replacement), result);
+  const unit = replace({
+    contents: source,
+    path: 'src/foo.js',
+    replacement
+  });
+
+  t.equal(unit.contents, result);
   t.end();
 });
 
@@ -70,30 +85,18 @@ test('replace transform does replacement for anonymous amd module', t => {
     require('./shims/client-only');
   })`;
 
-  t.equal(replace(source, replacement), result);
+  const unit = replace({
+    contents: source,
+    path: 'src/foo.js',
+    replacement
+  });
+
+  t.equal(unit.contents, result);
   t.end();
 });
 
-test('replace transform does replace es6 module dep', t => {
-  const source = `import a from 'module-a';
-    import './bar/';
-    import only, {client} from './server/only.js';`;
 
-  const replacement = {
-    'module-a': '__ignore__',
-    'module-b': './shims/module/b',
-    './server/only': './shims/client-only'
-  }
-
-  const result = `import a from '__ignore__';
-    import './bar';
-    import only, {client} from './shims/client-only';`
-
-  t.equal(replace(source, replacement), result);
-  t.end();
-});
-
-test('replace skips cleanup for UMD build', t => {
+test('replace transform skips cleanup for UMD build', t => {
   const umd = `(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.foo = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 module.exports = 'bar';
 
@@ -103,6 +106,34 @@ module.exports = require('./bar.js');
 });
 `;
 
-  t.equal(replace(umd, {}), umd);
+  t.notOk(replace({
+    contents: umd,
+    path: 'src/foo.js'
+  }));
   t.end();
 });
+
+test('replace transform does replacement for npm file', t => {
+  const unit = replace({
+    path: 'node_modules/foo/lib/bar.js',
+    contents: "require('module-a');require('module-b.js');require('module-c');require('../server/only.js');",
+    moduleId: 'foo/lib/bar',
+    packageName: 'foo',
+    replacement: {
+      'module-a': '__ignore__',
+      'module-b.js': '../shims/module/b',
+      '../server/only': '../shims/client-only'
+    },
+    sourceMap: {
+      version: 3,
+      file: 'foo/lib/bar.js',
+      sources: ['foo/src/lib.ts'],
+      mappings: ''
+    }
+  });
+
+  t.equal(unit.contents, "require('__ignore__');require('../shims/module/b');require('module-c');require('../shims/client-only');")
+  t.equal(unit.sourceMap.file, 'foo/lib/bar.js');
+  t.deepEqual(unit.sourceMap.sources, ['foo/lib/bar.js']);
+  t.end();
+})

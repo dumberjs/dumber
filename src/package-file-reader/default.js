@@ -56,6 +56,15 @@ export default function (packageConfig, mock) {
         }
         throw err;
       }
-    );
+    ).then(unit => {
+      if (filePath === 'package.json' || filePath === './package.json') {
+        const meta = JSON.parse(unit.contents);
+        if (meta.name !== name) {
+          meta.name = name;
+          unit.contents = JSON.stringify(meta);
+        }
+      }
+      return unit;
+    });
   });
 }

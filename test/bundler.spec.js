@@ -1,75 +1,42 @@
 import test from 'tape';
 import Bundler from '../src/index';
-import trace from '../src/trace';
 import {contentOrFile} from '../src/shared';
 import {mockResolve, buildReadFile, mockPackageFileReader} from './mock';
-
-function mockTrace(unit) {
-  const contents = unit.contents;
-  const moduleId = unit.moduleId;
-  const shim = unit.shim;
-
-  if (unit.moduleId === 'ext:css' || unit.path.endsWith('.css')) {
-    // don't mock ext:css trace
-    // don't mock css file
-    return trace(unit);
-  }
-
-  if (unit.packageName === 'jquery') {
-    return Promise.resolve({
-      path: unit.path,
-      contents,
-      sourceMap: unit.sourceMap,
-      moduleId,
-      defined: 'jquery',
-      deps: [],
-      packageName: 'jquery',
-      shimed: false
-    });
-  }
-  // very simple deps trace
-  let deps = [];
-  let transformed;
-  if (shim) {
-    if (shim.deps) deps = shim.deps;
-    transformed = contents;
-    transformed += `define('${moduleId}',${JSON.stringify(deps)},function(){`;
-    if (shim.exports) {
-      transformed += `return ${shim.exports};`;
-    }
-    transformed += '});';
-  } else if (contents.startsWith('define')) {
-    transformed = contents;
-  } else {
-    if (contents) deps = contents.split(' ');
-    transformed = `define('${moduleId}',${JSON.stringify(deps)},1);`
-  }
-
-  return Promise.resolve({
-    path: unit.path,
-    contents: transformed,
-    sourceMap: unit.sourceMap,
-    moduleId,
-    defined: moduleId,
-    deps,
-    packageName: unit.packageName,
-    shimed: !!shim
-  });
-}
 
 function mockContentOrFile(fakeReader) {
   return pathOrContent => contentOrFile(pathOrContent, {readFile: fakeReader});
 }
 
+function deleteSourceMap(file) {
+  delete file.sourceMap;
+}
+
 function createBundler(fakeFs = {}, opts = {}) {
+  // don't use cache in test
+  if (!opts.cache) opts.cache = false;
   const fakeReader = buildReadFile(fakeFs);
   opts.packageFileReader = mockPackageFileReader(fakeReader);
 
-  return new Bundler(opts, {
-    trace: mockTrace,
+  const bundler = new Bundler(opts, {
     resolve: mockResolve,
     contentOrFile: mockContentOrFile(fakeReader)
   });
+
+  const oldBundle = bundler.bundle.bind(bundler);
+  bundler.bundle = function() {
+    // don't test source map
+    const bundleMap = oldBundle();
+    Object.keys(bundleMap).forEach(key => {
+      if (bundleMap[key].files) {
+        bundleMap[key].files.forEach(deleteSourceMap);
+      }
+      if (bundleMap[key].appendFiles) {
+        bundleMap[key].appendFiles.forEach(deleteSourceMap);
+      }
+    });
+    return bundleMap;
+  };
+  return bundler;
 }
 
 test('Bundler traces files', t => {
@@ -78,7 +45,7 @@ test('Bundler traces files', t => {
     'local/after.js': 'after',
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
-    'node_modules/foo/index.js': 'loo',
+    'node_modules/foo/index.js': "require('loo');",
     'node_modules/foo/bar.js': '',
     'node_modules/loo/package.json':  JSON.stringify({name: 'loo', main: './loo'}),
     'node_modules/loo/loo.js': '',
@@ -89,35 +56,69 @@ test('Bundler traces files', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo page/one', moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: 'foo/bar loo', moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'var pre = 1;'},
-            {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
-            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'}
+        "entry-bundle": {
+          "files": [
+            {
+              "contents": "var pre = 1;"
+            },
+            {
+              "path": "local/setup.js",
+              "contents": "setup;"
+            },
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+            },
+            {
+              "path": "src/page/one.js",
+              "contents": "define('page/one',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/bar.js",
+              "contents": ";\ndefine('foo/bar',function(){});\n"
+            },
+            {
+              "path": "node_modules/foo/index.js",
+              "contents": "define('foo/index',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define('foo',['foo/index'],function(m){return m;});"
+            },
+            {
+              "path": "node_modules/loo/loo.js",
+              "contents": ";\ndefine('loo/loo',function(){});\n\n;define('loo',['loo/loo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          appendFiles: [
-            {contents: 'after;', path: 'local/after.js', sourceMap: undefined},
-            {contents: 'var ape = 1;'},
+          "appendFiles": [
+            {
+              "path": "local/after.js",
+              "contents": "after;"
+            },
+            {
+              "contents": "var ape = 1;"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
       })
@@ -145,19 +146,26 @@ test('Bundler can optionally skip dumber-module-loader', t => {
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dev-dumber-module-loader;'},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[],1);", sourceMap: undefined}
+        "entry-bundle": {
+          "files": [
+            {
+              "contents": "dev-dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": ";\ndefine('app',function(){});\n"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -170,7 +178,7 @@ test('Bundler traces files, split bundles', t => {
     'local/after.js': 'after',
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
-    'node_modules/foo/index.js': 'loo',
+    'node_modules/foo/index.js': "require('loo');",
     'node_modules/foo/bar.js': '',
     'node_modules/loo/package.json':  JSON.stringify({name: 'loo', main: './loo'}),
     'node_modules/loo/loo.js': '',
@@ -184,47 +192,87 @@ test('Bundler traces files, split bundles', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo page/one', moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: 'foo/bar loo', moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'var pre = 1;'},
-            {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
-            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined}
-          ],
-          appendFiles: [
-            {contents: 'after;', path: 'local/after.js', sourceMap: undefined},
-            {contents: 'var ape = 1;'},
-          ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {
-              'vendor': {
-                user: [],
-                package: ['foo', 'foo/bar', 'foo/index', 'loo', 'loo/loo']
-              }
+        "entry-bundle": {
+          "files": [
+            {
+              "contents": "var pre = 1;"
             },
-            paths: {}
+            {
+              "path": "local/setup.js",
+              "contents": "setup;"
+            },
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+            },
+            {
+              "path": "src/page/one.js",
+              "contents": "define('page/one',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
+            }
+          ],
+          "appendFiles": [
+            {
+              "path": "local/after.js",
+              "contents": "after;"
+            },
+            {
+              "contents": "var ape = 1;"
+            }
+          ],
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {
+              "vendor": {
+                "user": [],
+                "package": [
+                  "foo",
+                  "foo/bar",
+                  "foo/index",
+                  "loo",
+                  "loo/loo"
+                ]
+              }
+            }
           }
         },
-        'vendor': {
-          files: [
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "vendor": {
+          "files": [
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/bar.js",
+              "contents": ";\ndefine('foo/bar',function(){});\n"
+            },
+            {
+              "path": "node_modules/foo/index.js",
+              "contents": "define('foo/index',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define('foo',['foo/index'],function(m){return m;});"
+            },
+            {
+              "path": "node_modules/loo/loo.js",
+              "contents": ";\ndefine('loo/loo',function(){});\n\n;define('loo',['loo/loo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ]
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -237,7 +285,7 @@ test('Bundler traces files, split bundles, case2', t => {
     'local/after.js': 'after',
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
-    'node_modules/foo/index.js': 'loo',
+    'node_modules/foo/index.js': "require('loo');",
     'node_modules/foo/bar.js': '',
     'node_modules/loo/package.json':  JSON.stringify({name: 'loo', main: './loo'}),
     'node_modules/loo/loo.js': '',
@@ -258,57 +306,105 @@ test('Bundler traces files, split bundles, case2', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo page/one', moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: 'foo/bar loo', moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'main': {
-          files: [
-            {contents: 'var pre = 1;'},
-            {contents: 'setup;', path: 'local/setup.js', sourceMap: undefined},
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-          ],
-          appendFiles: [
-            {contents: 'after;', path: 'local/after.js', sourceMap: undefined},
-            {contents: 'var ape = 1;'},
-          ],
-          config: {
-            baseUrl: 'scripts',
-            bundles: {
-              'vendor': {
-                user: [],
-                package: ['foo', 'foo/bar', 'foo/index']
-              },
-              'app': {
-                user: ['app', 'page/one'],
-                package: ['loo', 'loo/loo']
-              }
+        "main": {
+          "files": [
+            {
+              "contents": "var pre = 1;"
             },
-            paths: {}
+            {
+              "path": "local/setup.js",
+              "contents": "setup;"
+            },
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            }
+          ],
+          "appendFiles": [
+            {
+              "path": "local/after.js",
+              "contents": "after;"
+            },
+            {
+              "contents": "var ape = 1;"
+            }
+          ],
+          "config": {
+            "baseUrl": "scripts",
+            "paths": {},
+            "bundles": {
+              "app": {
+                "user": [
+                  "app",
+                  "page/one"
+                ],
+                "package": [
+                  "loo",
+                  "loo/loo"
+                ]
+              },
+              "vendor": {
+                "user": [],
+                "package": [
+                  "foo",
+                  "foo/bar",
+                  "foo/index"
+                ]
+              }
+            }
           }
         },
-        'app': {
-          files: [
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
-            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "app": {
+          "files": [
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+            },
+            {
+              "path": "src/page/one.js",
+              "contents": "define('page/one',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/loo/loo.js",
+              "contents": ";\ndefine('loo/loo',function(){});\n\n;define('loo',['loo/loo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ]
         },
-        'vendor': {
-          files: [
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"loo\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "vendor": {
+          "files": [
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/bar.js",
+              "contents": ";\ndefine('foo/bar',function(){});\n"
+            },
+            {
+              "path": "node_modules/foo/index.js",
+              "contents": "define('foo/index',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define('foo',['foo/index'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ]
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -319,7 +415,7 @@ test('Bundler traces files, sorts shim', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/jquery/package.json': JSON.stringify({name: 'jquery', main: 'dist/jquery'}),
-    'node_modules/jquery/dist/jquery.js': 'define("jquery",[],1);',
+    'node_modules/jquery/dist/jquery.js': 'define("jquery",[],function(){});',
     'node_modules/bootstrap/package.json':  JSON.stringify({name: 'bootstrap', main: './dist/bootstrap'}),
     'node_modules/bootstrap/dist/bootstrap.js': '',
   };
@@ -330,31 +426,51 @@ test('Bundler traces files, sorts shim', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'fs bootstrap', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('fs');require('bootstrap');", moduleId: 'app'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"fs\",\"bootstrap\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/jquery/dist/jquery.js', contents: 'define("jquery",[],1);', sourceMap: undefined},
-            {path: 'node_modules/bootstrap/dist/bootstrap.js', contents: "define('bootstrap/dist/bootstrap',[\"jquery\"],function(){return jQuery;});define('bootstrap',['bootstrap/dist/bootstrap'],function(m){return m;});", sourceMap: undefined},
-            // mockTrace didn't touch fs stub, it is different in real usage
-            {path: '__stub__/fs.js', contents: "define(function(){return {};});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','fs','bootstrap'],function (require, exports, module) {\nrequire('fs');require('bootstrap');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/jquery/dist/jquery.js",
+              "contents": "define(\"jquery\",[],function(){});"
+            },
+            {
+              "path": "node_modules/bootstrap/dist/bootstrap.js",
+              "contents": ";\ndefine('bootstrap/dist/bootstrap',['jquery'],(function (global) {\n  return function () {\n    return global.jQuery;\n  };\n}(this)));\n\n;define('bootstrap',['bootstrap/dist/bootstrap'],function(m){return m;});"
+            },
+            {
+              "path": "__stub__/fs.js",
+              "contents": "define('fs',function(){return {};});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -365,7 +481,7 @@ test('Bundler traces files, always sort jquery and moment on top', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/jquery/package.json': JSON.stringify({name: 'jquery', main: 'dist/jquery'}),
-    'node_modules/jquery/dist/jquery.js': 'define("jquery",[],1);',
+    'node_modules/jquery/dist/jquery.js': 'define("jquery",[],function(){});',
     'node_modules/moment/package.json': JSON.stringify({name: 'moment', main: './moment'}),
     'node_modules/moment/moment.js': '',
     'node_modules/aaa/package.json':  JSON.stringify({name: 'aaa', main: './aaa'}),
@@ -374,30 +490,51 @@ test('Bundler traces files, always sort jquery and moment on top', t => {
   const bundler = createBundler(fakeFs);
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'aaa jquery moment', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('aaa');require('jquery');require('moment');", moduleId: 'app'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"aaa\",\"jquery\",\"moment\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/jquery/dist/jquery.js', contents: 'define("jquery",[],1);', sourceMap: undefined},
-            {path: 'node_modules/moment/moment.js', contents: "define('moment/moment',[],1);define('moment',['moment/moment'],function(m){return m;});", sourceMap: undefined},
-            {path: 'node_modules/aaa/aaa.js', contents: "define('aaa/aaa',[],1);define('aaa',['aaa/aaa'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','aaa','jquery','moment'],function (require, exports, module) {\nrequire('aaa');require('jquery');require('moment');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/jquery/dist/jquery.js",
+              "contents": "define(\"jquery\",[],function(){});"
+            },
+            {
+              "path": "node_modules/moment/moment.js",
+              "contents": ";\ndefine('moment/moment',function(){});\n\n;define('moment',['moment/moment'],function(m){return m;});"
+            },
+            {
+              "path": "node_modules/aaa/aaa.js",
+              "contents": ";\ndefine('aaa/aaa',function(){});\n\n;define('aaa',['aaa/aaa'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -415,25 +552,33 @@ test('Bundler ignores module when onRequire returns false', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -455,29 +600,47 @@ test('Bundler replaces deps when onRequire returns array', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/bar/index.js', contents: "define('bar/index',[],1);define('bar',['bar/index'],function(m){return m;});", sourceMap: undefined},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/bar/index.js",
+              "contents": ";\ndefine('bar/index',function(){});\n\n;define('bar',['bar/index'],function(m){return m;});"
+            },
+            {
+              "path": "node_modules/loo/loo.js",
+              "contents": ";\ndefine('loo/loo',function(){});\n\n;define('loo',['loo/loo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -493,34 +656,52 @@ test('Bundler supports implementation returned by onRequire', t => {
   const bundler = createBundler(fakeFs, {
     onRequire(moduleId) {
       // onRequire can return a Promise to resolve to false, array, or string.
-      if (moduleId === 'foo') return Promise.resolve("loo"); // "loo" will be processed by mockTrace
+      if (moduleId === 'foo') return Promise.resolve("require('loo');");
     }
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: '__on_require__/foo.js', contents: "define('foo',[\"loo\"],1);", sourceMap: undefined},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "__on_require__/foo.js",
+              "contents": "define('foo',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n"
+            },
+            {
+              "path": "node_modules/loo/loo.js",
+              "contents": ";\ndefine('loo/loo',function(){});\n\n;define('loo',['loo/loo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -540,28 +721,43 @@ test('Bundler swallows onRequire exception', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/foo.js', contents: "define('foo/foo',[],1);define('foo',['foo/foo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/foo.js",
+              "contents": ";\ndefine('foo/foo',function(){});\n\n;define('foo',['foo/foo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -581,36 +777,51 @@ test('Bundler swallows onRequire promise rejection', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/foo.js', contents: "define('foo/foo',[],1);define('foo',['foo/foo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/foo.js",
+              "contents": ";\ndefine('foo/foo',function(){});\n\n;define('foo',['foo/foo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
   .then(t.end);
 });
 
-test('Bundler uses cache by default', t => {
-  const bundler = createBundler();
+test('Bundler can use cache', t => {
+  const bundler = createBundler({}, {cache: true});
   t.ok(bundler._cache);
   t.end();
 });
@@ -651,106 +862,166 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo page/one', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app'}))
   .then(() => bundler.capture({path: 'src/page/one.js', contents: '', moduleId: 'page/one'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined}
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {
-              'vendor-bundle': {
-                user: [],
-                package: ['foo', 'foo/index']
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {
+              "app-bundle": {
+                "user": [
+                  "app"
+                ],
+                "package": []
               },
-              'app-bundle': {
-                user: ['app'],
-                package: []
+              "page-bundle": {
+                "user": [
+                  "page/one"
+                ],
+                "package": []
               },
-              'page-bundle': {
-                user: ['page/one'],
-                package: []
+              "vendor-bundle": {
+                "user": [],
+                "package": [
+                  "foo",
+                  "foo/index"
+                ]
               }
-            },
-            paths: {}
+            }
           }
         },
-        'app-bundle': {
-          files: [
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
+        "app-bundle": {
+          "files": [
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+            }
           ]
         },
-        'page-bundle': {
-          files: [
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/page/one.js', contents: "define('page/one',[],1);", sourceMap: undefined},
+        "page-bundle": {
+          "files": [
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/page/one.js",
+              "contents": ";\ndefine('page/one',function(){});\n"
+            }
           ]
         },
-        'vendor-bundle': {
-          files: [
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'}
+        "vendor-bundle": {
+          "files": [
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/index.js",
+              "contents": ";\ndefine('foo/index',function(){});\n\n;define('foo',['foo/index'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ]
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: 'foo/bar loo', moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'}
-          ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {
-              'vendor-bundle': {
-                user: [],
-                package: ['foo', 'foo/bar', 'foo/index']
-              },
-              'app-bundle': {
-                user: ['app'],
-                package: []
-              },
-              'page-bundle': {
-                user: ['page/one'],
-                package: []
-              }
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
             },
-            paths: {}
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/loo/loo.js",
+              "contents": ";\ndefine('loo/loo',function(){});\n\n;define('loo',['loo/loo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
+          ],
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {
+              "app-bundle": {
+                "user": [
+                  "app"
+                ],
+                "package": []
+              },
+              "page-bundle": {
+                "user": [
+                  "page/one"
+                ],
+                "package": []
+              },
+              "vendor-bundle": {
+                "user": [],
+                "package": [
+                  "foo",
+                  "foo/bar",
+                  "foo/index"
+                ]
+              }
+            }
           }
         },
-        'page-bundle': {
-          files: [
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/page/one.js', contents: "define('page/one',[\"foo/bar\",\"loo\"],1);", sourceMap: undefined},
+        "page-bundle": {
+          "files": [
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/page/one.js",
+              "contents": "define('page/one',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
+            }
           ]
         },
-        'vendor-bundle': {
-          files: [
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'}
+        "vendor-bundle": {
+          "files": [
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/bar.js",
+              "contents": ";\ndefine('foo/bar',function(){});\n"
+            },
+            {
+              "path": "node_modules/foo/index.js",
+              "contents": ";\ndefine('foo/index',function(){});\n\n;define('foo',['foo/index'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ]
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -761,41 +1032,72 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/loo/loo.js', contents: "define('loo/loo',[],1);define('loo',['loo/loo'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'}
-          ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {
-              'vendor-bundle': {
-                user: [],
-                package: ['foo', 'foo/bar', 'foo/index']
-              },
-              'app-bundle': {
-                user: ['app', 'goo', 'goo2'],
-                package: []
-              },
-              'page-bundle': {
-                user: ['page/one'],
-                package: []
-              }
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
             },
-            paths: {}
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/loo/loo.js",
+              "contents": ";\ndefine('loo/loo',function(){});\n\n;define('loo',['loo/loo'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
+          ],
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {
+              "app-bundle": {
+                "user": [
+                  "app",
+                  "goo",
+                  "goo2"
+                ],
+                "package": []
+              },
+              "page-bundle": {
+                "user": [
+                  "page/one"
+                ],
+                "package": []
+              },
+              "vendor-bundle": {
+                "user": [],
+                "package": [
+                  "foo",
+                  "foo/bar",
+                  "foo/index"
+                ]
+              }
+            }
           }
         },
-        'app-bundle': {
-          files: [
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\",\"page/one\"],1);", sourceMap: undefined},
-            {path: 'src/goo.js', contents: "define('goo',[],1);", sourceMap: undefined},
-            {path: 'src/goo2.js', contents: "define('goo2',[],1);", sourceMap: undefined},
+        "app-bundle": {
+          "files": [
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+            },
+            {
+              "path": "src/goo.js",
+              "contents": ";\ndefine('goo',function(){});\n"
+            },
+            {
+              "path": "src/goo2.js",
+              "contents": ";\ndefine('goo2',function(){});\n"
+            }
           ]
-        },
-      })
+        }
+      });
     },
     err => t.fail(err.stack)
   )
@@ -812,31 +1114,52 @@ test('Bundler supports inject css by default', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'c.css', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('c.css')", moduleId: 'app'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"c.css\"],1);", sourceMap: undefined},
-            {path: 'src/c.css', contents: "define('text!c.css',function(){return \"lorem\";});", sourceMap: undefined},
-            {path: '__stub__/ext-css.js', contents: "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/dumber/dist/inject-css.js', contents: "define('dumber/dist/inject-css',[],1);", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','c.css'],function (require, exports, module) {\nrequire('c.css')\n});\n"
+            },
+            {
+              "path": "src/c.css",
+              "contents": "define('text!c.css',function(){return \"lorem\";});"
+            },
+            {
+              "path": "__stub__/ext-css.js",
+              "contents": "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/dumber/dist/inject-css.js",
+              "contents": ";\ndefine('dumber/dist/inject-css',function(){});\n\n;define('dumber/inject-css',['dumber/dist/inject-css'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -853,31 +1176,52 @@ test('Bundler supports inject css (relative path) by default', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: './c.css', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('./c.css')", moduleId: 'app'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"./c.css\"],1);", sourceMap: undefined},
-            {path: 'src/c.css', contents: "define('text!c.css',function(){return \"lorem\";});", sourceMap: undefined},
-            {path: '__stub__/ext-css.js', contents: "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/dumber/dist/inject-css.js', contents: "define('dumber/dist/inject-css',[],1);", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','./c.css'],function (require, exports, module) {\nrequire('./c.css')\n});\n"
+            },
+            {
+              "path": "src/c.css",
+              "contents": "define('text!c.css',function(){return \"lorem\";});"
+            },
+            {
+              "path": "__stub__/ext-css.js",
+              "contents": "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/dumber/dist/inject-css.js",
+              "contents": ";\ndefine('dumber/dist/inject-css',function(){});\n\n;define('dumber/inject-css',['dumber/dist/inject-css'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -895,27 +1239,38 @@ test('Bundler can optionally turn off inject css', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'c.css', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('c.css')", moduleId: 'app'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"c.css\"],1);", sourceMap: undefined},
-            {path: 'src/c.css', contents: "define('text!c.css',function(){return \"lorem\";});", sourceMap: undefined}
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','c.css'],function (require, exports, module) {\nrequire('c.css')\n});\n"
+            },
+            {
+              "path": "src/c.css",
+              "contents": "define('text!c.css',function(){return \"lorem\";});"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -926,10 +1281,10 @@ test('Bundler traces files with paths mapping', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
-    'node_modules/foo/index.js': 'loo',
+    'node_modules/foo/index.js': "require('loo');",
     'node_modules/bar/package.json': JSON.stringify({name: 'bar', main: 'index'}),
-    'node_modules/bar/index.js': '',
-    'node_modules/bar/el.js': '',
+    'node_modules/bar/index.js': 'exports.bar = 1;',
+    'node_modules/bar/el.js': 'exports.el = 1;',
   };
   const bundler = createBundler(fakeFs, {
     paths: {
@@ -940,36 +1295,57 @@ test('Bundler traces files with paths mapping', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'el!foo', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'el!foo';", moduleId: 'app'}))
   .then(() => bundler.capture({path: 'src/common/foo.js', contents: '', moduleId: 'common/foo'}))
-  .then(() => bundler.capture({path: 'test/app.spec.js', contents: '../src/app', moduleId: '../test/app.spec'}))
+  .then(() => bundler.capture({path: 'test/app.spec.js', contents: "import '../src/app';", moduleId: '../test/app.spec'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'test/app.spec.js', contents: "define('../test/app.spec',[\"../src/app\"],1);", sourceMap: undefined},
-            {path: 'src/app.js', contents: "define('app',[\"el!foo\"],1);", sourceMap: undefined},
-            {path: 'src/common/foo.js', contents: "define('common/foo',[],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/bar/el.js', contents: "define('bar/el',[],1);", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-          ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {
-              'foo': 'common/foo',
-              'el': 'bar/el',
-              '../src': ''
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "test/app.spec.js",
+              "contents": "define('../test/app.spec',['require','exports','module','../src/app'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"../src/app\");\n});\n"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','el!foo'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"el!foo\");\n});\n"
+            },
+            {
+              "path": "src/common/foo.js",
+              "contents": ";\ndefine('common/foo',function(){});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/bar/el.js",
+              "contents": "define('bar/el',['require','exports','module'],function (require, exports, module) {\nexports.el = 1;\n});\n"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
             }
+          ],
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {
+              "foo": "common/foo",
+              "el": "bar/el",
+              "../src": ""
+            },
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -980,39 +1356,60 @@ test('Bundler allows same modules in both user and package space', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
-    'node_modules/foo/index.js': 'util',
-    'node_modules/foo/bar.js': '',
+    'node_modules/foo/index.js': "require('util');",
+    'node_modules/foo/bar.js': 'exports.bar = 1;',
     'node_modules/util/package.json':  JSON.stringify({name: 'util', main: './util'}),
-    'node_modules/util/util.js': '',
+    'node_modules/util/util.js': 'exports.util = 1;',
   };
   const bundler = createBundler(fakeFs);
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'foo ./util', moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/util.js', contents: '', moduleId: 'util'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'foo';\nimport './util'", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/util.js', contents: 'export default function(){}', moduleId: 'util'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"foo\",\"./util\"],1);", sourceMap: undefined},
-            {path: 'src/util.js', contents: "define('util',[],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[\"util\"],1);define('foo',['foo/index'],function(m){return m;});", sourceMap: undefined},
-            {path: 'node_modules/util/util.js', contents: "define('util/util',[],1);define('util',['util/util'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'}
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','foo','./util'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"foo\");\n\nrequire(\"./util\");\n});\n"
+            },
+            {
+              "path": "src/util.js",
+              "contents": "define('util',['require','exports','module'],function (require, exports, module) {\n\"use strict\";\n\nexports.__esModule = true;\nexports.default = _default;\n\nfunction _default() {}\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/index.js",
+              "contents": "define('foo/index',['require','exports','module','util'],function (require, exports, module) {\nrequire('util');\n});\n\n;define('foo',['foo/index'],function(m){return m;});"
+            },
+            {
+              "path": "node_modules/util/util.js",
+              "contents": "define('util/util',['require','exports','module'],function (require, exports, module) {\nexports.util = 1;\n});\n\n;define('util',['util/util'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -1023,10 +1420,11 @@ test('Bundler supports deps alias', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
-    'node_modules/foo/index.js': '',
-    'node_modules/foo/bar.js': ''
+    'node_modules/foo/index.js': 'exports.foo = 1;',
+    'node_modules/foo/bar.js': 'exports.bar = 1;'
   };
   const bundler = createBundler(fakeFs, {
+    cache: false,
     deps: [{
       name: 'bar',
       location: 'node_modules/foo'
@@ -1034,31 +1432,52 @@ test('Bundler supports deps alias', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'bar', moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/foo.js', contents: 'bar/bar', moduleId: 'foo'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'bar';", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/foo.js', contents: "import 'bar/bar';", moduleId: 'foo'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"bar\"],1);", sourceMap: undefined},
-            {path: 'src/foo.js', contents: "define('foo',[\"bar/bar\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);define('bar/bar',['foo/bar'],function(m){return m;});", sourceMap: undefined},
-            {path: 'node_modules/foo/index.js', contents: "define('foo/index',[],1);define('bar',['foo/index'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'}
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar\");\n});\n"
+            },
+            {
+              "path": "src/foo.js",
+              "contents": "define('foo',['require','exports','module','bar/bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar/bar\");\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/bar.js",
+              "contents": "define('bar/bar',['require','exports','module'],function (require, exports, module) {\nexports.bar = 1;\n});\n"
+            },
+            {
+              "path": "node_modules/foo/index.js",
+              "contents": "define('bar/index',['require','exports','module'],function (require, exports, module) {\nexports.foo = 1;\n});\n\n;define('bar',['bar/index'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )
@@ -1069,8 +1488,8 @@ test('Bundler supports package alias with lazyMain mode', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
-    'node_modules/foo/index.js': '',
-    'node_modules/foo/bar.js': ''
+    'node_modules/foo/index.js': 'exports.foo = 1;',
+    'node_modules/foo/bar.js': 'exports.bar = 1;'
   };
   const bundler = createBundler(fakeFs, {
     deps: [{
@@ -1081,28 +1500,43 @@ test('Bundler supports package alias with lazyMain mode', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: 'bar/bar', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'bar/bar';", moduleId: 'app'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
     bundleMap => {
       t.deepEqual(bundleMap, {
-        'entry-bundle': {
-          files: [
-            {contents: 'dumber-module-loader;', path: 'node_modules/dumber-module-loader/dist/index.debug.js', sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'},
-            {path: 'src/app.js', contents: "define('app',[\"bar/bar\"],1);", sourceMap: undefined},
-            {contents: 'define.switchToPackageSpace();'},
-            {path: 'node_modules/foo/bar.js', contents: "define('foo/bar',[],1);define('bar/bar',['foo/bar'],function(m){return m;});", sourceMap: undefined},
-            {contents: 'define.switchToUserSpace();'}
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','bar/bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar/bar\");\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/foo/bar.js",
+              "contents": "define('bar/bar',['require','exports','module'],function (require, exports, module) {\nexports.bar = 1;\n});\n"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
           ],
-          config: {
-            baseUrl: '/dist',
-            bundles: {},
-            paths: {}
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )

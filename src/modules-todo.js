@@ -6,9 +6,8 @@ const PACKAGE = '1';
 const USER_OR_PACKAGE = '2';
 
 export default class ModulesTodo {
-  constructor(modulesDone) {
+  constructor() {
     this._reset();
-    this._modulesDone = modulesDone;
   }
 
   _reset() {
@@ -68,27 +67,14 @@ export default class ModulesTodo {
       return Promise.resolve();
     }
 
-    const actualTodos = Object.create(null);
-
-    Object.keys(this.todos).sort().forEach(key => {
-      const [space, id] = spaceAndId(key);
-
-      let checkUserSpace = true;
-      let checkPackageSpace = true;
-      if (space === USER) checkPackageSpace = false;
-      else if (space === PACKAGE) checkUserSpace = false;
-
-      if (!this._modulesDone.has(id, checkUserSpace, checkPackageSpace)) {
-        actualTodos[key] = this.todos[key];
-      }
-    });
+    const {todos} = this;
     this._reset();
 
     let p = Promise.resolve();
 
-    Object.keys(actualTodos).forEach(key => {
+    Object.keys(todos).sort().forEach(key => {
       const [space, id] = spaceAndId(key);
-      const requiredBy = actualTodos[key];
+      const requiredBy = todos[key];
 
       p = p.then(() => cb(id, {
         user: space !== PACKAGE,

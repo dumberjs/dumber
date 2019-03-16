@@ -1,6 +1,5 @@
 import {ext, parse, resolveModuleId, relativeModuleId} from 'dumber-module-loader/dist/id-utils';
 import {stripJsExtension, isPackageName, stripSourceMappingUrl, getSourceMap} from './shared';
-import replace from './transformers/replace';
 import {error} from './log';
 import path from 'path';
 
@@ -40,7 +39,16 @@ export default class PackageReader {
   }
 
   readMain() {
-    return this.ensureMainPath().then(() => this._readFile(this.mainPath));
+    return this.ensureMainPath()
+      .then(() => this._readFile(this.mainPath))
+      .then(unit => {
+        // add alias from package name to main file module id.
+        // but don't add alias from "foo" to "foo/main.css".
+        if (ext(unit.moduleId) === ext(this.name)) {
+          unit.alias = this.name;
+        }
+        return unit;
+      });
   }
 
   readResource(resource) {
@@ -75,6 +83,15 @@ export default class PackageReader {
       }
 
       return findResource();
+    }).then(unit => {
+      const requested = this.name + '/' + resource;
+      if (unit.moduleId !== requested) {
+        // The requested id could be different from real id.
+        // for example, some browser replacement.
+        // e.g. readable-stream/readable -> readable-stream/readable-browser
+        unit.alias = requested;
+      }
+      return unit;
     });
   }
 
@@ -83,9 +100,8 @@ export default class PackageReader {
     return this.loadFile(filePath).then(file => {
       const moduleId = this.name + '/' + parse(stripJsExtension(filePath)).bareId;
 
+      let replacement;
       if (ext(filePath) === '.js') {
-        const replacement = {};
-
         Object.keys(this.browserReplacement).forEach(key => {
           const target = this.browserReplacement[key];
           const baseId = this.name + '/index';
@@ -102,19 +118,22 @@ export default class PackageReader {
             targetModule = '__ignore__';
           }
 
+          if (!replacement) replacement = {};
           replacement[sourceModule] = targetModule;
         });
-
-        file.contents = replace(file.contents, replacement);
       }
 
-      return {
+      const unit = {
         path: file.path.replace(/\\/g, '/'),
         contents: stripSourceMappingUrl(file.contents),
         moduleId,
         packageName: this.name,
         sourceMap: getSourceMap(file.contents, file.path)
       };
+
+      // the replacement will be picked up by transformers/replace.js
+      if (replacement) unit.replacement = replacement;
+      return unit;
     });
   }
 

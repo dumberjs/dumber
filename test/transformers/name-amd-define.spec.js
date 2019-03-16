@@ -1,60 +1,80 @@
 import test from 'tape';
-import defines from '../../src/transformers/defines';
+import nameDefine from '../../src/transformers/name-amd-define';
 
 // copied from r.js/build/tests/buildUtils.js
 // for toTransport
 
-test('defines ignores non-global define', t => {
-  const bad1 = 'this.define(field, value, {_resolve: false});';
-  const r = defines('bad/1', bad1);
-  t.equal(r.defined, null);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, bad1);
+test('nameDefine ignores non-global define', t => {
+  const unit = {
+    contents: 'this.define(field, value, {_resolve: false});',
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: [],
+    deps: []
+  })
   t.end();
 });
 
-test('defines ignores xdefine', t => {
-  const bad2 = 'xdefine(fields, callback);';
-  const r = defines('bad/2', bad2);
-  t.equal(r.defined, null);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, bad2);
+test('nameDefine ignores xdefine', t => {
+  const unit = {
+    contents: 'xdefine(fields, callback);',
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: [],
+    deps: []
+  })
   t.end();
 });
 
-test('defines ignores non-global define case2', t => {
-  const bad3 = 'this.define(function () {});';
-  const r = defines('bad/3', bad3);
-  t.equal(r.defined, null);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, bad3);
+test('nameDefine ignores non-global define case2', t => {
+  const unit = {
+    contents: 'this.define(function () {});',
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: [],
+    deps: []
+  })
   t.end();
 });
 
-test('defines ignores dynamic deps', t => {
-  const bad4 = 'define(fields, callback);';
-  const r = defines('bad/4', bad4);
-  t.equal(r.defined, null);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, bad4);
+test('nameDefine ignores dynamic deps', t => {
+  const unit = {
+    contents: 'define(fields, callback);',
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: [],
+    deps: []
+  })
   t.end();
 });
 
-test('defines ignores dynamic name or factory', t => {
-  const bad5 = 'define(a[0]);';
-  const r = defines('bad/5', bad5);
-  t.equal(r.defined, null);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, bad5);
+test('nameDefine ignores dynamic name or factory', t => {
+  const unit = {
+    contents: 'define(a[0]);',
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: [],
+    deps: []
+  })
   t.end();
 });
 
-test('defines ignores multiple defines', t => {
+test('nameDefine ignores multiple nameDefine', t => {
   const bad6 =  '(function () {\n' +
                 '    (function () {\n' +
                 '        var module = { exports: {} }, exports = module.exports;\n' +
@@ -76,15 +96,20 @@ test('defines ignores multiple defines', t => {
                 '    }());\n' +
                 '}());';
 
-  const r = defines('bad/6', bad6);
-  t.equal(r.defined, null);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, bad6);
+  const unit = {
+    contents: bad6,
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: [],
+    deps: []
+  })
   t.end();
 });
 
-test('defines fills up module name', t => {
+test('nameDefine fills up module name', t => {
   const good1 = 'if (typeof define === "function" && define.amd) {\n' +
                 '    define(definition);\n' +
                 '}';
@@ -92,93 +117,130 @@ test('defines fills up module name', t => {
   const goodExpected1 = 'if (typeof define === "function" && define.amd) {\n' +
                         '    define(\'good/1\',definition);\n' +
                         '}';
-  const r = defines('good/1', good1);
-  t.equal(r.defined, 'good/1');
+
+  const unit = {
+    contents: good1,
+    moduleId: 'good/1',
+    path: 'src/good/1.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['good/1']);
   t.notOk(r.shimed);
   t.equal(r.deps.length, 0);
   t.equal(r.contents, goodExpected1);
+  t.equal(r.sourceMap.file, 'src/good/1.js');
+  t.deepEqual(r.sourceMap.sources, ['src/good/1.js']);
   t.end();
 });
 
-test('defines fills up module name', t => {
+test('nameDefine fills up module name', t => {
   const good2 = '//    define([\'bad\'], function () {});\n' +
                 'define([\'foo\'], function () {});';
 
   const goodExpected2 = '//    define([\'bad\'], function () {});\n' +
                         'define(\'good/2\',[\'foo\'], function () {});';
 
-  const r = defines('good/2', good2);
-  t.equal(r.defined, 'good/2');
+  const unit = {
+    contents: good2,
+    moduleId: 'good/2',
+    path: 'src/good/2.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['good/2']);
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['foo']);
   t.equal(r.contents, goodExpected2);
   t.end();
 });
 
-test('defines ignores multiple defines case 2', t => {
+test('nameDefine ignores multiple nameDefine case 2', t => {
   const multi = 'define("foo", function (require) { var bar = require("bar"); });\n' +
                 'define("bar", function (require) { var foo = require("foo"); });\n';
-  const r = defines('multi', multi);
-  t.deepEqual(r.defined, ['foo', 'bar']);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, multi);
+  const unit = {
+    contents: multi,
+    moduleId: 'multi',
+    path: 'src/multi.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: ['foo', 'bar'],
+    deps: []
+  });
   t.end();
 });
 
-test('defines ignores multiple defines case 3', t => {
+test('nameDefine ignores multiple nameDefine case 3', t => {
   const multi = 'define("foo", ["a"], function (require) { var bar = require("bar"); });\n' +
                 'define("bar", ["b", "c"], function (require) { var foo = require("foo"); });\n';
-  const r = defines('multi', multi);
-  t.deepEqual(r.defined, ['foo', 'bar']);
-  t.notOk(r.shimed);
-  t.deepEqual(r.deps, ['a', 'b', 'c']);
-  t.equal(r.contents, multi);
+  const unit = {
+    contents: multi,
+    moduleId: 'multi',
+    path: 'src/multi.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: ['foo', 'bar'],
+    deps: ['a', 'b', 'c']
+  });
   t.end();
 });
 
-test('defines ignores inner deps', t => {
+test('nameDefine ignores inner deps', t => {
   const multi = 'define("foo", function() {});\n' +
                 'define("bar", ["foo", "loo"], function (require) { var foo = require("foo"); });\n';
-  const r = defines('bar', multi);
-  t.deepEqual(r.defined, ['foo', 'bar']);
-  t.notOk(r.shimed);
-  t.deepEqual(r.deps, ["loo"]);
-  t.equal(r.contents, multi);
+  const unit = {
+    contents: multi,
+    moduleId: 'multi',
+    path: 'src/multi.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: ['foo', 'bar'],
+    deps: ['loo']
+  });
   t.end();
 });
 
-test('defines ignores empty define call', t => {
-  const empty = 'define();\n';
-  const r = defines('empty', empty);
-  t.notOk(r.defined);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, empty);
+test('nameDefine ignores empty define call', t => {
+  const unit = {
+    contents: 'define();\n',
+    moduleId: 'empty',
+    path: 'src/empty.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {defined: [], deps: []});
   t.end();
 });
 
-test('defines does not rewrite named define', t => {
-  const foo = 'define("foo", function(){});\n';
-  const r = defines('bar', foo);
-  t.equal(r.defined, 'foo');
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, foo);
+test('nameDefine does not rewrite named define', t => {
+  const unit = {
+    contents: 'define("foo", function(){});\n',
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: ['foo'],
+    deps: []
+  });
   t.end();
 });
 
-test('defines ignore  define call without implementation', t => {
-  const empty = 'define(["a"]);\n';
-  const r = defines('empty', empty);
-  t.notOk(r.defined);
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, empty);
+test('nameDefine ignore  define call without implementation', t => {
+  const unit = {
+    contents: 'define(["a"]);\n',
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: [],
+    deps: []
+  });
   t.end();
 });
 
-test('defines wrapps multi anonymous define', t => {
+test('nameDefine wraps multi anonymous define', t => {
   const multiAnonWrapped =  '(function (root, factory) {\n' +
                             '    if (typeof define === \'function\' && define.amd) {\n' +
                             '        define([\'b\'], factory);\n' +
@@ -209,15 +271,20 @@ test('defines wrapps multi anonymous define', t => {
                                     '    return stored.bar;\n' +
                                     '}));';
 
-  const r = defines('multiAnonWrapped', multiAnonWrapped);
-  t.equal(r.defined, 'multiAnonWrapped');
-  t.notOk(r.shimed);
+  const unit = {
+    contents: multiAnonWrapped,
+    moduleId: 'multiAnonWrapped',
+    path: 'src/multiAnonWrapped.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['multiAnonWrapped']);
   t.deepEqual(r.deps, ['b']);
-  t.equal(r.contents, multiAnonWrappedExpected);
+  t.deepEqual(r.contents, multiAnonWrappedExpected);
+  t.equal(r.sourceMap.file, 'src/multiAnonWrapped.js');
   t.end();
 });
 
-test('defines inserts correctly for define across multiple lines', t => {
+test('nameDefine inserts correctly for define across multiple lines', t => {
   const good3 = 'define(\n' +
                 '    // a comment\n' +
                 '    [\n' +
@@ -230,27 +297,37 @@ test('defines inserts correctly for define across multiple lines', t => {
                         '        "some/dep"\n' +
                         '    ],\nfunction (dep) {});';
 
-  const r = defines('good/3', good3);
-  t.equal(r.defined, 'good/3');
-  t.notOk(r.shimed);
+  const unit = {
+    contents: good3,
+    moduleId: 'good/3',
+    path: 'src/good/3.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['good/3']);
   t.deepEqual(r.deps, ['some/dep']);
-  t.equal(r.contents, goodExpected3);
+  t.deepEqual(r.contents, goodExpected3);
+  t.equal(r.sourceMap.file, 'src/good/3.js');
   t.end();
 });
 
-test('defines inserts correctly for factory define', t => {
+test('nameDefine inserts correctly for factory define', t => {
   const good4 = 'define(this.key)';
   const goodExpected4 = 'define(\'good/4\',this.key)';
-  const r = defines('good/4', good4);
-  t.equal(r.defined, 'good/4');
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, goodExpected4);
+  const unit = {
+    contents: good4,
+    moduleId: 'good/4',
+    path: 'src/good/4.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['good/4']);
+  t.deepEqual(r.deps, []);
+  t.deepEqual(r.contents, goodExpected4);
+  t.equal(r.sourceMap.file, 'src/good/4.js');
   t.end();
 });
 
 // modified test. we don't do namespace.
-test('defines inserts correctly for cjs wrapper define', t => {
+test('nameDefine inserts correctly for cjs wrapper define', t => {
   const good5 = 'if ("function" === typeof define && define.amd) {\n' +
                 '    define(function (require) {\n' +
                 '        return {\n' +
@@ -267,15 +344,28 @@ test('defines inserts correctly for cjs wrapper define', t => {
                         '        };\n' +
                         '    });\n' +
                         '}';
-  const r = defines('good/5', good5);
-  t.equal(r.defined, 'good/5');
+  const unit = {
+    contents: good5,
+    moduleId: 'good/5',
+    path: 'src/good/5.js',
+    sourceMap: {
+      version: 3,
+      file: 'good/5.js',
+      sources: ['good/5.ts'],
+      mappings: ''
+    }
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['good/5']);
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./six']);
   t.equal(r.contents, goodExpected5);
+  t.equal(r.sourceMap.file, 'good/5.js');
+  t.deepEqual(r.sourceMap.sources, ['good/5.js']);
   t.end();
 });
 
-test('defines inserts correctly for cjs wrapper define case 2', t => {
+test('nameDefine inserts correctly for cjs wrapper define case 2', t => {
   const good5 = 'if ("function" === typeof define && define.amd) {\n' +
                 '    define(function (require, exports) {\n' +
                 '        return {\n' +
@@ -292,15 +382,20 @@ test('defines inserts correctly for cjs wrapper define case 2', t => {
                         '        };\n' +
                         '    });\n' +
                         '}';
-  const r = defines('good/5', good5);
-  t.equal(r.defined, 'good/5');
+  const unit = {
+    contents: good5,
+    moduleId: 'good/5',
+    path: 'src/good/5.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['good/5']);
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./six']);
   t.equal(r.contents, goodExpected5);
   t.end();
 });
 
-test('defines inserts correctly for cjs wrapper define case 3', t => {
+test('nameDefine inserts correctly for cjs wrapper define case 3', t => {
   const good5 = 'if ("function" === typeof define && define.amd) {\n' +
                 '    define(function (require, exports, module) {\n' +
                 '        return {\n' +
@@ -317,15 +412,20 @@ test('defines inserts correctly for cjs wrapper define case 3', t => {
                         '        };\n' +
                         '    });\n' +
                         '}';
-  const r = defines('good/5', good5);
-  t.equal(r.defined, 'good/5');
+  const unit = {
+    contents: good5,
+    moduleId: 'good/5',
+    path: 'src/good/5.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['good/5']);
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./six']);
   t.equal(r.contents, goodExpected5);
   t.end();
 });
 
-test('defines inserts correctly for cjs wrapper define case 4, keep deps order', t => {
+test('nameDefine inserts correctly for cjs wrapper define case 4, keep deps order', t => {
   const good5 = 'if ("function" === typeof define && define.amd) {\n' +
                 '    define(function (require, exports, module) {\n' +
                 '        return {\n' +
@@ -346,213 +446,129 @@ test('defines inserts correctly for cjs wrapper define case 4, keep deps order',
                         '        };\n' +
                         '    });\n' +
                         '}';
-  const r = defines('good/5', good5);
-  t.equal(r.defined, 'good/5');
+  const unit = {
+    contents: good5,
+    moduleId: 'good/5',
+    path: 'src/good/5.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['good/5']);
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./c', './a', './b']);
   t.equal(r.contents, goodExpected5);
   t.end();
 });
 
-test('defines shim', t => {
-  const shim = 'var Foo = "Foo";';
-  const shimExpected = 'var Foo = "Foo";;\n' +
-                       'define("shim", [\'bar\'], (function (global) {\n' +
-                       '  return function () {\n' +
-                       '    return global.Foo;\n' +
-                       '  };\n' +
-                       '}(this)));\n';
-  const r = defines('shim', shim, {deps: ['bar'], 'exports': 'Foo'});
-  t.equal(r.defined, 'shim');
-  t.ok(r.shimed);
-  t.deepEqual(r.deps, ['bar']);
-  t.equal(r.contents, shimExpected);
-  t.end();
-});
-
-test('defines shim without deps', t => {
-  const shim = 'var Foo = "Foo";';
-  const shimExpected = 'var Foo = "Foo";;\n' +
-                       'define("shim", (function (global) {\n' +
-                       '  return function () {\n' +
-                       '    return global.Foo;\n' +
-                       '  };\n' +
-                       '}(this)));\n';
-  const r = defines('shim', shim, {'exports': 'Foo'});
-  t.equal(r.defined, 'shim');
-  t.ok(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, shimExpected);
-  t.end();
-});
-
-test('defines shim without exports', t => {
-  const shim = 'var Foo = "Foo";';
-  const shimExpected = 'var Foo = "Foo";;\n' +
-                       'define("shim", [\'bar\'], function(){});\n';
-  const r = defines('shim', shim, {deps: ['bar']});
-  t.equal(r.defined, 'shim');
-  t.ok(r.shimed);
-  t.deepEqual(r.deps, ['bar']);
-  t.equal(r.contents, shimExpected);
-  t.end();
-});
-
-test('defines wrapShim', t => {
-  const shim = 'var Foo = "Foo";';
-  const shimExpected = '(function(root) {\n' +
-                       'define("shim", [\'bar\'], function() {\n' +
-                       '  return (function() {\n' +
-                       'var Foo = "Foo";;\n' +
-                       'return root.Foo = Foo;\n' +
-                       '  }).apply(root, arguments);\n' +
-                       '});\n' +
-                       '}(this));\n';
-  const r = defines('shim', shim, {deps: ['bar'], 'exports': 'Foo', wrapShim: true});
-  t.equal(r.defined, 'shim');
-  t.ok(r.shimed);
-  t.equal(r.headLines, 3);
-  t.deepEqual(r.deps, ['bar']);
-  t.equal(r.contents, shimExpected);
-  t.end();
-});
-
-test('defines wrapShim without deps', t => {
-  const shim = 'var Foo = "Foo";';
-  const shimExpected = '(function(root) {\n' +
-                       'define("shim", function() {\n' +
-                       '  return (function() {\n' +
-                       'var Foo = "Foo";;\n' +
-                       'return root.Foo = Foo;\n' +
-                       '  }).apply(root, arguments);\n' +
-                       '});\n' +
-                       '}(this));\n';
-  const r = defines('shim', shim, {'exports': 'Foo', wrapShim: true});
-  t.equal(r.defined, 'shim');
-  t.ok(r.shimed);
-  t.equal(r.headLines, 3);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, shimExpected);
-  t.end();
-});
-
-test('defines wrapShim without exports', t => {
-  const shim = 'var Foo = "Foo";';
-  const shimExpected = '(function(root) {\n' +
-                       'define("shim", [\'bar\'], function() {\n' +
-                       '  return (function() {\n' +
-                       'var Foo = "Foo";;\n' +
-                       '\n' +
-                       '  }).apply(root, arguments);\n' +
-                       '});\n' +
-                       '}(this));\n';
-  const r = defines('shim', shim, {deps: ['bar'], wrapShim: true});
-  t.equal(r.defined, 'shim');
-  t.ok(r.shimed);
-  t.equal(r.headLines, 3);
-  t.deepEqual(r.deps, ['bar']);
-  t.equal(r.contents, shimExpected);
-  t.end();
-});
-
-test('defines ignores shim settings if source code already defined amd module', t => {
-  const good1 = 'if (typeof define === "function" && define.amd) {\n' +
-                '    define(definition);\n' +
-                '}';
-
-  const goodExpected1 = 'if (typeof define === "function" && define.amd) {\n' +
-                        '    define(\'good/1\',definition);\n' +
-                        '}';
-  const r = defines('good/1', good1, {deps: ['bar'], 'exports': 'Foo', wrapShim: true});
-  t.equal(r.defined, 'good/1');
-  t.notOk(r.shimed);
-  t.equal(r.deps.length, 0);
-  t.equal(r.contents, goodExpected1);
-  t.end();
-});
-
-test('defines get requirejs deps', t => {
+test('nameDefine get requirejs deps', t => {
   t.deepEqual(
-    defines('demo', 'require(["a", "./b"]);'),
-    {
-      defined: null,
-      deps: ['a', './b'],
+    nameDefine({
+      moduleId: 'demo',
+      path: 'src/demo.js',
       contents: 'require(["a", "./b"]);'
+    }),
+    {
+      defined: [],
+      deps: ['a', './b'],
     }
   );
 
   t.deepEqual(
-    defines('demo', 'require(["a", "./b"], function(){});'),
-    {
-      defined: null,
-      deps: ['a', './b'],
+    nameDefine({
+      moduleId: 'demo',
+      path: 'src/demo.js',
       contents: 'require(["a", "./b"], function(){});'
+    }),
+    {
+      defined: [],
+      deps: ['a', './b']
     }
   );
 
   t.deepEqual(
-    defines('demo', 'require({}, ["a", "./b"]);'),
-    {
-      defined: null,
-      deps: ['a', './b'],
+    nameDefine({
+      moduleId: 'demo',
+      path: 'src/demo.js',
       contents: 'require({}, ["a", "./b"]);'
+    }),
+    {
+      defined: [],
+      deps: ['a', './b']
     }
   );
 
   t.deepEqual(
-    defines('demo', 'require({}, ["a", "./b"], function(){});'),
-    {
-      defined: null,
-      deps: ['a', './b'],
+    nameDefine({
+      moduleId: 'demo',
+      path: 'src/demo.js',
       contents: 'require({}, ["a", "./b"], function(){});'
+    }),
+    {
+      defined: [],
+      deps: ['a', './b']
     }
   );
 
   t.deepEqual(
-    defines('demo', 'requirejs(["a", "./b"]);'),
-    {
-      defined: null,
-      deps: ['a', './b'],
+    nameDefine({
+      moduleId: 'demo',
+      path: 'src/demo.js',
       contents: 'requirejs(["a", "./b"]);'
+    }),
+    {
+      defined: [],
+      deps: ['a', './b']
     }
   );
 
   t.deepEqual(
-    defines('demo', 'requirejs(["a", "./b"], function(){});'),
-    {
-      defined: null,
-      deps: ['a', './b'],
+    nameDefine({
+      moduleId: 'demo',
+      path: 'src/demo.js',
       contents: 'requirejs(["a", "./b"], function(){});'
+    }),
+    {
+      defined: [],
+      deps: ['a', './b']
     }
   );
 
   t.deepEqual(
-    defines('demo', 'requirejs({}, ["a", "./b"]);'),
-    {
-      defined: null,
-      deps: ['a', './b'],
+    nameDefine({
+      moduleId: 'demo',
+      path: 'src/demo.js',
       contents: 'requirejs({}, ["a", "./b"]);'
+    }),
+    {
+      defined: [],
+      deps: ['a', './b']
     }
   );
 
   t.deepEqual(
-    defines('demo', 'requirejs({}, ["a", "./b"], function(){});'),
-    {
-      defined: null,
-      deps: ['a', './b'],
+    nameDefine({
+      moduleId: 'demo',
+      path: 'src/demo.js',
       contents: 'requirejs({}, ["a", "./b"], function(){});'
+    }),
+    {
+      defined: [],
+      deps: ['a', './b']
     }
   );
   t.end();
 });
 
-test('defines fills up module name', t => {
+test('nameDefine fills up module name', t => {
   const cjs = "define(['require','exports','module','./a'],function(){});";
-
   const cjsExpected = "define('cjs',['require','exports','module','./a'],function(){});";
 
-  const r = defines('cjs', cjs);
-  t.equal(r.defined, 'cjs');
+  const unit = {
+    contents: cjs,
+    moduleId: 'cjs',
+    path: 'src/cjs.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['cjs']);
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./a']);
   t.equal(r.contents, cjsExpected);
