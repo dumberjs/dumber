@@ -420,11 +420,7 @@ export default class Bundler {
             sourceMap: unit.sourceMap
           });
           userSpaceModuleIds.add(unit.moduleId);
-          if (typeof unit.defined === 'string') {
-            userSpaceModuleIds.add(unit.defined);
-          } else if (Array.isArray(unit.defined)) {
-            unit.defined.forEach(d => userSpaceModuleIds.add(d));
-          }
+          unit.defined.forEach(d => userSpaceModuleIds.add(d));
         });
       }
 
@@ -438,11 +434,7 @@ export default class Bundler {
             sourceMap: unit.sourceMap
           });
           packageSpaceModuleIds.add(unit.moduleId);
-          if (typeof unit.defined === 'string') {
-            packageSpaceModuleIds.add(unit.defined);
-          } else if (Array.isArray(unit.defined)) {
-            unit.defined.forEach(d => packageSpaceModuleIds.add(d));
-          }
+          unit.defined.forEach(d => packageSpaceModuleIds.add(d));
         });
 
         // reset to userSpaceUnits
