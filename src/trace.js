@@ -37,7 +37,6 @@ export default function(unit, opts = {}) {
     hash = generateHash(key);
     const cached = cache.getCache(hash);
     if (cached) {
-      console.log('GOT CACHED');
       return Promise.resolve(cached);
     }
   }
