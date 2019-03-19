@@ -10,8 +10,11 @@ import './transformers/alias.spec';
 // something wrong with browserify + @babel/core
 // going to switch to dumberify when it's ready
 // import './trace.spec';
+// import './bundler.spec';
 // import './transformers/esm-to-cjs.spec';
+import './transformers/hack-moment.spec';
 import './transformers/cjs-to-amd.spec';
+import './transformers/conventional-alias.spec.js';
 import './transformers/name-amd-define.spec';
 import './transformers/replace.spec';
 import './transformers/shim-amd.spec';

@@ -59,7 +59,7 @@ export default class Bundler {
     this._unitsMap = {};
 
     this._modules_done = new ModulesDone();
-    this._modules_todo = new ModulesTodo(this._modules_done);
+    this._modules_todo = new ModulesTodo();
 
     this._readersMap = {};
     this._fileReader = opts.packageFileReader || defaultPackageFileReader;
