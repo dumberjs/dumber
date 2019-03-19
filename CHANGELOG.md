@@ -1,3 +1,12 @@
+# [0.11.0](https://github.com/dumberjs/dumber/compare/v0.10.0...v0.11.0) (2019-03-19)
+
+
+### Features
+
+* proper source map rewrite. refactor trace pipeline ([2ddf24e](https://github.com/dumberjs/dumber/commit/2ddf24e)), closes [#6](https://github.com/dumberjs/dumber/issues/6)
+
+
+
 # [0.10.0](https://github.com/dumberjs/dumber/compare/v0.9.2...v0.10.0) (2019-03-08)
 
 
