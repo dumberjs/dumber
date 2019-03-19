@@ -13,7 +13,7 @@ export default function (unit) {
       version: 3,
       file: filename,
       sources: [filename],
-      mappings: '',
+      mappings: 'AAAA',
       names: [],
       sourcesContent: [contents]
     }

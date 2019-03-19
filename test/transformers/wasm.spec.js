@@ -17,7 +17,7 @@ test('wasm wraps wasm into amd module', t => {
       version: 3,
       file: 'src/a.wasm',
       sources: ['src/a.wasm'],
-      mappings: '',
+      mappings: 'AAAA',
       names: [],
       sourcesContent: [source]
     }

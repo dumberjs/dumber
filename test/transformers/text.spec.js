@@ -17,7 +17,7 @@ test('text wraps text into amd module', t => {
       version: 3,
       file: 'src/a.html',
       sources: ['src/a.html'],
-      mappings: '',
+      mappings: 'AAAA',
       names: [],
       sourcesContent: [source]
     }
