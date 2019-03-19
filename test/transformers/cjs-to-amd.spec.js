@@ -236,3 +236,16 @@ test('cjs forces cjs wrap with npm package file path contains commonjs', t => {
   t.ok(newUnit.forceWrap);
   t.end();
 });
+
+test('cjs supports dynamic import() in ES module', t => {
+  const unit = {
+    contents: "exports.default = import('./a');",
+    path: 'src/foo.js',
+    moduleId: 'foo'
+  };
+  const newUnit = cjs(unit);
+  t.ok(newUnit.contents.startsWith('define(function (require, exports, module) {' +
+                                  'var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0]&&r[0].default?r[0].default:r;});};\n'));
+  t.ok(newUnit.contents.includes("imp0r_('./a')"))
+  t.end();
+});
