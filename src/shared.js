@@ -5,7 +5,6 @@ import fetch from 'node-fetch';
 import crypto from 'crypto';
 import {ensureParsed} from 'ast-matcher';
 import convert from 'convert-source-map';
-import {join as sourcePathJoin} from 'source-map/lib/util';
 import url from 'url';
 import './ensure-parser-set';
 
@@ -108,7 +107,7 @@ export function stripSourceMappingUrl(contents) {
 }
 
 export function getSourceMap(contents, filePath) {
-  const dir = filePath && path.dirname(filePath);
+  const dir = (filePath && path.dirname(filePath)) || '';
 
   const sourceMap = (() => {
     try {
@@ -129,16 +128,21 @@ export function getSourceMap(contents, filePath) {
     if (sourceRoot) {
       // get rid of sourceRoot
       if (sourceRoot !== '/') {
-        sourceMap.sources = sourceMap.sources.map(s => sourcePathJoin(sourceRoot, s));
+        sourceMap.sources = sourceMap.sources.map(s => path.join(sourceRoot, s).replace(/\\/g, '/'));
       }
       delete sourceMap.sourceRoot;
+    }
+
+    sourceMap.sources = sourceMap.sources.map(s => path.join(dir, s).replace(/\\/g, '/'));
+    if (filePath) {
+      sourceMap.file = filePath.replace(/\\/g, '/');
     }
 
     if (!sourceMap.sourcesContent) {
       // bring in sources content inline
       try {
         sourceMap.sourcesContent = sourceMap.sources.map(s =>
-          fs.readFileSync(path.resolve(dir, s), 'utf8')
+          fs.readFileSync(s, 'utf8')
         );
       } catch (err) {
         //

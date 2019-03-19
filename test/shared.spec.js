@@ -148,9 +148,22 @@ test('getSourceMap ignores file without sourceMap', t => {
 });
 
 test('getSourceMap gets inline sourceMap', t => {
-  const contents = 'var a = 1;\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYnVpbGQvZm9vLm1pbi5qcyIsInNvdXJjZXMiOlsic3JjL2Zvby5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSIsInNvdXJjZVJvb3QiOiIvIn0=';
-  const sourceMap = {"version":3,"file":"build/foo.min.js","sources":["src/foo.js"],"names":[],"mappings":"AAAA"};
-  t.deepEqual(getSourceMap(contents, 'foo.js'), sourceMap);
+  const sourceMap = {
+    version: 3,
+    file: 'foo.min.js',
+    sources: ['../src/foo.js'],
+    mappings: 'AAAA',
+    names: []
+  };
+  const expectedSourceMap = {
+    version: 3,
+    file: 'node_modules/foo/dist/foo.min.js',
+    sources: ['node_modules/foo/src/foo.js'],
+    mappings: 'AAAA',
+    names: []
+  };
+  const contents = 'var a = 1;\n//# sourceMappingURL=data:application/json;base64,' + Buffer.from(JSON.stringify(sourceMap)).toString('base64');
+  t.deepEqual(getSourceMap(contents, 'node_modules/foo/dist/foo.min.js'), expectedSourceMap);
   t.end();
 });
 
