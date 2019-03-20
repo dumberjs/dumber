@@ -1,7 +1,7 @@
 import {parse} from 'dumber-module-loader/dist/id-utils';
 
 const DIST_FOLDERS = ['dist', 'dists', 'output', 'out', 'lib', 'libs'];
-const DIST_FAVORS = ['amd', 'cjs', 'commonjs', 'es2015', 'native-modules', 'umd'];
+const DIST_FAVORS = ['amd', 'cjs', 'commonjs', 'es2015', 'native-modules', 'esm', 'umd'];
 
 // conventional alias mainly for aurelia
 // aurelia-foo/dist/cjs/bar -> aurelia-foo/bar
