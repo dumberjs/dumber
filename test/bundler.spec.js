@@ -1542,3 +1542,56 @@ test('Bundler supports package alias with lazyMain mode', t => {
   )
   .then(t.end);
 });
+
+test('Bundler creates correct alias for named AMD module which does not match package name', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
+    'node_modules/noty/package.json': JSON.stringify({name: 'noty', main: 'lib/noty.js'}),
+    'node_modules/noty/lib/noty.js': 'define("Noty",[],function(){});',
+  };
+  const bundler = createBundler(fakeFs);
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('noty');", moduleId: 'app'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app',['require','exports','module','noty'],function (require, exports, module) {\nrequire('noty');\n});\n"
+            },
+            {
+              "contents": "define.switchToPackageSpace();"
+            },
+            {
+              "path": "node_modules/noty/lib/noty.js",
+              "contents": "define(\"Noty\",[],function(){});\n;define('noty',['Noty'],function(m){return m;});"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            }
+          ],
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
+          }
+        }
+      });
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
+
