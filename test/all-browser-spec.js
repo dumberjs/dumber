@@ -1,4 +1,5 @@
 import './hide-log';
+import './check-deps.spec';
 // import './package-file-reader/default.spec';
 import './package-file-reader/jsDelivr.spec';
 import './package-reader.spec';
