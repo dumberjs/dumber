@@ -1,11 +1,11 @@
 export function info(message) {
-  console.info('[dumber] INFO: ' + message);
+  console.info('[dumber] ' + message);
 }
 
 export function warn(message) {
-  console.warn('[dumber] WARN: ' + message);
+  console.warn('[dumber] ' + message);
 }
 
 export function error(message) {
-  console.error('[dumber] ERROR: ' + message);
+  console.error('[dumber] ' + message);
 }
