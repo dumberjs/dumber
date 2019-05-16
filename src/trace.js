@@ -12,6 +12,7 @@ import shimAmd from './transformers/shim-amd';
 import transform from './transform';
 import {ext} from 'dumber-module-loader/dist/id-utils';
 import {generateHash} from './shared';
+import {version} from '../package.json';
 
 // depsFinder is optional
 export default function(unit, opts = {}) {
@@ -26,6 +27,7 @@ export default function(unit, opts = {}) {
 
   if (cache) {
     const key = [
+      version,
       path,
       moduleId,
       packageName,
