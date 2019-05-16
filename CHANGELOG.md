@@ -1,3 +1,12 @@
+## [0.11.3](https://github.com/dumberjs/dumber/compare/v0.11.2...v0.11.3) (2019-05-16)
+
+
+### Bug Fixes
+
+* don't stub text module with identity source map if there is existing map ([3afd5c0](https://github.com/dumberjs/dumber/commit/3afd5c0))
+
+
+
 ## [0.11.2](https://github.com/dumberjs/dumber/compare/v0.11.1...v0.11.2) (2019-03-19)
 
 
