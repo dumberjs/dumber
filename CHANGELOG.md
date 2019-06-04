@@ -1,3 +1,12 @@
+## [0.11.4](https://github.com/dumberjs/dumber/compare/v0.11.3...v0.11.4) (2019-06-04)
+
+
+### Bug Fixes
+
+* don't stop transform when incoming sourceMap is broken ([f129439](https://github.com/dumberjs/dumber/commit/f129439))
+
+
+
 ## [0.11.3](https://github.com/dumberjs/dumber/compare/v0.11.2...v0.11.3) (2019-05-16)
 
 
