@@ -8,6 +8,9 @@
     "./dist/package-file-reader/default.js": "./dist/package-file-reader/jsDelivr.js",
     "./dist/log.js": "./dist/log-browser.js"
   },
+  "engines": {
+    "node": ">=8.9"
+  },
   "files": [
     "dist"
   ],
