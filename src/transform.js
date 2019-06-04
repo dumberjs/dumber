@@ -1,4 +1,5 @@
 import {SourceMapGenerator, SourceMapConsumer} from 'source-map';
+import {error} from './log';
 
 export default function(unit, ...transformers) {
   let p = Promise.resolve(unit);
@@ -30,9 +31,15 @@ function mergeUnit(unit, newUnit) {
   if (sourceMap) {
     // merge source map
     if (unit.sourceMap && unit.sourceMap.mappings !== '') {
-      const generator = SourceMapGenerator.fromSourceMap(new SourceMapConsumer(sourceMap));
-      generator.applySourceMap(new SourceMapConsumer(unit.sourceMap));
-      merged.sourceMap = JSON.parse(generator.toString());
+      try {
+        const generator = SourceMapGenerator.fromSourceMap(new SourceMapConsumer(sourceMap));
+        generator.applySourceMap(new SourceMapConsumer(unit.sourceMap));
+        merged.sourceMap = JSON.parse(generator.toString());
+      } catch (err) {
+        error('merging sourceMap failed for ' + unit.path);
+        error(err);
+        merged.sourceMap = undefined;
+      }
     } else {
       merged.sourceMap = sourceMap;
     }

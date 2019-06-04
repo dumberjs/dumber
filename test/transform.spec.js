@@ -153,6 +153,35 @@ test('transform merges original unit sourceMap', t => {
   ).then(t.end);
 });
 
+test('transform ignores broken sourceMap', t => {
+  const unit = {
+    contents: 'a;\nb;\n',
+    path: 'src/foo.js',
+    moduleId: 'foo',
+    sourceMap: {
+      version: 3,
+      file: 'src/foo.js',
+      sources: [ 'src/foo.js' ],
+      sourcesContent: [ 'a;b;\n' ],
+      names: [],
+      mappings: 'XXX'
+    }
+  };
+
+  transform(unit, addLine(3, 'add;'))
+  .then(
+    unit => {
+      t.deepEqual(unit, {
+        contents: 'a;\nadd;\nb;\n',
+        path: 'src/foo.js',
+        moduleId: 'foo',
+        sourceMap: undefined
+      })
+    },
+    t.fail
+  ).then(t.end);
+});
+
 test('transform keeps original unit sourceMap if transformer did not supply source map', t => {
   const unit = {
     contents: 'a;\nb;\n',
