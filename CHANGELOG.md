@@ -1,3 +1,12 @@
+## [0.11.5](https://github.com/dumberjs/dumber/compare/v0.11.4...v0.11.5) (2019-06-04)
+
+
+### Bug Fixes
+
+* add dynamic import to tracing deps if possible ([1e6d148](https://github.com/dumberjs/dumber/commit/1e6d148))
+
+
+
 ## [0.11.4](https://github.com/dumberjs/dumber/compare/v0.11.3...v0.11.4) (2019-06-04)
 
 
