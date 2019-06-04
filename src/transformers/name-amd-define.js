@@ -16,6 +16,8 @@ const amdRequireDepFinder = astMatcher.depFinder(
   'requirejs(__any, [__deps])',
   'requirejs(__any, [__deps], __any)'
 );
+// import() has been translated to imp0r_() in cjs-to-amd.js
+const dynamicDepFinder = astMatcher.depFinder('imp0r_(__dep)');
 
 // transform an anonymous amd define() into named define.
 // find deps.
@@ -23,6 +25,12 @@ export default function(unit) {
   const result = ensureNamedDefine(unit);
 
   amdRequireDepFinder(unit.contents).forEach(d => {
+    if (result.deps.indexOf(d) === -1) {
+      result.deps.push(d);
+    }
+  });
+
+  dynamicDepFinder(unit.contents).forEach(d => {
     if (result.deps.indexOf(d) === -1) {
       result.deps.push(d);
     }

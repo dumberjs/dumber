@@ -559,8 +559,8 @@ test('nameDefine get requirejs deps', t => {
 });
 
 test('nameDefine fills up module name', t => {
-  const cjs = "define(['require','exports','module','./a'],function(){});";
-  const cjsExpected = "define('cjs',['require','exports','module','./a'],function(){});";
+  const cjs = "define(['require','exports','module','./a'],function(require, exports, module){var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0]&&r[0].default?r[0].default:r;});}; imp0r_('hello');});";
+  const cjsExpected = "define('cjs',['require','exports','module','./a'],function(require, exports, module){var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0]&&r[0].default?r[0].default:r;});}; imp0r_('hello');});";
 
   const unit = {
     contents: cjs,
@@ -570,7 +570,7 @@ test('nameDefine fills up module name', t => {
   const r = nameDefine(unit);
   t.deepEqual(r.defined, ['cjs']);
   t.notOk(r.shimed);
-  t.deepEqual(r.deps, ['./a']);
+  t.deepEqual(r.deps, ['./a', 'hello']);
   t.equal(r.contents, cjsExpected);
   t.end();
 });
