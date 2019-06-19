@@ -23,7 +23,7 @@
     "prepare": "del-cli dist && babel src -d dist",
     "nodejs-test": "tape -r @babel/register test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
     "coverage": "nyc --reporter=lcov tape -r @babel/register test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
-    "browser-test": "browserify -t babelify test/all-browser-spec.js | tape-run | tap-dot",
+    "browser-test": "browserify -t babelify test/all-browser-spec.js | browser-do --tap | tap-dot",
     "test": "npm run nodejs-test && npm run browser-test"
   },
   "repository": {
@@ -51,12 +51,12 @@
     "cherow": "^1.6.9",
     "convert-source-map": "^1.6.0",
     "del": "^4.1.1",
-    "dumber-module-loader": "^0.16.0",
+    "dumber-module-loader": "^0.16.1",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
     "modify-code": "^0.2.1",
     "node-fetch": "^2.6.0",
-    "node-libs-browser": "^2.2.0",
+    "node-libs-browser": "^2.2.1",
     "readable-stream": "^2.3.6",
     "resolve": "^1.11.1",
     "source-map": "^0.6.1"
@@ -65,7 +65,7 @@
     "@babel/cli": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
-    "babel-eslint": "^10.0.1",
+    "babel-eslint": "^10.0.2",
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "del-cli": "^2.0.0",
@@ -75,6 +75,6 @@
     "standard-changelog": "^2.0.11",
     "tap-dot": "^2.0.0",
     "tape": "^4.10.2",
-    "tape-run": "^6.0.0"
+    "browser-do": "^0.2.0"
   }
 }
