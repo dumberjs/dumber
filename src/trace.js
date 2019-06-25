@@ -3,6 +3,7 @@ import hackMoment from './transformers/hack-moment';
 import alias from './transformers/alias';
 import conventionalAlias from './transformers/conventional-alias';
 import text from './transformers/text';
+import json from './transformers/json';
 import wasm from './transformers/wasm';
 import esmToCjs from './transformers/esm-to-cjs';
 import replace from './transformers/replace';
@@ -56,6 +57,8 @@ export default function(unit, opts = {}) {
     );
   } else if (extname === '.wasm') {
     transformers.push(wasm);
+  } else if (extname === '.json') {
+    transformers.push(json);
   } else {
     // use text! for everything else including unknown extname
     transformers.push(text);
