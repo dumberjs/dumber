@@ -1,3 +1,12 @@
+## [0.11.6](https://github.com/dumberjs/dumber/compare/v0.11.5...v0.11.6) (2019-06-25)
+
+
+### Bug Fixes
+
+* explicitly fullfill json module to avoid json module dep issue in npm package ([f45809a](https://github.com/dumberjs/dumber/commit/f45809a))
+
+
+
 ## [0.11.5](https://github.com/dumberjs/dumber/compare/v0.11.4...v0.11.5) (2019-06-04)
 
 
