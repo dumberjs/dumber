@@ -1,3 +1,12 @@
+## [0.11.7](https://github.com/dumberjs/dumber/compare/v0.11.6...v0.11.7) (2019-06-25)
+
+
+### Bug Fixes
+
+* fix missing main alias for npm package name ended with ".js" ([fa5ffb2](https://github.com/dumberjs/dumber/commit/fa5ffb2))
+
+
+
 ## [0.11.6](https://github.com/dumberjs/dumber/compare/v0.11.5...v0.11.6) (2019-06-25)
 
 
