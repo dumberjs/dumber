@@ -234,22 +234,22 @@ test('packageReader reads browser over main/module field', t => {
 });
 
 test('packageReader reads main file with explicit ext', t => {
-  getReader('foo', {
-    'node_modules/foo/package.json': '{"name":"foo", "main": "./main.js"}',
-    'node_modules/foo/main.js': "lorem"
+  getReader('foo.js', {
+    'node_modules/foo.js/package.json': '{"name":"foo.js", "main": "./main.js"}',
+    'node_modules/foo.js/main.js': "lorem"
   }).then(r => {
     r.readMain().then(
       unit => {
         t.deepEqual(unit, {
-          path: 'node_modules/foo/main.js',
+          path: 'node_modules/foo.js/main.js',
           contents: 'lorem',
-          moduleId: 'foo/main',
-          packageName: 'foo',
-          alias: 'foo',
+          moduleId: 'foo.js/main',
+          packageName: 'foo.js',
+          alias: 'foo.js',
           sourceMap: undefined
         });
 
-        t.equal(r.name, 'foo');
+        t.equal(r.name, 'foo.js');
         t.equal(r.mainPath, 'main.js');
         t.deepEqual(r.browserReplacement, {});
       },

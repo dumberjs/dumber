@@ -44,7 +44,9 @@ export default class PackageReader {
       .then(unit => {
         // add alias from package name to main file module id.
         // but don't add alias from "foo" to "foo/main.css".
-        if (ext(unit.moduleId) === ext(this.name)) {
+        const mExt = ext(unit.moduleId);
+        const pExt = ext(this.name);
+        if (mExt === pExt || (pExt === '.js' && !mExt)) {
           unit.alias = this.name;
         }
         return unit;
