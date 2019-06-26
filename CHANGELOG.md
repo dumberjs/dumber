@@ -1,3 +1,12 @@
+# [0.12.0](https://github.com/dumberjs/dumber/compare/v0.11.7...v0.12.0) (2019-06-26)
+
+
+### Features
+
+* use the new define.alias func ([a86c32c](https://github.com/dumberjs/dumber/commit/a86c32c))
+
+
+
 ## [0.11.7](https://github.com/dumberjs/dumber/compare/v0.11.6...v0.11.7) (2019-06-25)
 
 
