@@ -426,7 +426,7 @@ test('trace traces npm js with dist alias', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.js',
-      contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});\n;define('foo/bar',['foo/dist/bar'],function(m){return m;});",
+      contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});\n;define.alias('foo/bar','foo/dist/bar');",
       sourceMap: {
         version: 3,
         sources: [ 'node_modules/foo/dist/bar.js' ],
@@ -456,7 +456,7 @@ test('trace traces npm html with dist alias', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/cjs/bar.html',
-      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\n;define('text!foo/bar.html',['text!foo/dist/cjs/bar.html'],function(m){return m;});",
+      contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\n;define.alias('text!foo/bar.html','text!foo/dist/cjs/bar.html');",
       sourceMap: {
         version: 3,
         sources: [ 'node_modules/foo/dist/cjs/bar.html' ],

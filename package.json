@@ -51,7 +51,7 @@
     "cherow": "^1.6.9",
     "convert-source-map": "^1.6.0",
     "del": "^4.1.1",
-    "dumber-module-loader": "^0.16.1",
+    "dumber-module-loader": "^0.17.0",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
     "modify-code": "^0.2.1",

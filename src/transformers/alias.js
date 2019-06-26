@@ -31,7 +31,7 @@ export default function (unit) {
 
   const newId = prefix + parsedFromId.bareId;
   const existingId = prefix + parsedToId.bareId;
-  const code = `\n;define('${newId}',['${existingId}'],function(m){return m;});`;
+  const code = `\n;define.alias('${newId}','${existingId}');`;
 
   // modifyCode is skipped, because there is only append,
   // no source map change needed.

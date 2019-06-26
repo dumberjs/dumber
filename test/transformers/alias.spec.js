@@ -9,7 +9,7 @@ test('alias creates aliases for js module', t => {
   }), {
     alias: null,
     defined: ['from/id'],
-    contents: "lorem\n;define('from/id',['to/id'],function(m){return m;});"
+    contents: "lorem\n;define.alias('from/id','to/id');"
   });
   t.deepEqual(alias({
     alias: 'from/id.js',
@@ -18,7 +18,7 @@ test('alias creates aliases for js module', t => {
   }), {
     alias: null,
     defined: ['from/id'],
-    contents: "lorem\n;define('from/id',['to/id'],function(m){return m;});"
+    contents: "lorem\n;define.alias('from/id','to/id');"
   });
   t.deepEqual(alias({
     alias: 'from/id',
@@ -27,7 +27,7 @@ test('alias creates aliases for js module', t => {
   }), {
     alias: null,
     defined: ['from/id'],
-    contents: "lorem\n;define('from/id',['to/id'],function(m){return m;});"
+    contents: "lorem\n;define.alias('from/id','to/id');"
   });
   t.deepEqual(alias({
     alias: 'from/id.js',
@@ -36,7 +36,7 @@ test('alias creates aliases for js module', t => {
   }), {
     alias: null,
     defined: ['from/id'],
-    contents: "lorem\n;define('from/id',['to/id'],function(m){return m;});"
+    contents: "lorem\n;define.alias('from/id','to/id');"
   });
   t.end();
 });
@@ -49,7 +49,7 @@ test('alias creates aliases for other modules', t => {
   }), {
     alias: null,
     defined: ['text!from/id.json'],
-    contents: "lorem\n;define('text!from/id.json',['text!to/id.json'],function(m){return m;});"
+    contents: "lorem\n;define.alias('text!from/id.json','text!to/id.json');"
   });
   t.deepEqual(alias({
     alias: 'text!from/id.css',
@@ -58,7 +58,7 @@ test('alias creates aliases for other modules', t => {
   }), {
     alias: null,
     defined: ['text!from/id.css'],
-    contents: "lorem\n;define('text!from/id.css',['text!to/id.css'],function(m){return m;});"
+    contents: "lorem\n;define.alias('text!from/id.css','text!to/id.css');"
   });
   t.deepEqual(alias({
     alias: 'from/id.wasm',
@@ -67,7 +67,7 @@ test('alias creates aliases for other modules', t => {
   }), {
     alias: null,
     defined: ['raw!from/id.wasm'],
-    contents: "lorem\n;define('raw!from/id.wasm',['raw!to/id.wasm'],function(m){return m;});"
+    contents: "lorem\n;define.alias('raw!from/id.wasm','raw!to/id.wasm');"
   });
   t.end();
 });
