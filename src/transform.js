@@ -1,6 +1,12 @@
 import {SourceMapGenerator, SourceMapConsumer} from 'source-map';
 import {warn} from './log';
 
+if (typeof process === 'undefined' || process.browser) {
+  SourceMapConsumer.initialize({
+    "lib/mappings.wasm": "https://unpkg.com/source-map@0.7.3/lib/mappings.wasm"
+  });
+}
+
 export default function(unit, ...transformers) {
   let p = Promise.resolve(unit);
 
@@ -28,30 +34,41 @@ function mergeUnit(unit, newUnit) {
     merged.contents = contents;
   }
 
+  let p = Promise.resolve();
   if (sourceMap) {
     // merge source map
     if (unit.sourceMap && unit.sourceMap.mappings !== '') {
-      try {
-        const generator = SourceMapGenerator.fromSourceMap(new SourceMapConsumer(sourceMap));
-        generator.applySourceMap(new SourceMapConsumer(unit.sourceMap));
-        merged.sourceMap = JSON.parse(generator.toString());
-      } catch (err) {
-        warn('merging sourceMap failed for ' + unit.path);
-        warn(err);
-        merged.sourceMap = undefined;
-      }
+      p = Promise.all([
+        new SourceMapConsumer(sourceMap),
+        new SourceMapConsumer(unit.sourceMap)
+      ]).then(([newConsumer, oldConsumer]) => {
+        try {
+          const generator = SourceMapGenerator.fromSourceMap(newConsumer);
+          generator.applySourceMap(oldConsumer);
+          merged.sourceMap = JSON.parse(generator.toString());
+        } catch (err) {
+          warn('merging sourceMap failed for ' + unit.path);
+          warn(err);
+          merged.sourceMap = undefined;
+        }
+
+        newConsumer.destroy();
+        oldConsumer.destroy();
+      });
     } else {
       merged.sourceMap = sourceMap;
     }
   }
 
-  const mergedDefined = mergeArray(unit.defined, defined);
-  const mergedDefs = mergeArray(unit.deps, deps);
+  return p.then(() => {
+    const mergedDefined = mergeArray(unit.defined, defined);
+    const mergedDefs = mergeArray(unit.deps, deps);
 
-  if (mergedDefined) merged.defined = mergedDefined;
-  if (mergedDefs) merged.deps = mergedDefs;
+    if (mergedDefined) merged.defined = mergedDefined;
+    if (mergedDefs) merged.deps = mergedDefs;
 
-  return merged;
+    return merged;
+  });
 }
 
 function mergeArray(arr1, arr2) {
