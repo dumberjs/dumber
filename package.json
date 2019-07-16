@@ -54,7 +54,7 @@
     "dumber-module-loader": "^0.17.2",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
-    "modify-code": "^0.5.2",
+    "modify-code": "^0.5.3",
     "node-fetch": "^2.6.0",
     "node-libs-browser": "^2.2.1",
     "readable-stream": "^2.3.6",
