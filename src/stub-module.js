@@ -67,7 +67,6 @@ export default function(moduleId) {
   }
 
   if (UNAVAIABLE_CORE_MODULES.indexOf(moduleId) !== -1) {
-    warn(`No avaiable stub for core Node.js module "${moduleId}", stubbed with empty module`);
     return EMPTY_MODULE;
   }
 
