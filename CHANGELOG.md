@@ -1,3 +1,7 @@
+## [0.12.5](https://github.com/dumberjs/dumber/compare/v0.12.4...v0.12.5) (2019-07-30)
+
+
+
 ## [0.12.4](https://github.com/dumberjs/dumber/compare/v0.12.3...v0.12.4) (2019-07-25)
 
 
