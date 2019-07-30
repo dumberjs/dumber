@@ -53,7 +53,7 @@
     "cherow": "^1.6.9",
     "convert-source-map": "^1.6.0",
     "del": "^5.0.0",
-    "dumber-module-loader": "^0.17.2",
+    "dumber-module-loader": "^0.18.0",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
     "modify-code": "^0.5.3",
@@ -74,7 +74,7 @@
     "eslint": "^6.1.0",
     "nyc": "^14.1.1",
     "sourcemap-codec": "^1.4.6",
-    "standard-changelog": "^2.0.11",
+    "standard-changelog": "^2.0.13",
     "tap-dot": "^2.0.0",
     "tape": "^4.11.0",
     "browser-do": "^0.3.2"
