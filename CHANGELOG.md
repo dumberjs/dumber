@@ -1,3 +1,17 @@
+## [0.12.6](https://github.com/dumberjs/dumber/compare/v0.12.5...v0.12.6) (2019-08-04)
+
+
+### Bug Fixes
+
+* fix missing css injection for less/scss/sass/styl files ([420e0aa](https://github.com/dumberjs/dumber/commit/420e0aa))
+
+
+### Features
+
+* support multiple aliases ([6cc5f6b](https://github.com/dumberjs/dumber/commit/6cc5f6b))
+
+
+
 ## [0.12.5](https://github.com/dumberjs/dumber/compare/v0.12.4...v0.12.5) (2019-07-30)
 
 
