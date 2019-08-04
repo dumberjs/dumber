@@ -1176,7 +1176,7 @@ test('Bundler supports inject css (relative path) by default', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('./c.css')", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('./c.scss')", moduleId: 'app'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -1194,7 +1194,7 @@ test('Bundler supports inject css (relative path) by default', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','./c.css'],function (require, exports, module) {\nrequire('./c.css')\n});\n"
+              "contents": "define('app',['require','exports','module','./c.scss'],function (require, exports, module) {\nrequire('./c.scss')\n});\n"
             },
             {
               "path": "src/c.css",

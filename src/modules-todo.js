@@ -26,7 +26,13 @@ export default class ModulesTodo {
     deps.forEach(d => {
       const parsedId = parse(resolveModuleId(moduleId, d));
 
-      if (!parsedId.prefix && parsedId.ext === '.css') {
+      if (!parsedId.prefix && (
+          parsedId.ext === '.css' ||
+          parsedId.ext === '.less' ||
+          parsedId.ext === '.scss' ||
+          parsedId.ext === '.sass' ||
+          parsedId.ext === '.styl'
+        )) {
         this.needCssInjection = true;
       }
 

@@ -147,3 +147,62 @@ test('ModulesTodo handles additional todos, set needCssInjection', t => {
   }).catch(t.fail).then(t.end);
 });
 
+test('ModulesTodo sets needCssInjection for less module', t => {
+  const md = new ModulesTodo();
+  md.process({
+    moduleId: 'foo',
+    deps: ['./foo.less']
+  });
+
+  t.deepEqual(md.todos, {
+    '0:foo.less': ['foo']
+  });
+  t.ok(md.needCssInjection);
+  t.ok(md.hasTodo());
+  t.end();
+});
+
+test('ModulesTodo sets needCssInjection for scss module', t => {
+  const md = new ModulesTodo();
+  md.process({
+    moduleId: 'foo',
+    deps: ['./foo.scss']
+  });
+
+  t.deepEqual(md.todos, {
+    '0:foo.scss': ['foo']
+  });
+  t.ok(md.needCssInjection);
+  t.ok(md.hasTodo());
+  t.end();
+});
+
+test('ModulesTodo sets needCssInjection for sass module', t => {
+  const md = new ModulesTodo();
+  md.process({
+    moduleId: 'foo',
+    deps: ['./foo.sass']
+  });
+
+  t.deepEqual(md.todos, {
+    '0:foo.sass': ['foo']
+  });
+  t.ok(md.needCssInjection);
+  t.ok(md.hasTodo());
+  t.end();
+});
+
+test('ModulesTodo sets needCssInjection for styl module', t => {
+  const md = new ModulesTodo();
+  md.process({
+    moduleId: 'foo',
+    deps: ['./foo.styl']
+  });
+
+  t.deepEqual(md.todos, {
+    '0:foo.styl': ['foo']
+  });
+  t.ok(md.needCssInjection);
+  t.ok(md.hasTodo());
+  t.end();
+});
