@@ -1,3 +1,12 @@
+## [0.12.7](https://github.com/dumberjs/dumber/compare/v0.12.6...v0.12.7) (2019-08-04)
+
+
+### Bug Fixes
+
+* fix missing ext:css plugin for less/sass/scss/styl deps ([3edd9da](https://github.com/dumberjs/dumber/commit/3edd9da))
+
+
+
 ## [0.12.6](https://github.com/dumberjs/dumber/compare/v0.12.5...v0.12.6) (2019-08-04)
 
 
