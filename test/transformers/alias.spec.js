@@ -101,3 +101,16 @@ test('alias ignores same alias', t => {
   });
   t.end();
 });
+
+test('multiple alias', t => {
+  t.deepEqual(alias({
+    alias: ['from/id', 'from/id2'],
+    defined: ['to/id'],
+    contents: 'lorem'
+  }), {
+    defined: ['from/id', 'from/id2'],
+    contents: "lorem\n;define.alias('from/id','to/id');\n;define.alias('from/id2','to/id');",
+    alias: null
+  });
+  t.end();
+});
