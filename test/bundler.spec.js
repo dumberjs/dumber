@@ -1140,7 +1140,7 @@ test('Bundler supports inject css by default', t => {
             },
             {
               "path": "__stub__/ext-css.js",
-              "contents": "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});"
+              "contents": "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});\n;define.alias('ext:less','ext:css');\n;define.alias('ext:scss','ext:css');\n;define.alias('ext:sass','ext:css');\n;define.alias('ext:styl','ext:css');"
             },
             {
               "contents": "define.switchToPackageSpace();"
@@ -1202,7 +1202,7 @@ test('Bundler supports inject css (relative path) by default', t => {
             },
             {
               "path": "__stub__/ext-css.js",
-              "contents": "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});"
+              "contents": "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});\n;define.alias('ext:less','ext:css');\n;define.alias('ext:scss','ext:css');\n;define.alias('ext:sass','ext:css');\n;define.alias('ext:styl','ext:css');"
             },
             {
               "contents": "define.switchToPackageSpace();"

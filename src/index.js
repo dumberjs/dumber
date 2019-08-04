@@ -228,7 +228,8 @@ export default class Bundler {
     return this.capture({
       path:'__stub__/ext-css.js',
       contents: "define(['dumber/dist/inject-css'],function(m){return m;});",
-      moduleId: 'ext:css'
+      moduleId: 'ext:css',
+      alias: ['ext:less', 'ext:scss', 'ext:sass', 'ext:styl']
     });
   }
 
