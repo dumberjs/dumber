@@ -3,6 +3,10 @@
   "version": "0.13.0",
   "description": "A dumb JavasScript bundler for Single Page Application, dumber than you and me",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "browser": {
     "./lib/cache/default.js": "./lib/cache/local-storage.js",
     "./lib/package-file-reader/default.js": "./lib/package-file-reader/jsDelivr.js",
