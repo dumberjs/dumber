@@ -1,3 +1,17 @@
+# [0.13.0](https://github.com/dumberjs/dumber/compare/v0.12.7...v0.13.0) (2019-08-05)
+
+
+### Features
+
+* remove babel transpiling, back to plain commonjs ([f62c8aa](https://github.com/dumberjs/dumber/commit/f62c8aa))
+
+
+### BREAKING CHANGES
+
+* ensure-parser-set API is changed.
+
+
+
 ## [0.12.7](https://github.com/dumberjs/dumber/compare/v0.12.6...v0.12.7) (2019-08-04)
 
 
