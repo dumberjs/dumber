@@ -1,5 +1,5 @@
-import test from 'tape';
-import hackMoment from '../../src/transformers/hack-moment';
+const test = require('tape');
+const hackMoment = require('../../lib/transformers/hack-moment');
 
 test('hackMoment patches momentjs to expose global var "moment"', t => {
   const moment = `//! moment.js

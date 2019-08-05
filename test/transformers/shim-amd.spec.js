@@ -1,5 +1,5 @@
-import test from 'tape';
-import shimAmd from '../../src/transformers/shim-amd';
+const test = require('tape');
+const shimAmd = require('../../lib/transformers/shim-amd');
 
 test('shimAmd shims', t => {
   const shim = 'var Foo = "Foo";';

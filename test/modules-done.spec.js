@@ -1,5 +1,5 @@
-import test from 'tape';
-import ModulesDone from '../src/modules-done';
+const test = require('tape');
+const ModulesDone = require('../lib/modules-done');
 
 test('ModulesDone adds user space module id', t => {
   const md = new ModulesDone();

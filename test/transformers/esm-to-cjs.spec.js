@@ -1,5 +1,5 @@
-import test from 'tape';
-import esm from '../../src/transformers/esm-to-cjs';
+const test = require('tape');
+const esm = require('../../lib/transformers/esm-to-cjs');
 
 test('esm skips non-ES module', t => {
   const unit = {

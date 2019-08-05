@@ -1,6 +1,6 @@
 'use strict';
-import test from 'tape';
-import {usesEsm} from '../src/parser';
+const test = require('tape');
+const {usesEsm} = require('../lib/parser');
 
 test('usesEsm ignores commonjs', t => {
   t.equal(usesEsm("var dep = require('dep');"), false);

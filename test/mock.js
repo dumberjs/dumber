@@ -1,11 +1,11 @@
-import path from 'path';
-import _defaultReader from '../src/package-file-reader/default';
+const path = require('path');
+const _defaultReader = require('../lib/package-file-reader/default');
 
-export function mockResolve(path) {
+function mockResolve(path) {
   return 'node_modules/' + path;
 }
 
-export function buildReadFile(fakeFs = {}) {
+function buildReadFile(fakeFs = {}) {
   return p => {
     p = path.normalize(p).replace(/\\/g, '/');
     if (fakeFs.hasOwnProperty(p)) return Promise.resolve(fakeFs[p]);
@@ -13,6 +13,10 @@ export function buildReadFile(fakeFs = {}) {
   };
 }
 
-export function mockPackageFileReader(fakeReader) {
+function mockPackageFileReader(fakeReader) {
   return packageConfig => _defaultReader(packageConfig, {resolve: mockResolve, readFile: fakeReader});
 }
+
+exports.mockResolve = mockResolve;
+exports.buildReadFile = buildReadFile;
+exports.mockPackageFileReader = mockPackageFileReader;

@@ -1,5 +1,5 @@
-import test from 'tape';
-import Package from '../src/package';
+const test = require('tape');
+const Package = require('../lib/package');
 
 test('package rejects invalid options', t => {
   t.throws(() => new Package());

@@ -1,4 +1,4 @@
-import _ from 'lodash';
+const _ = require('lodash');
 export default class X {
   constructor() {
     this.name = 'Hello';

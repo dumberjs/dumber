@@ -1,5 +1,5 @@
-import test from 'tape';
-import replace from '../../src/transformers/replace';
+const test = require('tape');
+const replace = require('../../lib/transformers/replace');
 
 test('replace transform ignores empty replacement', t => {
   const source = `define('foo', ['require', 'module-a', './bar'], function (require) {

@@ -1,6 +1,6 @@
-import test from 'tape';
-import jsDelivrFileReader from '../../src/package-file-reader/jsDelivr';
-import {decode} from 'base64-arraybuffer';
+const test = require('tape');
+const jsDelivrFileReader = require('../../lib/package-file-reader/jsDelivr');
+const {decode} = require('base64-arraybuffer');
 
 function mkResponse (text) {
   return {

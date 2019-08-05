@@ -1,5 +1,5 @@
-import test from 'tape';
-import {usesAmdOrRequireJs} from '../src/parser';
+const test = require('tape');
+const {usesAmdOrRequireJs} = require('../lib/parser');
 
 // copied from r.js/build/tests/parse.js
 // for usesAmdOrRequireJs

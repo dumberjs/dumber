@@ -1,5 +1,5 @@
-import test from 'tape';
-import text from '../../src/transformers/text';
+const test = require('tape');
+const text = require('../../lib/transformers/text');
 
 test('text wraps text into amd module', t => {
   const source = '<p></p>';

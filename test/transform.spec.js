@@ -1,7 +1,7 @@
-import test from 'tape';
-import transform from '../src/transform';
-import modifyCode from 'modify-code';
-import {encode} from 'sourcemap-codec';
+const test = require('tape');
+const transform = require('../lib/transform');
+const modifyCode = require('modify-code').default;
+const {encode} = require('sourcemap-codec');
 
 function addLine(idx, line) {
   return function(unit) {

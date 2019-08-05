@@ -1,5 +1,5 @@
-import test from 'tape';
-import conventionalAlias from '../../src/transformers/conventional-alias';
+const test = require('tape');
+const conventionalAlias = require('../../lib/transformers/conventional-alias');
 
 test('conventionalAlias ignores resource did not follow the convention', t => {
   t.notOk(conventionalAlias({

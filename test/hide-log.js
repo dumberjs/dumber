@@ -1,4 +1,4 @@
-import * as log from '../src/log';
+const log = require('../lib/log');
 
 function noop() {}
 log.info = noop;

@@ -1,5 +1,5 @@
-import test from 'tape';
-import ModulesTodo from '../src/modules-todo';
+const test = require('tape');
+const ModulesTodo = require('../lib/modules-todo');
 
 test('ModulesTodo process traced unit', t => {
   const md = new ModulesTodo();

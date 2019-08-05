@@ -1,5 +1,5 @@
-import test from 'tape';
-import cjs from '../../src/transformers/cjs-to-amd';
+const test = require('tape');
+const cjs = require('../../lib/transformers/cjs-to-amd');
 
 // copied from r.js/build/tests/convert.js
 // for commonJs.convert

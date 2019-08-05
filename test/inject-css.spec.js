@@ -1,5 +1,5 @@
-import test from 'tape';
-import {fixupCSSUrls} from '../src/inject-css';
+const test = require('tape');
+const {fixupCSSUrls} = require('../lib/inject-css');
 
 // tests partly copied from
 // https://github.com/webpack-contrib/style-loader/blob/master/test/fixUrls.test.js

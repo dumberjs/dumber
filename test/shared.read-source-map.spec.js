@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import test from 'tape';
-import {getSourceMap} from '../src/shared';
+const fs = require('fs');
+const path = require('path');
+const test = require('tape');
+const {getSourceMap} = require('../lib/shared');
 
 // no test in browser
 test('getSourceMap gets referenced sourceMap file content', t => {

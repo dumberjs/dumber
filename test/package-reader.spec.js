@@ -1,7 +1,7 @@
-import test from 'tape';
-import PackageReader from '../src/package-reader';
-import Package from '../src/package';
-import {mockPackageFileReader, buildReadFile} from './mock';
+const test = require('tape');
+const PackageReader = require('../lib/package-reader');
+const Package = require('../lib/package');
+const {mockPackageFileReader, buildReadFile} = require('./mock');
 
 function getReader(name, fakeFs) {
   const fakeReader = buildReadFile(fakeFs);

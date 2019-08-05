@@ -1,8 +1,8 @@
-import test from 'tape';
-import path from 'path';
-import fs from 'fs';
-import {buildReadFile, mockPackageFileReader} from '../mock';
-import _defaultFileReader from '../../src/package-file-reader/default';
+const test = require('tape');
+const path = require('path');
+const fs = require('fs');
+const {buildReadFile, mockPackageFileReader} = require('../mock');
+const _defaultFileReader = require('../../lib/package-file-reader/default');
 
 test('defaultNpmPackageFileReader falls back to main:index when package.json is missing', t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile());

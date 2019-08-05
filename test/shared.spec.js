@@ -1,6 +1,6 @@
-import test from 'tape';
-import {stripJsExtension, isPackageName, contentOrFile, generateHash, stripSourceMappingUrl, getSourceMap} from '../src/shared';
-import {buildReadFile} from './mock';
+const test = require('tape');
+const {stripJsExtension, isPackageName, contentOrFile, generateHash, stripSourceMappingUrl, getSourceMap} = require('../lib/shared');
+const {buildReadFile} = require('./mock');
 
 test('stripJsExtension keeps other extension', t => {
   t.equal(stripJsExtension('a.json'), 'a.json');

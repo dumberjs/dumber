@@ -2,30 +2,24 @@
   "name": "dumber",
   "version": "0.12.7",
   "description": "A dumb JavasScript bundler for Single Page Application, dumber than you and me",
-  "main": "dist/index.js",
+  "main": "index.js",
   "browser": {
-    "./dist/cache/default.js": "./dist/cache/local-storage.js",
-    "./dist/package-file-reader/default.js": "./dist/package-file-reader/jsDelivr.js",
-    "./dist/log.js": "./dist/log-browser.js"
+    "./lib/cache/default.js": "./lib/cache/local-storage.js",
+    "./lib/package-file-reader/default.js": "./lib/package-file-reader/jsDelivr.js",
+    "./lib/log.js": "./lib/log-browser.js"
   },
   "engines": {
     "node": ">=8.9"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "lint": "eslint src test",
+    "lint": "eslint index.js lib test",
     "preversion": "npm test",
     "version": "standard-changelog && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
-    "clean": "del-cli dist",
-    "build": "babel src -d dist",
-    "prepare": "npm run clean && npm run build",
-    "nodejs-test": "tape -r @babel/register test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
-    "coverage": "nyc --reporter=lcov tape -r @babel/register test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
-    "browser-test": "browserify -t babelify test/all-browser-spec.js | browser-do --tap | tap-dot",
+    "nodejs-test": "tape test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
+    "coverage": "nyc --reporter=lcov tape test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
+    "browser-test": "browserify test/all-browser-spec.js | browser-do --tap | tap-dot",
     "test": "npm run nodejs-test && npm run browser-test"
   },
   "repository": {
@@ -64,13 +58,7 @@
     "source-map": "^0.7.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/register": "^7.5.5",
-    "babel-eslint": "^10.0.2",
-    "babelify": "^10.0.0",
     "browserify": "^16.3.0",
-    "del-cli": "^2.0.0",
     "eslint": "^6.1.0",
     "nyc": "^14.1.1",
     "sourcemap-codec": "^1.4.6",

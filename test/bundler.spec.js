@@ -1,7 +1,7 @@
-import test from 'tape';
-import Bundler from '../src/index';
-import {contentOrFile} from '../src/shared';
-import {mockResolve, buildReadFile, mockPackageFileReader} from './mock';
+const test = require('tape');
+const Bundler = require('../lib/index');
+const {contentOrFile} = require('../lib/shared');
+const {mockResolve, buildReadFile, mockPackageFileReader} = require('./mock');
 
 function mockContentOrFile(fakeReader) {
   return pathOrContent => contentOrFile(pathOrContent, {readFile: fakeReader});

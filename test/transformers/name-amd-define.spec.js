@@ -1,5 +1,5 @@
-import test from 'tape';
-import nameDefine from '../../src/transformers/name-amd-define';
+const test = require('tape');
+const nameDefine = require('../../lib/transformers/name-amd-define');
 
 // copied from r.js/build/tests/buildUtils.js
 // for toTransport

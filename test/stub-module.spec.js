@@ -1,6 +1,6 @@
-import test from 'tape';
-import path from 'path';
-import stubModule from '../src/stub-module';
+const test = require('tape');
+const path = require('path');
+const stubModule = require('../lib/stub-module');
 
 
 function resolve(packageName) {

@@ -1,5 +1,5 @@
-import test from 'tape';
-import _trace from '../src/trace';
+const test = require('tape');
+const _trace = require('../lib/trace');
 
 function trace(unit, opts) {
   return _trace(unit, opts).then(unit => {

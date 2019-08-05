@@ -1,5 +1,5 @@
-import test from 'tape';
-import wasm from '../../src/transformers/wasm';
+const test = require('tape');
+const wasm = require('../../lib/transformers/wasm');
 
 test('wasm wraps wasm into amd module', t => {
   const source = 'abc';
