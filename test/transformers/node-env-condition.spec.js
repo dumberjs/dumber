@@ -68,7 +68,7 @@ foo(function() {
 test('nodeEnvCondition retains consequent branch in if-else condition', t => {
   const contents = `import foo from './foo';
 foo(function() {
-  if (process.env.NODE_ENV == 'production') {
+  if ('production' == process.env.NODE_ENV) {
     this.production();
   } else {
     this.debugger();
@@ -94,7 +94,7 @@ foo(function() {
 test('nodeEnvCondition retains alternate branch in if-else condition', t => {
   const contents = `import foo from './foo';
 foo(function() {
-  if (process.env["NODE_ENV"] == 'production') {
+  if ('production' == process.env["NODE_ENV"]) {
     this.production();
   } else {
     this.debugger();
