@@ -15,7 +15,7 @@ test('trace rejects not-matching packageName and moduleId', t => {
     contents: "lorem",
     moduleId: 'x/bar',
     packageName: 'foo'
-  }
+  };
   trace(unit).catch(err => {
     t.ok(err);
     t.end();
@@ -28,7 +28,7 @@ test('trace does not reject moduleId which is same as packageName', t => {
     contents: "define(function(){});",
     moduleId: 'fs',
     packageName: 'fs'
-  }
+  };
   trace(unit).then(
     traced => {
       t.deepEqual(traced, {
@@ -62,7 +62,7 @@ test('trace traces js', t => {
     path: 'src/foo/bar.js',
     contents: "define(['a','text!./b.css'],function() {});",
     moduleId: 'foo/bar'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -79,7 +79,7 @@ test('trace traces js', t => {
       moduleId: 'foo/bar',
       defined: ['foo/bar'],
       deps: ['a', 'text!./b.css']
-    })
+    });
     t.end();
   });
 });
@@ -97,7 +97,7 @@ test('trace traces js and update sourceMap', t => {
       sourcesContent: ["exports.bar = require('./a');"]
     },
     moduleId: 'foo/bar'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -115,7 +115,7 @@ test('trace traces js and update sourceMap', t => {
       moduleId: 'foo/bar',
       defined: ['foo/bar'],
       deps: ['./a']
-    })
+    });
     t.end();
   });
 });
@@ -135,7 +135,7 @@ test('trace traces shimed js and update sourceMap', t => {
     moduleId: 'bar/bar',
     packageName: 'bar',
     shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true}
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -160,7 +160,7 @@ test('trace traces shimed js and update sourceMap', t => {
       packageName: 'bar',
       shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true},
       shimed: true
-    })
+    });
     t.end();
   });
 });
@@ -179,7 +179,7 @@ test('trace forces shim on old js and update sourceMap', t => {
     },
     moduleId: 'bar/bar',
     packageName: 'bar'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -199,7 +199,7 @@ test('trace forces shim on old js and update sourceMap', t => {
       deps: [],
       packageName: 'bar',
       shimed: true
-    })
+    });
     t.end();
   });
 });
@@ -209,7 +209,7 @@ test('trace transforms json', t => {
     path: 'src/foo/bar.json',
     contents: '{"a":1}',
     moduleId: 'foo/bar.json'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -226,7 +226,7 @@ test('trace transforms json', t => {
       moduleId: 'foo/bar.json',
       defined: ['foo/bar.json', 'text!foo/bar.json'],
       deps: []
-    })
+    });
     t.end();
   });
 });
@@ -236,7 +236,7 @@ test('trace transforms text file', t => {
     path: 'src/foo/bar.html',
     contents: '<p></p>',
     moduleId: 'foo/bar.html'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -253,7 +253,7 @@ test('trace transforms text file', t => {
       moduleId: 'foo/bar.html',
       defined: ['text!foo/bar.html'],
       deps: []
-    })
+    });
     t.end();
   });
 });
@@ -263,7 +263,7 @@ test('trace transforms wasm file', t => {
     path: 'src/foo/bar.wasm',
     contents: 'abc',
     moduleId: 'foo/bar.wasm'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -280,7 +280,7 @@ test('trace transforms wasm file', t => {
       moduleId: 'foo/bar.wasm',
       defined: ['raw!foo/bar.wasm'],
       deps: ['base64-arraybuffer']
-    })
+    });
     t.end();
   });
 });
@@ -294,7 +294,7 @@ test('trace supports optional depsFinder returns deps directly', t => {
       return [];
     }
     return [];
-  }
+  };
 
   Promise.all([
     trace({
@@ -327,7 +327,7 @@ test('trace supports optional depsFinder returns deps in promise', t => {
       }
       return resolve([]);
     });
-  }
+  };
 
   Promise.all([
     trace({
@@ -368,7 +368,7 @@ test('trace supports cache', t => {
       }
       return resolve([]);
     });
-  }
+  };
 
   let cached = {};
   const cache = {
@@ -440,7 +440,7 @@ test('trace traces npm js with dist alias', t => {
       deps: ['a', 'text!./b.css'],
       packageName: 'foo',
       alias: null
-    })
+    });
     t.end();
   });
 });
@@ -451,7 +451,7 @@ test('trace traces npm html with dist alias', t => {
     contents: "<p></p>",
     moduleId: 'foo/dist/cjs/bar.html',
     packageName: 'foo'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -470,7 +470,7 @@ test('trace traces npm html with dist alias', t => {
       deps: [],
       packageName: 'foo',
       alias: null
-    })
+    });
     t.end();
   });
 });
@@ -498,7 +498,7 @@ test('trace patches momentjs to expose global var "moment"', t => {
     sourceMap: undefined,
     moduleId: 'moment/moment',
     packageName: 'moment'
-  }
+  };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
@@ -516,7 +516,105 @@ test('trace patches momentjs to expose global var "moment"', t => {
         file: 'node_modules/moment/moment.js',
         sourcesContent: [ '//! moment.js\n\n;(function (global, factory) {\n    typeof exports === \'object\' && typeof module !== \'undefined\' ? module.exports = factory() :\n    typeof define === \'function\' && define.amd ? (function(){var m=factory();if(typeof moment === \'undefined\'){window.moment=m;} define(function(){return m;})})() :\n    global.moment = factory()\n}(this, (function () {})));' ]
       }
-    })
+    });
     t.end();
   });
+});
+
+test('trace patches npm package process for NODE_ENV', t => {
+  const processFile = 'var process = module.exports = {};';
+
+  const nodeEnv = process.env.NODE_ENV || '';
+  const patchedProcessFile = `var process = module.exports = {};
+process.env = {"NODE_ENV":${JSON.stringify(nodeEnv)}};
+`;
+
+  const transformedProcessFile = `define('process/browser',['require','exports','module'],function (require, exports, module) {
+${patchedProcessFile}
+});
+
+;define.alias('process','process/browser');`;
+
+  const unit = {
+    path: 'node_modules/process/browser.js',
+    contents: processFile,
+    sourceMap: undefined,
+    moduleId: 'process/browser',
+    packageName: 'process',
+    alias: 'process',
+  };
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/process/browser.js',
+      contents: transformedProcessFile,
+      moduleId: 'process/browser',
+      defined: ['process/browser', 'process'],
+      deps: [],
+      packageName: 'process',
+      alias: null,
+      sourceMap: {
+        version: 3,
+        sources: [ 'node_modules/process/browser.js' ],
+        names: [],
+        mappings: '',
+        file: 'node_modules/process/browser.js',
+        sourcesContent: [ patchedProcessFile ]
+      }
+    });
+    t.end();
+  });
+});
+
+test('trace removes conditional NODE_ENV branch', t => {
+  const contents = `if (process.env.NODE_ENV === "production") {
+  doIt();
+}
+exports.foo = 1;
+`;
+
+  const expected = `define('foo',['require','exports','module'],function (require, exports, module) {
+
+exports.foo = 1;
+
+});
+`;
+
+  const oldNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'development';
+
+  const unit = {
+    path: 'src/foo.js',
+    contents: contents,
+    sourceMap: undefined,
+    moduleId: 'foo',
+  };
+
+  trace(unit).then(
+    traced => {
+      t.deepEqual(traced, {
+        path: 'src/foo.js',
+        contents: expected,
+        moduleId: 'foo',
+        defined: ['foo' ],
+        deps: [],
+        sourceMap: {
+          version: 3,
+          sources: [ 'src/foo.js' ],
+          names: [],
+          mappings: '',
+          file: 'src/foo.js',
+          sourcesContent: [ contents ]
+        }
+      });
+
+      process.env.NODE_ENV = oldNodeEnv;
+      t.end();
+    },
+    err => {
+      process.env.NODE_ENV = oldNodeEnv;
+      t.fail(err);
+      t.end();
+    }
+  );
 });

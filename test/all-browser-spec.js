@@ -21,6 +21,8 @@ require('./transformers/replace.spec');
 require('./transformers/shim-amd.spec');
 require('./transformers/text.spec');
 require('./transformers/wasm.spec');
+require('./transformers/node-env-condition.spec');
+require('./transformers/process-env.spec');
 require('./shared.spec');
 require('./stub-module.spec');
 require('./inject-css.spec');
