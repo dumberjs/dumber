@@ -1108,7 +1108,7 @@ test('Bundler supports inject css by default', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
-    'node_modules/dumber/dist/inject-css.js': '',
+    'node_modules/dumber/lib/inject-css.js': '',
   };
   const bundler = createBundler(fakeFs, {
   });
@@ -1140,14 +1140,14 @@ test('Bundler supports inject css by default', t => {
             },
             {
               "path": "__stub__/ext-css.js",
-              "contents": "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});\n;define.alias('ext:less','ext:css');\n;define.alias('ext:scss','ext:css');\n;define.alias('ext:sass','ext:css');\n;define.alias('ext:styl','ext:css');"
+              "contents": "define('ext:css',['dumber/lib/inject-css'],function(m){return m;});\n;define.alias('ext:less','ext:css');\n;define.alias('ext:scss','ext:css');\n;define.alias('ext:sass','ext:css');\n;define.alias('ext:styl','ext:css');"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
-              "path": "node_modules/dumber/dist/inject-css.js",
-              "contents": ";\ndefine('dumber/dist/inject-css',function(){});\n\n;define.alias('dumber/inject-css','dumber/dist/inject-css');"
+              "path": "node_modules/dumber/lib/inject-css.js",
+              "contents": ";\ndefine('dumber/lib/inject-css',function(){});\n\n;define.alias('dumber/inject-css','dumber/lib/inject-css');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1170,7 +1170,7 @@ test('Bundler supports inject css (relative path) by default', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
-    'node_modules/dumber/dist/inject-css.js': '',
+    'node_modules/dumber/lib/inject-css.js': '',
   };
   const bundler = createBundler(fakeFs, {
   });
@@ -1202,14 +1202,14 @@ test('Bundler supports inject css (relative path) by default', t => {
             },
             {
               "path": "__stub__/ext-css.js",
-              "contents": "define('ext:css',['dumber/dist/inject-css'],function(m){return m;});\n;define.alias('ext:less','ext:css');\n;define.alias('ext:scss','ext:css');\n;define.alias('ext:sass','ext:css');\n;define.alias('ext:styl','ext:css');"
+              "contents": "define('ext:css',['dumber/lib/inject-css'],function(m){return m;});\n;define.alias('ext:less','ext:css');\n;define.alias('ext:scss','ext:css');\n;define.alias('ext:sass','ext:css');\n;define.alias('ext:styl','ext:css');"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
-              "path": "node_modules/dumber/dist/inject-css.js",
-              "contents": ";\ndefine('dumber/dist/inject-css',function(){});\n\n;define.alias('dumber/inject-css','dumber/dist/inject-css');"
+              "path": "node_modules/dumber/lib/inject-css.js",
+              "contents": ";\ndefine('dumber/lib/inject-css',function(){});\n\n;define.alias('dumber/inject-css','dumber/lib/inject-css');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1232,7 +1232,7 @@ test('Bundler can optionally turn off inject css', t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
-    'node_modules/dumber/dist/inject-css.js': '',
+    'node_modules/dumber/lib/inject-css.js': '',
   };
   const bundler = createBundler(fakeFs, {
     injectCss: false
