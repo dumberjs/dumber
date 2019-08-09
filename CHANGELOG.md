@@ -1,3 +1,12 @@
+## [0.14.3](https://github.com/dumberjs/dumber/compare/v0.14.2...v0.14.3) (2019-08-09)
+
+
+### Bug Fixes
+
+* fix regresstion on path to inject-css module ([def96de](https://github.com/dumberjs/dumber/commit/def96de))
+
+
+
 ## [0.14.2](https://github.com/dumberjs/dumber/compare/v0.14.1...v0.14.2) (2019-08-09)
 
 
