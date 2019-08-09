@@ -1,3 +1,12 @@
+# [0.14.0](https://github.com/dumberjs/dumber/compare/v0.13.1...v0.14.0) (2019-08-09)
+
+
+### Features
+
+* support process.env.NODE_ENV ([75a902c](https://github.com/dumberjs/dumber/commit/75a902c))
+
+
+
 ## [0.13.1](https://github.com/dumberjs/dumber/compare/v0.13.0...v0.13.1) (2019-08-05)
 
 
