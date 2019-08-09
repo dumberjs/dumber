@@ -1,3 +1,12 @@
+## [0.14.1](https://github.com/dumberjs/dumber/compare/v0.14.0...v0.14.1) (2019-08-09)
+
+
+### Bug Fixes
+
+* fix missing check in node-env-condition ([17ecb94](https://github.com/dumberjs/dumber/commit/17ecb94))
+
+
+
 # [0.14.0](https://github.com/dumberjs/dumber/compare/v0.13.1...v0.14.0) (2019-08-09)
 
 
