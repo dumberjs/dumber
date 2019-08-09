@@ -7,6 +7,9 @@ foo(function() {
   if (env !== 'production') {
     this.debugger();
   }
+  if (a == b) {
+    c();
+  }
   this.start();
 });
 `;
