@@ -1,3 +1,12 @@
+## [0.14.4](https://github.com/dumberjs/dumber/compare/v0.14.3...v0.14.4) (2019-08-28)
+
+
+### Bug Fixes
+
+* replace deprecated cherow with @babel/parser (in estree mode) ([896057a](https://github.com/dumberjs/dumber/commit/896057a))
+
+
+
 ## [0.14.3](https://github.com/dumberjs/dumber/compare/v0.14.2...v0.14.3) (2019-08-09)
 
 
