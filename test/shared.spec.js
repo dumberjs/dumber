@@ -84,7 +84,7 @@ test('contentOrFile rejects wrong remote url', t => {
 test('contentOrFile reads local js file', t => {
   const path = 'a.js';
 
-  contentOrFile(path, {readFile: buildReadFile({'a.js': 'var a;\n//# sourceMappingURL=abc'})})
+  contentOrFile(path, {readFile: buildReadFile({'a.js': 'var a;\n//# sourceMappingURL=data:application/json;base64,abc'})})
   .then(
     result => {
       t.equal(result.contents, 'var a;');
@@ -127,17 +127,23 @@ test('generateHash generates hash', t => {
   t.end();
 });
 
+test('stripSourceMappingUrl does not strip sourceMappingURL inside js string', t => {
+  const code = `"\\n/*# sourceMappingURL=data:application/json;base64,".concat(map," */");`;
+  t.equal(stripSourceMappingUrl(code), code);
+  t.end();
+})
+
 test('stripSourceMappingUrl strips js sourcemapping url', t => {
   t.equal(stripSourceMappingUrl('lorem\n'), 'lorem\n');
-  t.equal(stripSourceMappingUrl('lorem\n//# sourceMappingURL=abc123'), 'lorem\n');
-  t.equal(stripSourceMappingUrl('lorem\n//# sourceMappingURL=abc123\nfoo\n//# sourceMappingURL=xyz'), 'lorem\n\nfoo\n');
+  t.equal(stripSourceMappingUrl('lorem\n//# sourceMappingURL=data:application/json;base64,abc123'), 'lorem\n');
+  t.equal(stripSourceMappingUrl('lorem\n//# sourceMappingURL=data:application/json;base64,abc123\nfoo\n//# sourceMappingURL=data:application/json;base64,xyz'), 'lorem\n\nfoo\n');
   t.end();
 });
 
 test('stripSourceMappingUrl strips css sourcemapping url', t => {
   t.equal(stripSourceMappingUrl('lorem\n'), 'lorem\n');
-  t.equal(stripSourceMappingUrl('lorem\n/*# sourceMappingURL=abc123 */'), 'lorem\n');
-  t.equal(stripSourceMappingUrl('lorem\n/*# sourceMappingURL=abc123 */\nfoo\n/*# sourceMappingURL=xyz */'), 'lorem\n\nfoo\n');
+  t.equal(stripSourceMappingUrl('lorem\n/*# sourceMappingURL=data:application/json;base64,abc123 */'), 'lorem\n');
+  t.equal(stripSourceMappingUrl('lorem\n/*# sourceMappingURL=data:application/json;base64,abc123 */\nfoo\n/*# sourceMappingURL=data:application/json;base64,xyz */'), 'lorem\n\nfoo\n');
   t.end();
 });
 
