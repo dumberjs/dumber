@@ -46,7 +46,7 @@
     "@babel/core": "^7.5.5",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-modules-commonjs": "^7.5.0",
-    "ast-matcher": "^1.0.5",
+    "ast-matcher": "^1.1.1",
     "base64-arraybuffer": "^0.2.0",
     "convert-source-map": "^1.6.0",
     "del": "^5.1.0",
