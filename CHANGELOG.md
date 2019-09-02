@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/dumberjs/dumber/compare/v1.0.2...v1.1.0) (2019-09-02)
+
+
+### Features
+
+* support gulp-dumber-css-module ([2d11107](https://github.com/dumberjs/dumber/commit/2d11107)), closes [#13](https://github.com/dumberjs/dumber/issues/13)
+
+
+
 ## [1.0.2](https://github.com/dumberjs/dumber/compare/v1.0.1...v1.0.2) (2019-08-30)
 
 
