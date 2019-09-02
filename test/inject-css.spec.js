@@ -172,7 +172,7 @@ test('splitCssModuleExports returns original contents when css-module is not det
 test('splitCssModuleExports splits css-module exports', t => {
   const css = '._a_1vkqw_1 { color: red; }\n/* dumber-css-module: {"a":"_a_1vkqw_1"} */\n';
   t.deepEqual(splitCssModuleExports(css), {
-    css: '._a_1vkqw_1 { color: red; }\n',
+    css: '._a_1vkqw_1 { color: red; }',
     exportTokens: {a: '_a_1vkqw_1'}
   });
   t.end();
