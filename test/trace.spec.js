@@ -633,3 +633,36 @@ exports.foo = 1;
     }
   );
 });
+
+test('trace traces npm main', t => {
+  const unit = {
+    path: 'node_modules/foo/dist/bar.js',
+    contents: "define(['a','text!./b.css'],function() {});",
+    moduleId: 'foo/dist/bar',
+    packageName: 'foo',
+    packageMainPath: 'dist/bar.js',
+    alias: 'foo'
+  };
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/foo/dist/bar.js',
+      contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});\n;define.alias('foo','foo/dist/bar');",
+      sourceMap: {
+        version: 3,
+        sources: [ 'node_modules/foo/dist/bar.js' ],
+        names: [],
+        mappings: '',
+        file: 'node_modules/foo/dist/bar.js',
+        sourcesContent: [ 'define([\'a\',\'text!./b.css\'],function() {});' ]
+      },
+      moduleId: 'foo/dist/bar',
+      defined: ['foo/dist/bar', 'foo'],
+      deps: ['a', 'text!./b.css'],
+      packageName: 'foo',
+      packageMainPath: 'dist/bar.js',
+      alias: null
+    });
+    t.end();
+  });
+});
