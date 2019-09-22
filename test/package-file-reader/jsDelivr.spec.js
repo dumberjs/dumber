@@ -61,7 +61,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for existing package', 
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, '//cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
+          t.equal(file.path, 'https://cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
           const info = JSON.parse(file.contents);
           t.equal(info.name, 'foo');
           t.equal(info.version, '1.0.1');
@@ -80,7 +80,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for fixed package versi
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, '//cdn.jsdelivr.net/npm/bar@2.0.0-rc1/package.json');
+          t.equal(file.path, 'https://cdn.jsdelivr.net/npm/bar@2.0.0-rc1/package.json');
           const info = JSON.parse(file.contents);
           t.equal(info.name, 'bar');
           t.equal(info.version, '2.0.0-rc1');
@@ -100,7 +100,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for alias package', t =
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, '//cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
+          t.equal(file.path, 'https://cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
           const info = JSON.parse(file.contents);
           t.equal(info.name, 'bar');
           t.equal(info.version, '1.0.1');
@@ -133,7 +133,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for existing scoped pac
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, '//cdn.jsdelivr.net/npm/@scoped/pkg@1.0.0/package.json');
+          t.equal(file.path, 'https://cdn.jsdelivr.net/npm/@scoped/pkg@1.0.0/package.json');
           const info = JSON.parse(file.contents);
           t.equal(info.name, '@scoped/pkg');
           t.equal(info.version, '1.0.0');
