@@ -1,3 +1,12 @@
+## [1.1.2](https://github.com/dumberjs/dumber/compare/v1.1.1...v1.1.2) (2019-09-22)
+
+
+### Bug Fixes
+
+* use full path for jsdelivr when running dumber in browser ([fcc014a](https://github.com/dumberjs/dumber/commit/fcc014a))
+
+
+
 ## [1.1.1](https://github.com/dumberjs/dumber/compare/v1.1.0...v1.1.1) (2019-09-22)
 
 
