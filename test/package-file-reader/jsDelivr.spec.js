@@ -12,28 +12,28 @@ function mkResponse (text) {
 function mockFetch (url) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      if (url.endsWith('foo/package.json') ||
-          url.endsWith('foo@1.0.1/package.json')) {
+      if (url === '//cdn.jsdelivr.net/npm/foo/package.json' ||
+          url === '//cdn.jsdelivr.net/npm/foo@1.0.1/package.json') {
         resolve(mkResponse('{"name":"foo","version":"1.0.1"}'));
 
-      } else if (url.endsWith('foo@1.0.1/fib.wasm')) {
+      } else if (url === '//cdn.jsdelivr.net/npm/foo@1.0.1/fib.wasm') {
         const base64 = 'AGFzbQEAAAABBgFgAX8BfwMCAQAHBwEDZmliAAAKHwEdACAAQQJIBEBBAQ8LIABBAmsQACAAQQFrEABqDws=';
         resolve({
           ok: true,
           arrayBuffer: () => Promise.resolve(decode(base64))
         });
-      } else if (url.endsWith('bar/package.json') ||
-                 url.endsWith('bar@1.9.0/package.json')) {
+      } else if (url === '//cdn.jsdelivr.net/npm/bar/package.json' ||
+                 url === '//cdn.jsdelivr.net/npm/bar@1.9.0/package.json') {
         resolve(mkResponse('{"name":"bar","version":"1.9.0"}'));
 
-      } else if (url.endsWith('bar@2.0.0-rc1/package.json')) {
+      } else if (url === '//cdn.jsdelivr.net/npm/bar@2.0.0-rc1/package.json') {
         resolve(mkResponse('{"name":"bar","version":"2.0.0-rc1"}'));
 
-      } else if (url.endsWith('@scoped/pkg/package.json') ||
-                 url.endsWith('@scoped/pkg@1.0.0/package.json')) {
+      } else if (url === '//cdn.jsdelivr.net/npm/@scoped/pkg/package.json' ||
+                 url === '//cdn.jsdelivr.net/npm/@scoped/pkg@1.0.0/package.json') {
         resolve(mkResponse('{"name":"@scoped/pkg","version":"1.0.0"}'));
-      } else if (url.endsWith('foo/dist') ||
-          url.endsWith('foo@1.0.1/dist')) {
+      } else if (url === '//cdn.jsdelivr.net/npm/foo/dist' ||
+          url === '//cdn.jsdelivr.net/npm/foo@1.0.1/dist') {
         resolve({ok: true, redirected: true});
       } else {
         resolve({statusText: 'Not Found'});
@@ -61,7 +61,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for existing package', 
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, 'https://cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
           const info = JSON.parse(file.contents);
           t.equal(info.name, 'foo');
           t.equal(info.version, '1.0.1');
@@ -80,7 +80,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for fixed package versi
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, 'https://cdn.jsdelivr.net/npm/bar@2.0.0-rc1/package.json');
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/bar@2.0.0-rc1/package.json');
           const info = JSON.parse(file.contents);
           t.equal(info.name, 'bar');
           t.equal(info.version, '2.0.0-rc1');
@@ -100,7 +100,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for alias package', t =
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, 'https://cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
           const info = JSON.parse(file.contents);
           t.equal(info.name, 'bar');
           t.equal(info.version, '1.0.1');
@@ -133,7 +133,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for existing scoped pac
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, 'https://cdn.jsdelivr.net/npm/@scoped/pkg@1.0.0/package.json');
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/@scoped/pkg@1.0.0/package.json');
           const info = JSON.parse(file.contents);
           t.equal(info.name, '@scoped/pkg');
           t.equal(info.version, '1.0.0');
