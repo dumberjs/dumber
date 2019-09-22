@@ -1,3 +1,13 @@
+## [1.1.1](https://github.com/dumberjs/dumber/compare/v1.1.0...v1.1.1) (2019-09-22)
+
+
+### Bug Fixes
+
+* avoid conflict in conventional alias, only apply for package with main with same path prefix ([99b4bba](https://github.com/dumberjs/dumber/commit/99b4bba))
+* fix a missing package alias when main file is requested from an explicit require('packageName/main/path'); ([7ecc905](https://github.com/dumberjs/dumber/commit/7ecc905))
+
+
+
 # [1.1.0](https://github.com/dumberjs/dumber/compare/v1.0.2...v1.1.0) (2019-09-02)
 
 
