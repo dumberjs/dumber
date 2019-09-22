@@ -43,9 +43,9 @@
   },
   "homepage": "https://github.com/dumberjs/dumber#readme",
   "dependencies": {
-    "@babel/core": "^7.5.5",
+    "@babel/core": "^7.6.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.5.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.6.0",
     "ast-matcher": "^1.1.1",
     "base64-arraybuffer": "^0.2.0",
     "convert-source-map": "^1.6.0",
@@ -53,7 +53,7 @@
     "dumber-module-loader": "^1.0.0",
     "escope": "^3.6.0",
     "mkdirp": "^0.5.1",
-    "modify-code": "^1.0.0",
+    "modify-code": "^1.0.1",
     "node-fetch": "^2.6.0",
     "node-libs-browser": "^2.2.1",
     "readable-stream": "^2.3.6",
@@ -61,10 +61,10 @@
     "source-map": "^0.7.3"
   },
   "devDependencies": {
-    "@babel/parser": "^7.5.5",
+    "@babel/parser": "^7.6.0",
     "browser-do": "^0.3.2",
     "browserify": "^16.5.0",
-    "eslint": "^6.2.2",
+    "eslint": "^6.4.0",
     "nyc": "^14.1.1",
     "sourcemap-codec": "^1.4.6",
     "standard-changelog": "^2.0.13",
