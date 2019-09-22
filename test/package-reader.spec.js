@@ -137,6 +137,35 @@ test('packageReader reads main file', t => {
   });
 });
 
+test('packageReader reads resource file which is actually main', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
+    'node_modules/foo/index.js': "lorem"
+  }).then(r => {
+    r.readResource('index').then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/index.js',
+          contents: 'lorem',
+          moduleId: 'foo/index',
+          packageName: 'foo',
+          packageMainPath: 'index.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
 test('packageReader rejects invalid package.json', t => {
   getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"',
@@ -427,6 +456,34 @@ test('packageReader reads deep relative resource', t => {
   });
 });
 
+test('packageReader reads deep relative resource which is actually main', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "dist/cjs/main"}',
+    'node_modules/foo/dist/cjs/main.js': 'lorem',
+  }).then(r => {
+    r.readResource('main').then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/dist/cjs/main.js',
+          contents: 'lorem',
+          moduleId: 'foo/dist/cjs/main',
+          packageName: 'foo',
+          packageMainPath: 'dist/cjs/main.js',
+          alias: ['foo', 'foo/main'],
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'dist/cjs/main.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
 test('packageReader reads json resouce', t => {
   getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "dist/cjs/main"}',
@@ -662,6 +719,41 @@ test('packageReader uses browser replacement in package.json to normalize main r
     'node_modules/foo/browser.js': "browser"
   }).then(r => {
     r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/browser.js',
+          contents: "browser",
+          moduleId: 'foo/browser',
+          packageName: 'foo',
+          packageMainPath: 'browser.js',
+          alias: 'foo',
+          replacement: { './index': './browser' },
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'browser.js');
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader uses browser replacement in package.json to normalize resource read which is actually main', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "./index.js": "./browser.js"
+      }
+    }`,
+    'node_modules/foo/index.js': "index",
+    'node_modules/foo/browser.js': "browser"
+  }).then(r => {
+    r.readResource('browser').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/browser.js',
