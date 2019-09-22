@@ -21,6 +21,7 @@ test('packageReader falls back to main:index when package.json is missing', t =>
           moduleId: 'foo/index',
           alias: 'foo',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           sourceMap: undefined
         });
 
@@ -64,6 +65,7 @@ test('packageReader can still read resource when main is missing', t => {
           contents: 'lorem',
           moduleId: 'foo/bar',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           sourceMap: undefined
         });
 
@@ -91,6 +93,7 @@ test('packageReader uses default index.js as main path if main file is missing b
           contents: 'lorem',
           moduleId: 'foo/bar',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           sourceMap: undefined
         });
 
@@ -118,6 +121,7 @@ test('packageReader reads main file', t => {
           contents: 'lorem',
           moduleId: 'foo/index',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           alias: 'foo',
           sourceMap: undefined
         });
@@ -161,6 +165,7 @@ test('packageReader use default main index.js', t => {
           contents: 'lorem',
           moduleId: 'foo/index',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           alias: 'foo',
           sourceMap: undefined
         });
@@ -189,6 +194,7 @@ test('packageReader reads module over main field', t => {
           contents: 'es',
           moduleId: 'foo/es',
           packageName: 'foo',
+          packageMainPath: 'es.js',
           alias: 'foo',
           sourceMap: undefined
         });
@@ -218,6 +224,7 @@ test('packageReader reads browser over main/module field', t => {
           contents: 'br',
           moduleId: 'foo/br',
           packageName: 'foo',
+          packageMainPath: 'br.js',
           alias: 'foo',
           sourceMap: undefined
         });
@@ -245,6 +252,7 @@ test('packageReader reads main file with explicit ext', t => {
           contents: 'lorem',
           moduleId: 'foo.js/main',
           packageName: 'foo.js',
+          packageMainPath: 'main.js',
           alias: 'foo.js',
           sourceMap: undefined
         });
@@ -272,6 +280,7 @@ test('packageReader reads main file with non-js file', t => {
           contents: 'lorem',
           moduleId: 'foo/main.css',
           packageName: 'foo',
+          packageMainPath: 'main.css',
           sourceMap: undefined
         });
 
@@ -298,6 +307,7 @@ test('packageReader reads implicit main file', t => {
           contents: 'lorem',
           moduleId: 'foo/lib/index',
           packageName: 'foo',
+          packageMainPath: 'lib/index.js',
           alias: 'foo',
           sourceMap: undefined
         });
@@ -344,6 +354,7 @@ test('packageReader reads resource', t => {
           contents: 'lorem2',
           moduleId: 'foo/lib/bar',
           packageName: 'foo',
+          packageMainPath: 'lib/main.js',
           sourceMap: undefined
         });
 
@@ -371,6 +382,7 @@ test('packageReader reads relative resource', t => {
           contents: 'lorem2',
           moduleId: 'foo/lib/bar',
           packageName: 'foo',
+          packageMainPath: 'lib/main.js',
           alias: 'foo/bar',
           sourceMap: undefined
         });
@@ -399,6 +411,7 @@ test('packageReader reads deep relative resource', t => {
           contents: 'lorem2',
           moduleId: 'foo/dist/cjs/foo/bar',
           packageName: 'foo',
+          packageMainPath: 'dist/cjs/main.js',
           alias: 'foo/foo/bar',
           sourceMap: undefined
         });
@@ -427,6 +440,7 @@ test('packageReader reads json resouce', t => {
           contents: '{"a":1}',
           moduleId: 'foo/dist/cjs/foo/bar.json',
           packageName: 'foo',
+          packageMainPath: 'dist/cjs/main.js',
           alias: 'foo/foo/bar',
           sourceMap: undefined
         });
@@ -455,6 +469,7 @@ test('packageReader reads directory index.js', t => {
           contents: 'lorem2',
           moduleId: 'foo/lib/index',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           alias: 'foo/lib',
           sourceMap: undefined
         });
@@ -483,6 +498,7 @@ test('packageReader reads directory index.json', t => {
           contents: '{"a":1}',
           moduleId: 'foo/lib/index.json',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           alias: 'foo/lib',
           sourceMap: undefined
         });
@@ -513,6 +529,7 @@ test('packageReader reads directory package.json', t => {
           contents: 'es',
           moduleId: 'foo/lib/es/index',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           alias: 'foo/lib',
           sourceMap: undefined
         });
@@ -567,6 +584,7 @@ test('packageReader reads browser replacement in package.json', t => {
           contents: 'lorem',
           moduleId: 'foo/index',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           alias: 'foo',
           replacement: {
             'module-a': '__ignore__',
@@ -611,6 +629,7 @@ test('packageReader uses browser replacement in package.json to normalize replac
           contents: "require('module-a');require('module-b.js');require('module-c');",
           moduleId: 'foo/shims/client-only',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           replacement: {
             'module-a': '__ignore__',
             'module-b.js': './module/b',
@@ -649,6 +668,7 @@ test('packageReader uses browser replacement in package.json to normalize main r
           contents: "browser",
           moduleId: 'foo/browser',
           packageName: 'foo',
+          packageMainPath: 'browser.js',
           alias: 'foo',
           replacement: { './index': './browser' },
           sourceMap: undefined
@@ -684,6 +704,7 @@ test('packageReader uses browser replacement in package.json to normalize main r
           contents: "require('module-a');require('module-b.js');require('module-c');require('./server/only.js');",
           moduleId: 'foo/index',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           alias: 'foo',
           replacement: {
             'module-a': '__ignore__',
@@ -724,6 +745,7 @@ test('packageReader uses browser replacement in package.json to normalize replac
           contents: "require('module-a');require('module-b.js');require('module-c');require('./only.js');",
           moduleId: 'foo/server/bar',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           replacement: {
             'module-a': '__ignore__',
             'module-b.js': '../shims/module/b',
@@ -763,6 +785,7 @@ test('packageReader uses browser replacement in package.json to normalize replac
           contents: "require('module-a');require('module-b.js');require('module-c');require('../server/only.js');",
           moduleId: 'foo/lib/bar',
           packageName: 'foo',
+          packageMainPath: 'index.js',
           replacement: {
             'module-a': '__ignore__',
             'module-b.js': '../shims/module/b',
@@ -794,6 +817,7 @@ test('packageReader reads main file for package alias', t => {
           contents: 'lorem',
           moduleId: 'bar/index',
           packageName: 'bar',
+          packageMainPath: 'index.js',
           alias: 'bar',
           sourceMap: undefined
         });
@@ -823,6 +847,7 @@ test('packageReader reads resource file for package alias', t => {
           contents: 'lorem2',
           moduleId: 'bar/lo',
           packageName: 'bar',
+          packageMainPath: 'index.js',
           sourceMap: undefined
         });
 

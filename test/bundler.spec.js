@@ -1147,7 +1147,7 @@ test('Bundler supports inject css by default', t => {
             },
             {
               "path": "node_modules/dumber/lib/inject-css.js",
-              "contents": ";\ndefine('dumber/lib/inject-css',function(){});\n\n;define.alias('dumber/inject-css','dumber/lib/inject-css');"
+              "contents": ";\ndefine('dumber/lib/inject-css',function(){});\n"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1209,7 +1209,7 @@ test('Bundler supports inject css (relative path) by default', t => {
             },
             {
               "path": "node_modules/dumber/lib/inject-css.js",
-              "contents": ";\ndefine('dumber/lib/inject-css',function(){});\n\n;define.alias('dumber/inject-css','dumber/lib/inject-css');"
+              "contents": ";\ndefine('dumber/lib/inject-css',function(){});\n"
             },
             {
               "contents": "define.switchToUserSpace();"

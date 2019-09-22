@@ -14,7 +14,8 @@ test('trace rejects not-matching packageName and moduleId', t => {
     path: 'node_module/foo/bar.js',
     contents: "lorem",
     moduleId: 'x/bar',
-    packageName: 'foo'
+    packageName: 'foo',
+    packageMainPath: 'index.js'
   };
   trace(unit).catch(err => {
     t.ok(err);
@@ -27,7 +28,8 @@ test('trace does not reject moduleId which is same as packageName', t => {
     path: '__stub__/fs.js',
     contents: "define(function(){});",
     moduleId: 'fs',
-    packageName: 'fs'
+    packageName: 'fs',
+    packageMainPath: 'index.js'
   };
   trace(unit).then(
     traced => {
@@ -45,7 +47,8 @@ test('trace does not reject moduleId which is same as packageName', t => {
         moduleId: 'fs',
         defined: ['fs'],
         deps: [],
-        packageName: 'fs'
+        packageName: 'fs',
+        packageMainPath: 'index.js'
       });
       t.end();
     },
@@ -134,6 +137,7 @@ test('trace traces shimed js and update sourceMap', t => {
     },
     moduleId: 'bar/bar',
     packageName: 'bar',
+    packageMainPath: 'index.js',
     shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true}
   };
 
@@ -158,6 +162,7 @@ test('trace traces shimed js and update sourceMap', t => {
       defined: ['bar/bar'],
       deps: ['foo'],
       packageName: 'bar',
+      packageMainPath: 'index.js',
       shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true},
       shimed: true
     });
@@ -178,7 +183,8 @@ test('trace forces shim on old js and update sourceMap', t => {
       sourcesContent: ["var Bar = 1;"]
     },
     moduleId: 'bar/bar',
-    packageName: 'bar'
+    packageName: 'bar',
+    packageMainPath: 'index.js'
   };
 
   trace(unit).then(traced => {
@@ -198,6 +204,7 @@ test('trace forces shim on old js and update sourceMap', t => {
       defined: ['bar/bar'],
       deps: [],
       packageName: 'bar',
+      packageMainPath: 'index.js',
       shimed: true
     });
     t.end();
@@ -420,7 +427,8 @@ test('trace traces npm js with dist alias', t => {
     path: 'node_modules/foo/dist/bar.js',
     contents: "define(['a','text!./b.css'],function() {});",
     moduleId: 'foo/dist/bar',
-    packageName: 'foo'
+    packageName: 'foo',
+    packageMainPath: 'dist/index.js'
   };
 
   trace(unit).then(traced => {
@@ -439,6 +447,7 @@ test('trace traces npm js with dist alias', t => {
       defined: ['foo/dist/bar', 'foo/bar'],
       deps: ['a', 'text!./b.css'],
       packageName: 'foo',
+      packageMainPath: 'dist/index.js',
       alias: null
     });
     t.end();
@@ -450,7 +459,8 @@ test('trace traces npm html with dist alias', t => {
     path: 'node_modules/foo/dist/cjs/bar.html',
     contents: "<p></p>",
     moduleId: 'foo/dist/cjs/bar.html',
-    packageName: 'foo'
+    packageName: 'foo',
+    packageMainPath: 'dist/cjs/index.js'
   };
 
   trace(unit).then(traced => {
@@ -469,6 +479,7 @@ test('trace traces npm html with dist alias', t => {
       defined: ['text!foo/dist/cjs/bar.html', 'text!foo/bar.html'],
       deps: [],
       packageName: 'foo',
+      packageMainPath: 'dist/cjs/index.js',
       alias: null
     });
     t.end();
@@ -497,7 +508,8 @@ test('trace patches momentjs to expose global var "moment"', t => {
     contents: moment,
     sourceMap: undefined,
     moduleId: 'moment/moment',
-    packageName: 'moment'
+    packageName: 'moment',
+    packageMainPath: 'moment.js'
   };
 
   trace(unit).then(traced => {
@@ -508,6 +520,7 @@ test('trace patches momentjs to expose global var "moment"', t => {
       defined: ['moment/moment'],
       deps: [],
       packageName: 'moment',
+      packageMainPath: 'moment.js',
       sourceMap: {
         version: 3,
         sources: [ 'node_modules/moment/moment.js' ],
@@ -541,6 +554,7 @@ ${patchedProcessFile}
     sourceMap: undefined,
     moduleId: 'process/browser',
     packageName: 'process',
+    packageMainPath: 'browser.js',
     alias: 'process',
   };
 
@@ -552,6 +566,7 @@ ${patchedProcessFile}
       defined: ['process/browser', 'process'],
       deps: [],
       packageName: 'process',
+      packageMainPath: 'browser.js',
       alias: null,
       sourceMap: {
         version: 3,
