@@ -188,3 +188,63 @@ test('jsDelivrNpmPackageFileReader reads .wasm file to base64 string', t => {
     err => t.fail(err)
   ).then(() => t.end());
 });
+
+test('jsDelivrNpmPackageFileReader returns fileRead func for package with hard coded main', t => {
+  fileReader({name: 'foo', main: 'lib/main'})
+  .then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/foo@1.0.1/package.json');
+          const info = JSON.parse(file.contents);
+          t.equal(info.name, 'foo');
+          t.equal(info.version, '1.0.1');
+          t.equal(info.dumberForcedMain, 'lib/main');
+        },
+        err => t.fail(err.message)
+      );
+    },
+    err => t.fail(err)
+  ).then(() => t.end());
+});
+
+test('jsDelivrNpmPackageFileReader returns fileRead func for package with custom path and hard coded main', t => {
+  fileReader({name: 'foo', location: 'bar@2.0.0-rc1', main: 'lib/main'})
+  .then(
+    fileRead => {
+      return fileRead('package.json')
+      .then(
+        file => {
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/bar@2.0.0-rc1/package.json');
+          const info = JSON.parse(file.contents);
+          t.equal(info.name, 'foo');
+          t.equal(info.version, '2.0.0-rc1');
+          t.equal(info.dumberForcedMain, 'lib/main');
+        },
+        err => t.fail(err.message)
+      );
+    },
+    err => t.fail(err)
+  ).then(() => t.end());
+});
+
+test('jsDelivrNpmPackageFileReader returns fileRead func for package with custom path, version and hard coded main', t => {
+  fileReader({name: 'foo', location: 'bar', version: '2.0.0-rc1', main: 'lib/main'})
+  .then(
+    fileRead => {
+      return fileRead('./package.json')
+      .then(
+        file => {
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/bar@2.0.0-rc1/package.json');
+          const info = JSON.parse(file.contents);
+          t.equal(info.name, 'foo');
+          t.equal(info.version, '2.0.0-rc1');
+          t.equal(info.dumberForcedMain, 'lib/main');
+        },
+        err => t.fail(err.message)
+      );
+    },
+    err => t.fail(err)
+  ).then(() => t.end());
+});

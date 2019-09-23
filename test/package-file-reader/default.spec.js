@@ -13,7 +13,7 @@ test('defaultNpmPackageFileReader falls back to main:index when package.json is 
       .then(
         file => {
           t.equal(file.path, 'node_modules/foo/package.json');
-          t.equal(file.contents, '{"name":"foo","main":"index"}');
+          t.deepEqual(JSON.parse(file.contents), {name:'foo',main:'index',version:'N/A'});
         },
         err => t.fail(err.stack)
       );
@@ -61,7 +61,7 @@ test('defaultNpmPackageFileReader returns fileRead func for package with hard co
       .then(
         file => {
           t.equal(file.path, 'node_modules/foo/package.json');
-          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main', version: '2.1.0'});
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'index.js', dumberForcedMain: 'lib/main', version: '2.1.0'});
         },
         err => t.fail(err.message)
       );
@@ -99,17 +99,17 @@ test('defaultNpmPackageFileReader returns fileRead func for package with custom 
 
 test('defaultNpmPackageFileReader returns fileRead func for package with custom path and hard coded main', t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
-    'packages/foo/package.json': '{"name":"foo","main":"index.js","version":"1.2.0"}'
+    'packages/bar/package.json': '{"name":"bar","main":"index.js","version":"1.2.0"}'
   }));
 
-  defaultFileReader({name: 'foo', location: 'packages/foo', main: 'lib/main'})
+  defaultFileReader({name: 'foo', location: 'packages/bar', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
       .then(
         file => {
-          t.equal(file.path, 'packages/foo/package.json');
-          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main', version: '1.2.0'});
+          t.equal(file.path, 'packages/bar/package.json');
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'index.js', dumberForcedMain: 'lib/main', version: '1.2.0'});
         },
         err => t.fail(err.message)
       );
@@ -131,7 +131,7 @@ test('defaultNpmPackageFileReader returns fileRead func for package with custom 
       .then(
         file => {
           t.equal(file.path, 'packages/foo/package.json');
-          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'lib/main', version: 'N/A'});
+          t.deepEqual(JSON.parse(file.contents), {name: 'foo', main: 'index', dumberForcedMain: 'lib/main', version: 'N/A'});
         },
         err => t.fail(err.message)
       );

@@ -53,7 +53,6 @@ test('trace does not reject moduleId which is same as packageName', t => {
       t.end();
     },
     err => {
-      console.log(err.stack);
       t.fail(err);
       t.end();
     }

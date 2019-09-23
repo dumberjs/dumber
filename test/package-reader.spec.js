@@ -166,17 +166,30 @@ test('packageReader reads resource file which is actually main', t => {
   });
 });
 
-test('packageReader rejects invalid package.json', t => {
+test('packageReader tolerate invalid package.json', t => {
   getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"',
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readMain().then(
-      () => {
-        t.fail('should not pass')
+    r.readResource('index').then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/index.js',
+          contents: 'lorem',
+          moduleId: 'foo/index',
+          packageName: 'foo',
+          packageMainPath: 'index.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.js');
+        t.deepEqual(r.browserReplacement, {});
       },
       err => {
-        t.pass(err.message);
+        t.fail(err.message);
       }
     ).then(t.end);
   });
@@ -239,7 +252,7 @@ test('packageReader reads module over main field', t => {
   });
 });
 
-test('packageReader reads browser over main/module field', t => {
+test('packageReader reads browser over module/main field', t => {
   getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "browser": "br", "module": "es", "main": "index"}',
     'node_modules/foo/index.js': "lorem",
@@ -260,6 +273,37 @@ test('packageReader reads browser over main/module field', t => {
 
         t.equal(r.name, 'foo');
         t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader reads dumberForcedMain over browser/module/main field', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "browser": "br", "module": "es", "main": "index", "dumberForcedMain": "hc"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br',
+    'node_modules/foo/hc.js': 'hc',
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/hc.js',
+          contents: 'hc',
+          moduleId: 'foo/hc',
+          packageName: 'foo',
+          packageMainPath: 'hc.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'hc.js');
         t.deepEqual(r.browserReplacement, {});
       },
       err => {
@@ -345,10 +389,7 @@ test('packageReader reads implicit main file', t => {
         t.equal(r.mainPath, 'lib/index.js');
         t.deepEqual(r.browserReplacement, {});
       },
-      err => {
-        console.log('err', err);
-        t.fail(err.message);
-      }
+      err => t.fail(err.message)
     );
   }).then(t.end);
 });
