@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/dumberjs/dumber/compare/v1.1.2...v1.2.0) (2019-09-23)
+
+
+### Bug Fixes
+
+* fix jsDeliver reader url issue ([a831fad](https://github.com/dumberjs/dumber/commit/a831fad))
+
+
+### Features
+
+* refactor forced main, support forced main in jsDelivr ([4fdfb00](https://github.com/dumberjs/dumber/commit/4fdfb00))
+
+
+
 ## [1.1.2](https://github.com/dumberjs/dumber/compare/v1.1.1...v1.1.2) (2019-09-22)
 
 
