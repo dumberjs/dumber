@@ -1,5 +1,5 @@
 const path = require('path');
-const _defaultReader = require('../lib/package-file-reader/default');
+const _defaultReader = require('../lib/package-file-reader/node');
 
 function mockResolve(path) {
   return 'node_modules/' + path;
