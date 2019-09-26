@@ -1,3 +1,12 @@
+## [1.2.1](https://github.com/dumberjs/dumber/compare/v1.2.0...v1.2.1) (2019-09-26)
+
+
+### Bug Fixes
+
+* fix esm-to-cjs error when running bundler inside browser ([a3b9a20](https://github.com/dumberjs/dumber/commit/a3b9a20))
+
+
+
 # [1.2.0](https://github.com/dumberjs/dumber/compare/v1.1.2...v1.2.0) (2019-09-23)
 
 
