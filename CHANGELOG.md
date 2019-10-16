@@ -1,3 +1,12 @@
+## [1.2.2](https://github.com/dumberjs/dumber/compare/v1.2.1...v1.2.2) (2019-10-16)
+
+
+### Bug Fixes
+
+* fix missed sourcemap content on cache key ([81060cf](https://github.com/dumberjs/dumber/commit/81060cf))
+
+
+
 ## [1.2.1](https://github.com/dumberjs/dumber/compare/v1.2.0...v1.2.1) (2019-09-26)
 
 
