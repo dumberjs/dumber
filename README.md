@@ -2,7 +2,7 @@
 
 A dumb JavasScript bundler for Single Page Application, dumber than you and me.
 
-**Document site (80% completed)**: https://dumberjs.github.io
+**Document site (80% completed)**: https://dumber.js.org
 
 You won't normally use this package directly, dumber is designed to be consumed through [gulp-dumber](https://github.com/dumberjs/gulp-dumber) or dumberify (TBD).
 
