@@ -1,3 +1,12 @@
+## [1.2.4](https://github.com/dumberjs/dumber/compare/v1.2.3...v1.2.4) (2019-12-17)
+
+
+### Bug Fixes
+
+* avoid panic when parsing toastr, but doesn't fix toastr bundling ([9024a62](https://github.com/dumberjs/dumber/commit/9024a62fa6227201e1c99bf67699eb9580ea0954))
+
+
+
 ## [1.2.3](https://github.com/dumberjs/dumber/compare/v1.2.2...v1.2.3) (2019-11-13)
 
 
