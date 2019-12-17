@@ -226,6 +226,20 @@ test('nameDefine does not rewrite named define', t => {
   t.end();
 });
 
+test('nameDefine does not rewrite indirect define call', t => {
+  const unit = {
+    contents: '(function (define) {define(["jquery"], function(){});})(typeof define === "function" && define.amd ? define : function(deps, factory) {})\n',
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r, {
+    defined: [],
+    deps: []
+  });
+  t.end();
+});
+
 test('nameDefine ignore  define call without implementation', t => {
   const unit = {
     contents: 'define(["a"]);\n',
