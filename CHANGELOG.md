@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/dumberjs/dumber/compare/v1.2.5...v1.3.0) (2019-12-19)
+
+
+### Features
+
+* performance boost by paralleling npm package (io) reading ([85a4926](https://github.com/dumberjs/dumber/commit/85a49266bd4362987fa007113dcb8cf5c8f19553))
+
+
+
 ## [1.2.5](https://github.com/dumberjs/dumber/compare/v1.2.4...v1.2.5) (2019-12-18)
 
 
