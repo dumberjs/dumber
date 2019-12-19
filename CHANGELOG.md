@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/dumberjs/dumber/compare/v1.3.0...v1.3.1) (2019-12-19)
+
+
+### Bug Fixes
+
+* update to latest estree ImportExpression from @babel/parser ([a105914](https://github.com/dumberjs/dumber/commit/a105914089dd35ebcbf75b071d54008ffb7bc8e5))
+
+
+
 # [1.3.0](https://github.com/dumberjs/dumber/compare/v1.2.5...v1.3.0) (2019-12-19)
 
 
