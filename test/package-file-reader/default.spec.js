@@ -9,6 +9,7 @@ test('defaultNpmPackageFileReader falls back to main:index when package.json is 
   defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
+      t.equal(fileRead.packageConfig.name, 'foo');
       return fileRead('package.json')
       .then(
         file => {
@@ -57,6 +58,8 @@ test('defaultNpmPackageFileReader returns fileRead func for package with hard co
   defaultFileReader({name: 'foo', main: 'lib/main'})
   .then(
     fileRead => {
+      t.equal(fileRead.packageConfig.name, 'foo');
+      t.equal(fileRead.packageConfig.main, 'lib/main');
       return fileRead('package.json')
       .then(
         file => {
@@ -81,6 +84,8 @@ test('defaultNpmPackageFileReader returns fileRead func for package with custom 
   defaultFileReader({name: 'foo', location: 'packages/foo'})
   .then(
     fileRead => {
+      t.equal(fileRead.packageConfig.name, 'foo');
+      t.equal(fileRead.packageConfig.location, 'packages/foo');
       return fileRead('package.json')
       .then(
         file => {

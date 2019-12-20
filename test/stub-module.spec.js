@@ -5,7 +5,7 @@ const stubModule = require('../lib/stub-module');
 
 function resolve(packageName) {
   if (require && typeof require.resolve === 'function') {
-    return path.resolve('node_modules/' + packageName);
+    return path.relative(process.cwd(), path.resolve('node_modules/' + packageName));
   }
   // browser
   return packageName;

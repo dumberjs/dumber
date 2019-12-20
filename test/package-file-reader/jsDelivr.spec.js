@@ -58,6 +58,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for existing package', 
   fileReader({name: 'foo'})
   .then(
     fileRead => {
+      t.equal(fileRead.packageConfig.name, 'foo');
       return fileRead('package.json')
       .then(
         file => {
@@ -77,6 +78,8 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for fixed package versi
   fileReader({name: 'bar', version: '2.0.0-rc1'})
   .then(
     fileRead => {
+      t.equal(fileRead.packageConfig.name, 'bar');
+      t.equal(fileRead.packageConfig.version, '2.0.0-rc1');
       return fileRead('package.json')
       .then(
         file => {
@@ -97,6 +100,9 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for alias package', t =
 
   l.then(
     fileRead => {
+      t.equal(fileRead.packageConfig.name, 'bar');
+      t.equal(fileRead.packageConfig.location, 'foo');
+      t.equal(fileRead.packageConfig.version, '1.0.1');
       return fileRead('package.json')
       .then(
         file => {
