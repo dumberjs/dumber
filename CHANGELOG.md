@@ -1,3 +1,12 @@
+# [1.4.0](https://github.com/dumberjs/dumber/compare/v1.3.1...v1.4.0) (2019-12-20)
+
+
+### Features
+
+* show additional package config in log ([902383d](https://github.com/dumberjs/dumber/commit/902383d1040d01fb12bdcb1e2e02259f30824c8b))
+
+
+
 ## [1.3.1](https://github.com/dumberjs/dumber/compare/v1.3.0...v1.3.1) (2019-12-19)
 
 
