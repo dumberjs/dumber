@@ -1,3 +1,17 @@
+# [1.5.0](https://github.com/dumberjs/dumber/compare/v1.4.0...v1.5.0) (2019-12-22)
+
+
+### Bug Fixes
+
+* localStorage api is not available in service worker ([fc49a20](https://github.com/dumberjs/dumber/commit/fc49a20664b6ed15bce2a3dfac3c356e43ed8faf))
+
+
+### Features
+
+* improve jsdelivr reader by caching file lists result ([45a1faa](https://github.com/dumberjs/dumber/commit/45a1faaf934f6bcdb3b9eee2eef1babea0e08303))
+
+
+
 # [1.4.0](https://github.com/dumberjs/dumber/compare/v1.3.1...v1.4.0) (2019-12-20)
 
 
