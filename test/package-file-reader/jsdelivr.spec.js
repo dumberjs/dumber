@@ -1,11 +1,18 @@
 const test = require('tape');
-const jsDelivrFileReader = require('../../lib/package-file-reader/jsDelivr');
+const jsdelivrFileReader = require('../../lib/package-file-reader/jsdelivr');
 const {decode} = require('base64-arraybuffer');
 
 function mkResponse (text) {
   return {
     ok: true,
     text: () => Promise.resolve(text)
+  }
+}
+
+function mkJsonResponse (obj) {
+  return {
+    ok: true,
+    json: () => Promise.resolve(obj)
   }
 }
 
@@ -22,6 +29,8 @@ function mockFetch (url) {
           ok: true,
           arrayBuffer: () => Promise.resolve(decode(base64))
         });
+      } else if (url === '//cdn.jsdelivr.net/npm/foo@1.0.1/dist/index.js') {
+        resolve(mkResponse('lorem'));
       } else if (url === '//cdn.jsdelivr.net/npm/bar/package.json' ||
                  url === '//cdn.jsdelivr.net/npm/bar@1.9.0/package.json') {
         resolve(mkResponse('{"name":"bar","version":"1.9.0"}'));
@@ -35,6 +44,56 @@ function mockFetch (url) {
       } else if (url === '//cdn.jsdelivr.net/npm/foo/dist' ||
           url === '//cdn.jsdelivr.net/npm/foo@1.0.1/dist') {
         resolve({ok: true, redirected: true});
+      } else if (url === '//data.jsdelivr.com/v1/package/npm/foo@1.0.1') {
+        resolve(mkJsonResponse({
+          files: [
+            {
+              type: 'file',
+              name: 'package.json'
+            },
+            {
+              type: 'file',
+              name: 'fib.wasm'
+            },
+            {
+              type: 'directory',
+              name: 'dist',
+              files: [
+                {
+                  type: 'file',
+                  name: 'index.js'
+                }
+              ]
+            }
+          ]
+        }));
+      } else if (url === '//data.jsdelivr.com/v1/package/npm/bar@1.9.0') {
+        resolve(mkJsonResponse({
+          files: [
+            {
+              type: 'file',
+              name: 'package.json'
+            }
+          ]
+        }));
+      } else if (url === '//data.jsdelivr.com/v1/package/npm/bar@2.0.0-rc1') {
+        resolve(mkJsonResponse({
+          files: [
+            {
+              type: 'file',
+              name: 'package.json'
+            }
+          ]
+        }));
+      } else if (url === '//data.jsdelivr.com/v1/package/npm/@scoped/pkg@1.0.0') {
+        resolve(mkJsonResponse({
+          files: [
+            {
+              type: 'file',
+              name: 'package.json'
+            }
+          ]
+        }));
       } else {
         resolve({statusText: 'Not Found'});
       }
@@ -43,10 +102,10 @@ function mockFetch (url) {
 }
 
 const fileReader = function (packageConfig) {
-  return jsDelivrFileReader(packageConfig, {fetch: mockFetch});
+  return jsdelivrFileReader(packageConfig, {fetch: mockFetch});
 }
 
-test('jsDelivrNpmPackageFileReader rejects missing package', t => {
+test('jsdelivrFileReader rejects missing package', t => {
   fileReader({name: 'nope'})
   .then(
     () => t.fail('should not pass'),
@@ -54,7 +113,7 @@ test('jsDelivrNpmPackageFileReader rejects missing package', t => {
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func for existing package', t => {
+test('jsdelivrFileReader returns fileRead func for existing package', t => {
   fileReader({name: 'foo'})
   .then(
     fileRead => {
@@ -74,7 +133,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for existing package', 
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func for fixed package version', t => {
+test('jsdelivrFileReader returns fileRead func for fixed package version', t => {
   fileReader({name: 'bar', version: '2.0.0-rc1'})
   .then(
     fileRead => {
@@ -95,7 +154,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for fixed package versi
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func for alias package', t => {
+test('jsdelivrFileReader returns fileRead func for alias package', t => {
   const l = fileReader({name: 'bar', location: 'foo', version: '1.0.1'});
 
   l.then(
@@ -118,7 +177,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for alias package', t =
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func rejects missing file for existing package', t => {
+test('jsdelivrFileReader returns fileRead func rejects missing file for existing package', t => {
   fileReader({name: 'foo'})
   .then(
     fileRead => {
@@ -132,7 +191,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func rejects missing file fo
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func for existing scoped package', t => {
+test('jsdelivrFileReader returns fileRead func for existing scoped package', t => {
   fileReader({name: '@scoped/pkg'})
   .then(
     fileRead => {
@@ -151,7 +210,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for existing scoped pac
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func rejects missing file for existing scoped package', t => {
+test('jsdelivrFileReader returns fileRead func rejects missing file for existing scoped package', t => {
   fileReader({name: '@scoped/pkg'})
   .then(
     fileRead => {
@@ -165,21 +224,38 @@ test('jsDelivrNpmPackageFileReader returns fileRead func rejects missing file fo
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader rejects read on dir', t => {
+test('jsdelivrFileReader rejects read on dir', t => {
   fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('dist')
       .then(
         () => t.fail('should not read dir'),
-        err => t.equal(err.message, 'it is a directory')
+        err => t.equal(err.message, 'no file "dist" in foo@1.0.1')
       );
     },
     err => t.fail(err)
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader reads .wasm file to base64 string', t => {
+test('jsdelivrFileReader reads nested file', t => {
+  fileReader({name: 'foo'})
+  .then(
+    fileRead => {
+      return fileRead('dist/index.js')
+      .then(
+        file => {
+          t.equal(file.path, '//cdn.jsdelivr.net/npm/foo@1.0.1/dist/index.js');
+          t.equal(file.contents, 'lorem');
+        },
+        err => t.fail(err.message)
+      );
+    },
+    err => t.fail(err)
+  ).then(() => t.end());
+});
+
+test('jsdelivrFileReader reads .wasm file to base64 string', t => {
   fileReader({name: 'foo'})
   .then(
     fileRead => {
@@ -195,7 +271,7 @@ test('jsDelivrNpmPackageFileReader reads .wasm file to base64 string', t => {
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func for package with hard coded main', t => {
+test('jsdelivrFileReader returns fileRead func for package with hard coded main', t => {
   fileReader({name: 'foo', main: 'lib/main'})
   .then(
     fileRead => {
@@ -215,7 +291,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for package with hard c
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func for package with custom path and hard coded main', t => {
+test('jsdelivrFileReader returns fileRead func for package with custom path and hard coded main', t => {
   fileReader({name: 'foo', location: 'bar@2.0.0-rc1', main: 'lib/main'})
   .then(
     fileRead => {
@@ -235,7 +311,7 @@ test('jsDelivrNpmPackageFileReader returns fileRead func for package with custom
   ).then(() => t.end());
 });
 
-test('jsDelivrNpmPackageFileReader returns fileRead func for package with custom path, version and hard coded main', t => {
+test('jsdelivrFileReader returns fileRead func for package with custom path, version and hard coded main', t => {
   fileReader({name: 'foo', location: 'bar', version: '2.0.0-rc1', main: 'lib/main'})
   .then(
     fileRead => {

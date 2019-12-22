@@ -1,7 +1,7 @@
 require('./hide-log');
 require('./check-deps.spec');
 // require('./package-file-reader/default.spec');
-require('./package-file-reader/jsDelivr.spec');
+require('./package-file-reader/jsdelivr.spec');
 require('./package-reader.spec');
 require('./package.spec');
 require('./parser.uses-amd-or-requirejs.spec');
