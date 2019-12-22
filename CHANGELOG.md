@@ -1,3 +1,12 @@
+## [1.5.1](https://github.com/dumberjs/dumber/compare/v1.5.0...v1.5.1) (2019-12-22)
+
+
+### Bug Fixes
+
+* avoid warning of unhandled promise reject ([0163b08](https://github.com/dumberjs/dumber/commit/0163b08f48da9ba38a8ec9da2d254831e28722f1))
+
+
+
 # [1.5.0](https://github.com/dumberjs/dumber/compare/v1.4.0...v1.5.0) (2019-12-22)
 
 
