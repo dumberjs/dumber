@@ -36,7 +36,6 @@ test('cjs transform does not ignore amd code with requirejs usage', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -52,7 +51,6 @@ test('cjs transform wraps cjs code', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -74,7 +72,6 @@ test('cjs transform wraps cjs code, uses file name on existing source map', t =>
   t.equal(newUnit.sourceMap.file, 'foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -90,7 +87,6 @@ test('cjs transform wraps cjs code case 2', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -106,7 +102,6 @@ test('cjs transform wraps cjs code with require call', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -124,7 +119,6 @@ test('cjs transform wraps cjs code with __dirname', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -142,7 +136,6 @@ test('cjs transform wraps cjs code with __filename', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -158,7 +151,6 @@ test('cjs transform wraps cjs code case 3', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -176,7 +168,6 @@ test('cjs transform wraps cjs code with global, process, and Buffer', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.notOk(newUnit.forceWrap);
   t.end();
 });
 
@@ -195,7 +186,6 @@ test('cjs forces cjs wrap', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.ok(newUnit.forceWrap);
   t.end();
 });
 
@@ -214,7 +204,6 @@ test('cjs forces cjs wrap with npm package file path contains cjs', t => {
   t.equal(newUnit.sourceMap.file, 'node_module/foo/dist/cjs/index.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.ok(newUnit.forceWrap);
   t.end();
 });
 
@@ -233,7 +222,6 @@ test('cjs forces cjs wrap with npm package file path contains commonjs', t => {
   t.equal(newUnit.sourceMap.file, 'node_module/foo/dist/commonjs/index.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.ok(newUnit.forceWrap);
   t.end();
 });
 
