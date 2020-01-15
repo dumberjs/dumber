@@ -21,9 +21,9 @@
     "version": "standard-changelog && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
-    "nodejs-test": "tape test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
-    "coverage": "nyc --reporter=lcov tape test/hide-log.js \"test/**/*.spec.js\" | tap-dot",
-    "browser-test": "browserify test/all-browser-spec.js | browser-do --tap | tap-dot",
+    "nodejs-test": "tape test/hide-log.js \"test/**/*.spec.js\" | tap-nirvana",
+    "coverage": "nyc --reporter=lcov tape test/hide-log.js \"test/**/*.spec.js\" | tap-nirvana",
+    "browser-test": "browserify test/all-browser-spec.js | browser-do --tap | tap-nirvana",
     "test": "npm run nodejs-test && npm run browser-test"
   },
   "repository": {
@@ -52,6 +52,7 @@
     "del": "^5.1.0",
     "dumber-module-loader": "^1.1.0",
     "escope": "^3.6.0",
+    "fs-browser-stub": "^1.0.0",
     "mkdirp": "^0.5.1",
     "modify-code": "^1.0.2",
     "node-fetch": "^2.6.0",
@@ -68,7 +69,7 @@
     "nyc": "^14.1.1",
     "sourcemap-codec": "^1.4.6",
     "standard-changelog": "^2.0.21",
-    "tap-dot": "^2.0.0",
+    "tap-nirvana": "^1.1.0",
     "tape": "^4.12.0"
   }
 }

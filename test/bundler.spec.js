@@ -418,6 +418,8 @@ test('Bundler traces files, sorts shim', t => {
     'node_modules/jquery/dist/jquery.js': 'define("jquery",[],function(){});',
     'node_modules/bootstrap/package.json':  JSON.stringify({name: 'bootstrap', main: './dist/bootstrap'}),
     'node_modules/bootstrap/dist/bootstrap.js': '',
+    'node_modules/fs-browser-stub/package.json': JSON.stringify({name: 'fs-browser-stub', main: 'index.js'}),
+    'node_modules/fs-browser-stub/index.js': ''
   };
   const bundler = createBundler(fakeFs, {
     deps: [
@@ -457,8 +459,8 @@ test('Bundler traces files, sorts shim', t => {
               "contents": ";\ndefine('bootstrap/dist/bootstrap',['jquery'],(function (global) {\n  return function () {\n    return global.jQuery;\n  };\n}(this)));\n\n;define.alias('bootstrap','bootstrap/dist/bootstrap');"
             },
             {
-              "path": "__stub__/fs.js",
-              "contents": "define('fs',function(){return {};});"
+              "path": "node_modules/fs-browser-stub/index.js",
+              "contents": ";\ndefine('fs/index',function(){});\n\n;define.alias('fs','fs/index');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1594,4 +1596,3 @@ test('Bundler creates correct alias for named AMD module which does not match pa
   )
   .then(t.end);
 });
-

@@ -56,8 +56,16 @@ test('stubModule stubs zlib', t => {
   t.end();
 });
 
+test('stubModule stubs fs', t => {
+  t.deepEqual(stubModule('fs'),{
+    name: 'fs',
+    location: resolve('fs-browser-stub')
+  });
+  t.end();
+});
+
 test('stubModule stubs empty module for some core module', t => {
-  t.equal(stubModule('fs'), 'define(function(){return {};});');
+  t.equal(stubModule('dns'), 'define(function(){return {};});');
   t.end();
 });
 
