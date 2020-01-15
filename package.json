@@ -10,7 +10,8 @@
   "browser": {
     "./lib/cache/default.js": "./lib/cache/none.js",
     "./lib/package-file-reader/default.js": "./lib/package-file-reader/jsdelivr.js",
-    "./lib/log.js": "./lib/log-browser.js"
+    "./lib/log.js": "./lib/log-browser.js",
+    "./lib/resolve-package.js": "./lib/resolve-package-browser.js"
   },
   "engines": {
     "node": ">=8.9"
@@ -63,7 +64,7 @@
   },
   "devDependencies": {
     "@babel/parser": "^7.7.7",
-    "browser-do": "^0.3.3",
+    "browser-do": "^0.4.0",
     "browserify": "^16.5.0",
     "eslint": "^6.7.2",
     "nyc": "^14.1.1",
