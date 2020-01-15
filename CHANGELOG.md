@@ -1,3 +1,12 @@
+# [1.6.0](https://github.com/dumberjs/dumber/compare/v1.5.1...v1.6.0) (2020-01-15)
+
+
+### Features
+
+* better stub of fs to delay the error in browser ([67b1673](https://github.com/dumberjs/dumber/commit/67b16737e3447f43535602931423d1da064b7412))
+
+
+
 ## [1.5.1](https://github.com/dumberjs/dumber/compare/v1.5.0...v1.5.1) (2019-12-22)
 
 
