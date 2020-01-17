@@ -1,3 +1,12 @@
+# [1.7.0](https://github.com/dumberjs/dumber/compare/v1.6.0...v1.7.0) (2020-01-17)
+
+
+### Features
+
+* calls getCache with meta info to allow user to fine tune cache storage ([c2b08d6](https://github.com/dumberjs/dumber/commit/c2b08d6a40e1b1d713b232548c42e2cca6a9b9de))
+
+
+
 # [1.6.0](https://github.com/dumberjs/dumber/compare/v1.5.1...v1.6.0) (2020-01-15)
 
 
