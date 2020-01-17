@@ -377,8 +377,12 @@ test('trace supports cache', t => {
   };
 
   let cached = {};
+  const triedCacheMeta = [];
   const cache = {
-    getCache: hash => cached[hash],
+    getCache: (hash, meta) => {
+      triedCacheMeta.push(meta);
+      return cached[hash];
+    },
     setCache: (hash, obj) => cached[hash] = obj,
     clearCache: () => cached = {}
   }
@@ -399,6 +403,11 @@ test('trace supports cache', t => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
+
+    t.deepEqual(triedCacheMeta, [
+      { packageName: undefined, moduleId: 'foo/bar' },
+      { packageName: undefined, moduleId: 'foo/bar.html' },
+    ]);
 
     return Promise.all([
       trace({
