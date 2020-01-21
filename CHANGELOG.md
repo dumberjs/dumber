@@ -1,3 +1,12 @@
+## [1.7.5](https://github.com/dumberjs/dumber/compare/v1.7.4...v1.7.5) (2020-01-21)
+
+
+### Bug Fixes
+
+* synchronously print slow code warning ([0c36984](https://github.com/dumberjs/dumber/commit/0c36984ed8f9aa34ca2b5ca88ef92b34814fc8d3))
+
+
+
 ## [1.7.4](https://github.com/dumberjs/dumber/compare/v1.7.3...v1.7.4) (2020-01-20)
 
 
