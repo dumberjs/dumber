@@ -1,3 +1,12 @@
+# [1.8.0](https://github.com/dumberjs/dumber/compare/v1.7.5...v1.8.0) (2020-01-22)
+
+
+### Features
+
+* add "size" meta data to getCache callback ([0067ae3](https://github.com/dumberjs/dumber/commit/0067ae39516e9f8def21977510221d41378056ad))
+
+
+
 ## [1.7.5](https://github.com/dumberjs/dumber/compare/v1.7.4...v1.7.5) (2020-01-21)
 
 
