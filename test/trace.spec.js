@@ -405,8 +405,8 @@ test('trace supports cache', t => {
     t.deepEqual(traced2.deps, ['lorem']);
 
     t.deepEqual(triedCacheMeta, [
-      { packageName: undefined, moduleId: 'foo/bar' },
-      { packageName: undefined, moduleId: 'foo/bar.html' },
+      { packageName: undefined, moduleId: 'foo/bar', size: 15 },
+      { packageName: undefined, moduleId: 'foo/bar.html', size: 32 },
     ]);
 
     return Promise.all([
