@@ -1,3 +1,12 @@
+## [1.8.1](https://github.com/dumberjs/dumber/compare/v1.8.0...v1.8.1) (2020-01-28)
+
+
+### Bug Fixes
+
+* add package main path to cache hash ([f7353ab](https://github.com/dumberjs/dumber/commit/f7353ab2888adba0e2dcba3a2dfd64904938954d))
+
+
+
 # [1.8.0](https://github.com/dumberjs/dumber/compare/v1.7.5...v1.8.0) (2020-01-22)
 
 
