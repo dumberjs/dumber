@@ -12,9 +12,14 @@ test('stripJsExtension keeps other extension', t => {
 
 test('stripJsExtension strips js extension', t => {
   t.equal(stripJsExtension('a.js'), 'a');
+  t.equal(stripJsExtension('a.ts'), 'a');
   t.equal(stripJsExtension('./b/a.js'), './b/a');
+  t.equal(stripJsExtension('./b/a.jsx'), './b/a');
   t.equal(stripJsExtension('foo/a.min.js'), 'foo/a.min');
+  t.equal(stripJsExtension('foo/a.min.tsx'), 'foo/a.min');
   t.equal(stripJsExtension('@bar/foo/a.min.js'), '@bar/foo/a.min');
+  t.equal(stripJsExtension('@bar/foo/a.min.cjs'), '@bar/foo/a.min');
+  t.equal(stripJsExtension('@bar/foo/a.min.mjs'), '@bar/foo/a.min');
   t.end();
 });
 
