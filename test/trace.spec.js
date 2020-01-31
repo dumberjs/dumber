@@ -642,34 +642,68 @@ exports.foo = 1;
   );
 });
 
-test('trace traces npm main', t => {
+test('trace traces npm main in cjs', t => {
   const unit = {
-    path: 'node_modules/foo/dist/bar.js',
+    path: 'node_modules/foo/dist/bar.cjs',
     contents: "define(['a','text!./b.css'],function() {});",
     moduleId: 'foo/dist/bar',
     packageName: 'foo',
-    packageMainPath: 'dist/bar.js',
+    packageMainPath: 'dist/bar.cjs',
     alias: 'foo'
   };
 
   trace(unit).then(traced => {
     t.deepEqual(traced, {
-      path: 'node_modules/foo/dist/bar.js',
+      path: 'node_modules/foo/dist/bar.cjs',
       contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});\n;define.alias('foo','foo/dist/bar');",
       sourceMap: {
         version: 3,
-        sources: [ 'node_modules/foo/dist/bar.js' ],
+        sources: [ 'node_modules/foo/dist/bar.cjs' ],
         names: [],
         mappings: '',
-        file: 'node_modules/foo/dist/bar.js',
+        file: 'node_modules/foo/dist/bar.cjs',
         sourcesContent: [ 'define([\'a\',\'text!./b.css\'],function() {});' ]
       },
       moduleId: 'foo/dist/bar',
       defined: ['foo/dist/bar', 'foo'],
       deps: ['a', 'text!./b.css'],
       packageName: 'foo',
-      packageMainPath: 'dist/bar.js',
+      packageMainPath: 'dist/bar.cjs',
       alias: null
+    });
+    t.end();
+  });
+});
+
+test('trace traces npm main in mjs', t => {
+  const unit = {
+    path: 'node_modules/foo/dist/bar.mjs',
+    contents: "import a from 'a';",
+    moduleId: 'foo/dist/bar',
+    packageName: 'foo',
+    packageMainPath: 'dist/bar.mjs',
+    alias: 'foo'
+  };
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/foo/dist/bar.mjs',
+      contents: "define('foo/dist/bar',['require','exports','module','a'],function (require, exports, module) {\n\"use strict\";\n\nvar _a = _interopRequireDefault(require(\"a\"));\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n});\n\n;define.alias('foo','foo/dist/bar');",
+      sourceMap: {
+        version: 3,
+        sources: [ 'node_modules/foo/dist/bar.mjs' ],
+        names: [],
+        mappings: '',
+        file: 'node_modules/foo/dist/bar.mjs',
+        sourcesContent: [ "import a from 'a';" ]
+      },
+      moduleId: 'foo/dist/bar',
+      defined: ['foo/dist/bar', 'foo'],
+      deps: ['a'],
+      packageName: 'foo',
+      packageMainPath: 'dist/bar.mjs',
+      alias: null,
+      forceWrap: true
     });
     t.end();
   });
