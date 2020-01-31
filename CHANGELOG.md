@@ -1,3 +1,12 @@
+# [1.9.0](https://github.com/dumberjs/dumber/compare/v1.8.1...v1.9.0) (2020-01-31)
+
+
+### Features
+
+* small step to add some support for mjs and cjs files ([a5e1d05](https://github.com/dumberjs/dumber/commit/a5e1d056a5ffda7b2f1cfdc61fae4b1ff17d0c83))
+
+
+
 ## [1.8.1](https://github.com/dumberjs/dumber/compare/v1.8.0...v1.8.1) (2020-01-28)
 
 
