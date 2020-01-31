@@ -1,3 +1,12 @@
+## [1.9.1](https://github.com/dumberjs/dumber/compare/v1.9.0...v1.9.1) (2020-01-31)
+
+
+### Bug Fixes
+
+* need to transform cjs/mjs as js code ([2326c49](https://github.com/dumberjs/dumber/commit/2326c4952bc89737761d79209ac4be4e9c9d2018))
+
+
+
 # [1.9.0](https://github.com/dumberjs/dumber/compare/v1.8.1...v1.9.0) (2020-01-31)
 
 
