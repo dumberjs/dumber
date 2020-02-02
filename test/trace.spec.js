@@ -22,10 +22,18 @@ test('trace rejects not-matching packageName and moduleId', t => {
     packageName: 'foo',
     packageMainPath: 'index.js'
   };
-  trace(unit).catch(err => {
-    t.ok(err);
-    t.end();
-  }).finally(terminate);
+  trace(unit).then(
+    () => {
+      terminate();
+      t.fail('should not pass');
+      t.end();
+    },
+    err => {
+      terminate();
+      t.ok(err);
+      t.end();
+    }
+  );
 });
 
 test('trace does not reject moduleId which is same as packageName', t => {
@@ -55,13 +63,15 @@ test('trace does not reject moduleId which is same as packageName', t => {
         packageName: 'fs',
         packageMainPath: 'index.js'
       });
+      terminate();
       t.end();
     },
     err => {
       t.fail(err);
+      terminate();
       t.end();
     }
-  ).finally(terminate);
+  );
 });
 
 test('trace traces js', t => {
@@ -87,8 +97,9 @@ test('trace traces js', t => {
       defined: ['foo/bar'],
       deps: ['a', 'text!./b.css']
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace traces js and update sourceMap', t => {
@@ -123,8 +134,9 @@ test('trace traces js and update sourceMap', t => {
       defined: ['foo/bar'],
       deps: ['./a']
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace traces shimed js and update sourceMap', t => {
@@ -170,8 +182,9 @@ test('trace traces shimed js and update sourceMap', t => {
       shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true},
       shimed: true
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace forces shim on old js and update sourceMap', t => {
@@ -211,8 +224,9 @@ test('trace forces shim on old js and update sourceMap', t => {
       packageMainPath: 'index.js',
       shimed: true
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace transforms json', t => {
@@ -238,8 +252,9 @@ test('trace transforms json', t => {
       defined: ['foo/bar.json', 'text!foo/bar.json'],
       deps: []
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace transforms text file', t => {
@@ -265,8 +280,9 @@ test('trace transforms text file', t => {
       defined: ['text!foo/bar.html'],
       deps: []
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace transforms wasm file', t => {
@@ -292,8 +308,9 @@ test('trace transforms wasm file', t => {
       defined: ['raw!foo/bar.wasm'],
       deps: ['base64-arraybuffer']
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace supports optional depsFinder returns deps directly', t => {
@@ -323,8 +340,9 @@ test('trace supports optional depsFinder returns deps directly', t => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace supports optional depsFinder returns deps in promise', t => {
@@ -356,8 +374,9 @@ test('trace supports optional depsFinder returns deps in promise', t => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace supports cache', t => {
@@ -431,8 +450,9 @@ test('trace supports cache', t => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace traces npm js with dist alias', t => {
@@ -463,8 +483,9 @@ test('trace traces npm js with dist alias', t => {
       packageMainPath: 'dist/index.js',
       alias: null
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace traces npm html with dist alias', t => {
@@ -495,8 +516,9 @@ test('trace traces npm html with dist alias', t => {
       packageMainPath: 'dist/cjs/index.js',
       alias: null
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace patches momentjs to expose global var "moment"', t => {
@@ -543,8 +565,9 @@ test('trace patches momentjs to expose global var "moment"', t => {
         sourcesContent: [ '//! moment.js\n\n;(function (global, factory) {\n    typeof exports === \'object\' && typeof module !== \'undefined\' ? module.exports = factory() :\n    typeof define === \'function\' && define.amd ? (function(){var m=factory();if(typeof moment === \'undefined\'){window.moment=m;} define(function(){return m;})})() :\n    global.moment = factory()\n}(this, (function () {})));' ]
       }
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace patches npm package process for NODE_ENV', t => {
@@ -590,8 +613,9 @@ ${patchedProcessFile}
         sourcesContent: [ patchedProcessFile ]
       }
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace removes conditional NODE_ENV branch', t => {
@@ -637,14 +661,16 @@ exports.foo = 1;
       });
 
       process.env.NODE_ENV = oldNodeEnv;
+      terminate();
       t.end();
     },
     err => {
       process.env.NODE_ENV = oldNodeEnv;
       t.fail(err);
+      terminate();
       t.end();
     }
-  ).finally(terminate);
+  );
 });
 
 test('trace traces npm main in cjs', t => {
@@ -676,8 +702,9 @@ test('trace traces npm main in cjs', t => {
       packageMainPath: 'dist/bar.cjs',
       alias: null
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
 
 test('trace traces npm main in mjs', t => {
@@ -710,6 +737,7 @@ test('trace traces npm main in mjs', t => {
       alias: null,
       forceWrap: true
     });
+    terminate();
     t.end();
-  }).finally(terminate);
+  });
 });
