@@ -1,6 +1,11 @@
 const test = require('tape');
 const _trace = require('../lib/trace');
 
+function terminate() {
+  if (_trace.terminate) return _trace.terminate();
+  else return Promise.resolve();
+}
+
 function trace(unit, opts) {
   return _trace(unit, opts).then(unit => {
     // don't test source map details
@@ -20,7 +25,7 @@ test('trace rejects not-matching packageName and moduleId', t => {
   trace(unit).catch(err => {
     t.ok(err);
     t.end();
-  })
+  }).finally(terminate);
 });
 
 test('trace does not reject moduleId which is same as packageName', t => {
@@ -56,7 +61,7 @@ test('trace does not reject moduleId which is same as packageName', t => {
       t.fail(err);
       t.end();
     }
-  );
+  ).finally(terminate);
 });
 
 test('trace traces js', t => {
@@ -83,7 +88,7 @@ test('trace traces js', t => {
       deps: ['a', 'text!./b.css']
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace traces js and update sourceMap', t => {
@@ -119,7 +124,7 @@ test('trace traces js and update sourceMap', t => {
       deps: ['./a']
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace traces shimed js and update sourceMap', t => {
@@ -166,7 +171,7 @@ test('trace traces shimed js and update sourceMap', t => {
       shimed: true
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace forces shim on old js and update sourceMap', t => {
@@ -207,7 +212,7 @@ test('trace forces shim on old js and update sourceMap', t => {
       shimed: true
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace transforms json', t => {
@@ -234,7 +239,7 @@ test('trace transforms json', t => {
       deps: []
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace transforms text file', t => {
@@ -261,7 +266,7 @@ test('trace transforms text file', t => {
       deps: []
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace transforms wasm file', t => {
@@ -288,7 +293,7 @@ test('trace transforms wasm file', t => {
       deps: ['base64-arraybuffer']
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace supports optional depsFinder returns deps directly', t => {
@@ -319,7 +324,7 @@ test('trace supports optional depsFinder returns deps directly', t => {
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace supports optional depsFinder returns deps in promise', t => {
@@ -352,7 +357,7 @@ test('trace supports optional depsFinder returns deps in promise', t => {
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace supports cache', t => {
@@ -427,7 +432,7 @@ test('trace supports cache', t => {
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace traces npm js with dist alias', t => {
@@ -459,7 +464,7 @@ test('trace traces npm js with dist alias', t => {
       alias: null
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace traces npm html with dist alias', t => {
@@ -491,7 +496,7 @@ test('trace traces npm html with dist alias', t => {
       alias: null
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace patches momentjs to expose global var "moment"', t => {
@@ -539,7 +544,7 @@ test('trace patches momentjs to expose global var "moment"', t => {
       }
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace patches npm package process for NODE_ENV', t => {
@@ -586,7 +591,7 @@ ${patchedProcessFile}
       }
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace removes conditional NODE_ENV branch', t => {
@@ -639,7 +644,7 @@ exports.foo = 1;
       t.fail(err);
       t.end();
     }
-  );
+  ).finally(terminate);
 });
 
 test('trace traces npm main in cjs', t => {
@@ -672,7 +677,7 @@ test('trace traces npm main in cjs', t => {
       alias: null
     });
     t.end();
-  });
+  }).finally(terminate);
 });
 
 test('trace traces npm main in mjs', t => {
@@ -706,5 +711,5 @@ test('trace traces npm main in mjs', t => {
       forceWrap: true
     });
     t.end();
-  });
+  }).finally(terminate);
 });

@@ -23,9 +23,9 @@ function createBundler(fakeFs = {}, opts = {}) {
   });
 
   const oldBundle = bundler.bundle.bind(bundler);
-  bundler.bundle = function() {
+  bundler.bundle = async function() {
     // don't test source map
-    const bundleMap = oldBundle();
+    const bundleMap = await oldBundle();
     Object.keys(bundleMap).forEach(key => {
       if (bundleMap[key].files) {
         bundleMap[key].files.forEach(deleteSourceMap);
@@ -121,7 +121,7 @@ test('Bundler traces files', t => {
             "bundles": {}
           }
         }
-      })
+      });
     },
     err => t.fail(err.stack)
   )

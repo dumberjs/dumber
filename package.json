@@ -11,7 +11,8 @@
     "./lib/cache/default.js": "./lib/cache/none.js",
     "./lib/package-file-reader/default.js": "./lib/package-file-reader/jsdelivr.js",
     "./lib/log.js": "./lib/log-browser.js",
-    "./lib/resolve-package.js": "./lib/resolve-package-browser.js"
+    "./lib/resolve-package.js": "./lib/resolve-package-browser.js",
+    "./lib/trace-js-threaded.js": "./lib/trace-js.js"
   },
   "engines": {
     "node": ">=8.9"
