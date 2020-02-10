@@ -1,3 +1,12 @@
+# [1.10.0](https://github.com/dumberjs/dumber/compare/v1.9.1...v1.10.0) (2020-02-10)
+
+
+### Features
+
+* support aggressive reading from cache ([dc824d0](https://github.com/dumberjs/dumber/commit/dc824d021f6fc96f8e7d56e5a30a58efabab2f5f))
+
+
+
 ## [1.9.1](https://github.com/dumberjs/dumber/compare/v1.9.0...v1.9.1) (2020-01-31)
 
 
