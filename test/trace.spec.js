@@ -4,9 +4,9 @@ const _trace = require('../lib/trace');
 function trace(unit, opts) {
   return _trace(unit, opts).then(unit => {
     // don't test source map details
-    unit.sourceMap.mappings = '';
+    if (unit.sourceMap) unit.sourceMap.mappings = '';
     return unit;
-  })
+  });
 }
 
 test('trace rejects not-matching packageName and moduleId', t => {
@@ -707,4 +707,26 @@ test('trace traces npm main in mjs', t => {
     });
     t.end();
   });
+});
+
+test('trace bypasses traced unit', t => {
+  const unit = {
+    path: 'some/file.s',
+    contents: "traced",
+    moduleId: 'some/file',
+    packageName: 'some',
+    packageMainPath: 'file.js',
+    defined: ['some/file'],
+    deps: []
+  };
+  trace(unit).then(
+    traced => {
+      t.deepEqual(traced, unit);
+      t.end();
+    },
+    err => {
+      t.fail(err);
+      t.end();
+    }
+  );
 });

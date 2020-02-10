@@ -94,16 +94,69 @@ function mockFetch (url) {
             }
           ]
         }));
+      } else if (url === '//data.jsdelivr.com/v1/package/npm/cc@1.0.0') {
+        resolve(mkJsonResponse({
+          files: [
+            {
+              type: 'file',
+              name: 'package.json'
+            },
+            {
+              type: 'directory',
+              name: 'dist',
+              files: [
+                {
+                  type: 'file',
+                  name: 'index.js'
+                }
+              ]
+            }
+          ]
+        }));
+      } else if (url === '//cdn.jsdelivr.net/npm/cc@1.0.0/package.json') {
+        resolve(mkResponse('{"name":"cc","version":"1.0.0","main":"dist/index"}'));
+      } else if (url === '//cache.dumber.app/npm/cc@1.0.0/dist/index.js') {
+        resolve(mkResponse(JSON.stringify({
+          path: '//cdn.jsdelivr.net/npm/cc@1.0.0/dist/index.js',
+          contents: 'traced',
+          moduleId: 'cc/dist/index',
+          defined: ['cc/dist/index'],
+          deps: []
+        })));
       } else {
         resolve({statusText: 'Not Found'});
       }
-    }, 10);
+    });
   });
 }
 
 const fileReader = function (packageConfig) {
   return jsdelivrFileReader(packageConfig, {fetch: mockFetch});
 }
+
+test('jsdelivrFileReader uses traced cache first', t => {
+  fileReader({name: 'cc', version: '1.0.0'})
+  .then(
+    fileRead => {
+      t.equal(fileRead.packageConfig.name, 'cc');
+      return fileRead('dist/index.js')
+      .then(
+        file => {
+          t.deepEqual(file, {
+            path: '//cdn.jsdelivr.net/npm/cc@1.0.0/dist/index.js',
+            contents: 'traced',
+            moduleId: 'cc/dist/index',
+            defined: ['cc/dist/index'],
+            deps: []
+          });
+        },
+        err => t.fail(err.message)
+      );
+    },
+    err => t.fail(err)
+  ).then(() => t.end());
+});
+
 
 test('jsdelivrFileReader rejects missing package', t => {
   fileReader({name: 'nope'})
