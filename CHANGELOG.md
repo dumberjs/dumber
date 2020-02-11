@@ -1,3 +1,12 @@
+## [1.10.2](https://github.com/dumberjs/dumber/compare/v1.10.1...v1.10.2) (2020-02-11)
+
+
+### Bug Fixes
+
+* package reader needs to bypass traced cache ([c6ed0eb](https://github.com/dumberjs/dumber/commit/c6ed0ebb1a1f1a619c1e13803fcd4c4421949eba))
+
+
+
 ## [1.10.1](https://github.com/dumberjs/dumber/compare/v1.10.0...v1.10.1) (2020-02-11)
 
 
