@@ -1,3 +1,12 @@
+## [1.10.1](https://github.com/dumberjs/dumber/compare/v1.10.0...v1.10.1) (2020-02-11)
+
+
+### Bug Fixes
+
+* avoid fetching jsdelivr package.json repeatedly ([b81bc56](https://github.com/dumberjs/dumber/commit/b81bc56b2430fc02048394bf6c3431b8e97d1996))
+
+
+
 # [1.10.0](https://github.com/dumberjs/dumber/compare/v1.9.1...v1.10.0) (2020-02-10)
 
 
