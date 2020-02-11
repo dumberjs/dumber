@@ -994,3 +994,48 @@ test('packageReader reads resource file for package alias', t => {
     ).then(t.end);
   });
 });
+
+test('packageReader reads traced file', t => {
+  function _fileReader(filePath) {
+    if (filePath === 'index.js') {
+      return Promise.resolve({
+        path: 'node_modules/foo/index.js',
+        contents: 'traced',
+        moduleId: 'foo/index',
+        packageName: 'foo',
+        packageMainPath: 'index.js',
+        defined: ['foo/index', 'foo'],
+        deps: []
+      });
+    } else if (filePath === 'package.json') {
+      return Promise.resolve({
+        path: 'node_modules/foo/package.json',
+        contents: '{"name":"foo", "main": "index", "version": "1.0.0"}'
+      });
+    }
+  }
+
+  _fileReader.packageConfig = new Package('foo');
+  const r = new PackageReader(_fileReader)
+  r.readMain().then(
+    unit => {
+      t.equal(r.version, '1.0.0');
+      t.deepEqual(unit, {
+        path: 'node_modules/foo/index.js',
+        contents: 'traced',
+        moduleId: 'foo/index',
+        packageName: 'foo',
+        packageMainPath: 'index.js',
+        defined: ['foo/index', 'foo'],
+        deps: []
+      });
+
+      t.equal(r.name, 'foo');
+      t.equal(r.mainPath, 'index.js');
+      t.deepEqual(r.browserReplacement, {});
+    },
+    err => {
+      t.fail(err.message);
+    }
+  ).then(t.end);
+});
