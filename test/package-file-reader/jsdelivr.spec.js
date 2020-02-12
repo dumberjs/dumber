@@ -108,6 +108,10 @@ function mockFetch (url) {
                 {
                   type: 'file',
                   name: 'index.js'
+                },
+                {
+                  type: 'file',
+                  name: 'another.js'
                 }
               ]
             }
@@ -123,6 +127,10 @@ function mockFetch (url) {
           defined: ['cc/dist/index'],
           deps: []
         })));
+      } else if (url === '//cache.dumber.app/npm/cc@1.0.0/dist/another.js') {
+        resolve(mkResponse(''));
+      } else if (url === '//cdn.jsdelivr.net/npm/cc@1.0.0/dist/another.js') {
+        resolve(mkResponse('not-traced'));
       } else {
         resolve({statusText: 'Not Found'});
       }
@@ -157,6 +165,26 @@ test('jsdelivrFileReader uses traced cache first', t => {
   ).then(() => t.end());
 });
 
+
+test('jsdelivrFileReader treats empty traced cache as not cached', t => {
+  fileReader({name: 'cc', version: '1.0.0'})
+  .then(
+    fileRead => {
+      t.equal(fileRead.packageConfig.name, 'cc');
+      return fileRead('dist/another.js')
+      .then(
+        file => {
+          t.deepEqual(file, {
+            path: '//cdn.jsdelivr.net/npm/cc@1.0.0/dist/another.js',
+            contents: 'not-traced'
+          });
+        },
+        err => t.fail(err.message)
+      );
+    },
+    err => t.fail(err)
+  ).then(() => t.end());
+});
 
 test('jsdelivrFileReader rejects missing package', t => {
   fileReader({name: 'nope'})
