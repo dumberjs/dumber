@@ -1,3 +1,12 @@
+## [1.10.3](https://github.com/dumberjs/dumber/compare/v1.10.2...v1.10.3) (2020-02-12)
+
+
+### Bug Fixes
+
+* treat empty cache as no cache ([41460d8](https://github.com/dumberjs/dumber/commit/41460d876962ba84db1c2110944ff84ba8666f16))
+
+
+
 ## [1.10.2](https://github.com/dumberjs/dumber/compare/v1.10.1...v1.10.2) (2020-02-11)
 
 
