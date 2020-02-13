@@ -1,3 +1,12 @@
+# [1.11.0](https://github.com/dumberjs/dumber/compare/v1.10.4...v1.11.0) (2020-02-13)
+
+
+### Features
+
+* add exists api to package-file-reader to avoid unnecessary io ([7c45630](https://github.com/dumberjs/dumber/commit/7c45630072e71a035c28c9f6eb76e4ac83b93b0e))
+
+
+
 ## [1.10.4](https://github.com/dumberjs/dumber/compare/v1.10.3...v1.10.4) (2020-02-13)
 
 
