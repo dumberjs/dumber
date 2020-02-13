@@ -1,6 +1,6 @@
 require('./hide-log');
 require('./check-deps.spec');
-// require('./package-file-reader/default.spec');
+// require('./package-file-reader/node.spec');
 require('./package-file-reader/jsdelivr.spec');
 require('./package-reader.spec');
 require('./package.spec');

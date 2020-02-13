@@ -411,3 +411,36 @@ test('jsdelivrFileReader returns fileRead func for package with custom path, ver
     err => t.fail(err)
   ).then(() => t.end());
 });
+
+test('jsdelivrFileReader returns fileRead.exists func', t => {
+  fileReader({name: 'foo'})
+  .then(
+    fileRead => {
+      return Promise.all([
+        fileRead.exists('package.json'),
+        fileRead.exists('index.js'),
+        fileRead.exists('./dist/index.js'),
+        fileRead.exists('dist/index.js'),
+        fileRead.exists('fib.wasm'),
+        fileRead.exists('nope.js')
+      ])
+      .then(
+        results => {
+          t.deepEqual(results, [
+            true,
+            false,
+            true,
+            true,
+            true,
+            false
+          ]);
+        },
+        err => t.fail(err.stack)
+      );
+    },
+    err => t.fail(err.stack)
+  )
+  .then(() => {
+    t.end();
+  });
+});

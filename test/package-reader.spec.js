@@ -1016,6 +1016,11 @@ test('packageReader reads traced file', t => {
     return Promise.reject();
   }
 
+  function _exists(filePath) {
+    return Promise.resolve(filePath === 'package.json' || filePath === 'index.js');
+  }
+
+  _fileReader.exists = _exists;
   _fileReader.packageConfig = new Package('foo');
   const r = new PackageReader(_fileReader)
   r.readMain().then(

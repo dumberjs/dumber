@@ -2,7 +2,7 @@ const test = require('tape');
 const path = require('path');
 const fs = require('fs');
 const {buildReadFile, mockPackageFileReader} = require('../mock');
-const _defaultFileReader = require('../../lib/package-file-reader/default');
+const _defaultFileReader = require('../../lib/package-file-reader/node');
 
 test('defaultNpmPackageFileReader falls back to main:index when package.json is missing', t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile());
@@ -164,9 +164,10 @@ test('defaultNpmPackageFileReader can read parent node_modules folder', t => {
           t.equal(file.contents, '{"name":"foo"}');
         },
         err => t.fail(err.message)
+
       );
     },
-    () => t.fail('should not fail')
+    err => t.fail(err.message)
   )
   .then(() => {
     t.end();
@@ -287,3 +288,40 @@ test('defaultNpmPackageFileReader returns fileRead func for package alias', t =>
   });
 });
 
+test('defaultNpmPackageFileReader returns fileRead.exists func', t => {
+  const defaultFileReader = mockPackageFileReader(buildReadFile({
+    'node_modules/foo/package.json': '{"name":"foo","version":"1.0.0","main":"index.js"}',
+    'node_modules/foo/index.js': 'lorem'
+  }));
+
+  defaultFileReader({name: 'foo'})
+  .then(
+    fileRead => {
+      return Promise.all([
+        fileRead.exists('package.json'),
+        fileRead.exists('index.js'),
+        fileRead.exists('./index.js'),
+        fileRead.exists('index'),
+        fileRead.exists('./nope'),
+        fileRead.exists('nope.js')
+      ])
+      .then(
+        results => {
+          t.deepEqual(results, [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false
+          ]);
+        },
+        err => t.fail(err.stack)
+      );
+    },
+    err => t.fail(err.stack)
+  )
+  .then(() => {
+    t.end();
+  });
+});
