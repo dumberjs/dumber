@@ -1013,6 +1013,7 @@ test('packageReader reads traced file', t => {
         contents: '{"name":"foo", "main": "index", "version": "1.0.0"}'
       });
     }
+    return Promise.reject();
   }
 
   _fileReader.packageConfig = new Package('foo');
