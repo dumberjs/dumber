@@ -1,3 +1,12 @@
+## [1.10.4](https://github.com/dumberjs/dumber/compare/v1.10.3...v1.10.4) (2020-02-13)
+
+
+### Bug Fixes
+
+* lazily resolve package main ([b883b05](https://github.com/dumberjs/dumber/commit/b883b051c2f19601cd33a0f4cae3c3a0c1de3b26))
+
+
+
 ## [1.10.3](https://github.com/dumberjs/dumber/compare/v1.10.2...v1.10.3) (2020-02-12)
 
 
