@@ -1,4 +1,4 @@
-# dumber [![Build Status](https://travis-ci.org/dumberjs/dumber.svg?branch=master)](https://travis-ci.org/dumberjs/dumber)
+# dumber
 
 A dumb JavasScript bundler for Single Page Application, dumber than you and me.
 
