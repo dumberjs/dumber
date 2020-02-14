@@ -1,3 +1,12 @@
+## [1.11.2](https://github.com/dumberjs/dumber/compare/v1.11.1...v1.11.2) (2020-02-14)
+
+
+### Bug Fixes
+
+* missing branch ([edebb42](https://github.com/dumberjs/dumber/commit/edebb421469dc7c58d51fc5b2d7e305e0cffe1db))
+
+
+
 ## [1.11.1](https://github.com/dumberjs/dumber/compare/v1.11.0...v1.11.1) (2020-02-14)
 
 
