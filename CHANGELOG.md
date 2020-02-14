@@ -1,3 +1,12 @@
+## [1.11.1](https://github.com/dumberjs/dumber/compare/v1.11.0...v1.11.1) (2020-02-14)
+
+
+### Bug Fixes
+
+* fix fsExists on dir check ([bcb2d67](https://github.com/dumberjs/dumber/commit/bcb2d6729577f3f70fe27460cf6b3fa9ee784a5e))
+
+
+
 # [1.11.0](https://github.com/dumberjs/dumber/compare/v1.10.4...v1.11.0) (2020-02-13)
 
 
