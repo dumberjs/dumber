@@ -1,4 +1,4 @@
-# dumber
+# dumber ![CI](https://github.com/dumberjs/dumber/workflows/CI/badge.svg)
 
 A dumb JavasScript bundler for Single Page Application, dumber than you and me.
 
