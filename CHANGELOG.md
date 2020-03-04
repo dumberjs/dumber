@@ -1,3 +1,12 @@
+## [1.11.3](https://github.com/dumberjs/dumber/compare/v1.11.2...v1.11.3) (2020-03-04)
+
+
+### Bug Fixes
+
+* dynamic import() should return es namespace ([b7b68b5](https://github.com/dumberjs/dumber/commit/b7b68b5c0839e6e1c80edef9f917dcea50d1a31d))
+
+
+
 ## [1.11.2](https://github.com/dumberjs/dumber/compare/v1.11.1...v1.11.2) (2020-02-14)
 
 
