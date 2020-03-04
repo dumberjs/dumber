@@ -573,8 +573,8 @@ test('nameDefine get requirejs deps', t => {
 });
 
 test('nameDefine fills up module name', t => {
-  const cjs = "define(['require','exports','module','./a'],function(require, exports, module){var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0]&&r[0].default?r[0].default:r;});}; imp0r_('hello');});";
-  const cjsExpected = "define('cjs',['require','exports','module','./a'],function(require, exports, module){var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0]&&r[0].default?r[0].default:r;});}; imp0r_('hello');});";
+  const cjs = "define(['require','exports','module','./a'],function(require, exports, module){var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0];});}; imp0r_('hello');});";
+  const cjsExpected = "define('cjs',['require','exports','module','./a'],function(require, exports, module){var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0];});}; imp0r_('hello');});";
 
   const unit = {
     contents: cjs,
