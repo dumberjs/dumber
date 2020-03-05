@@ -1,3 +1,13 @@
+## [1.11.4](https://github.com/dumberjs/dumber/compare/v1.11.3...v1.11.4) (2020-03-05)
+
+
+### Bug Fixes
+
+* fix main alias on file name like index.cjs.js ([3910668](https://github.com/dumberjs/dumber/commit/3910668a86f57812dd8583fdcbcb9a49252ef8eb))
+* remove alias check to avoid double strip ([ec804c5](https://github.com/dumberjs/dumber/commit/ec804c5797f618d26f83a9a3af29eac0107bb32a))
+
+
+
 ## [1.11.3](https://github.com/dumberjs/dumber/compare/v1.11.2...v1.11.3) (2020-03-04)
 
 
