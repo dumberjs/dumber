@@ -17,8 +17,8 @@ test('alias creates aliases for js module', t => {
     contents: 'lorem'
   }), {
     alias: null,
-    defined: ['from/id'],
-    contents: "lorem\n;define.alias('from/id','to/id');"
+    defined: ['from/id.js'],
+    contents: "lorem\n;define.alias('from/id.js','to/id');"
   });
   t.deepEqual(alias({
     alias: 'from/id',
@@ -27,7 +27,7 @@ test('alias creates aliases for js module', t => {
   }), {
     alias: null,
     defined: ['from/id'],
-    contents: "lorem\n;define.alias('from/id','to/id');"
+    contents: "lorem\n;define.alias('from/id','to/id.js');"
   });
   t.deepEqual(alias({
     alias: 'from/id.js',
@@ -35,8 +35,8 @@ test('alias creates aliases for js module', t => {
     contents: 'lorem'
   }), {
     alias: null,
-    defined: ['from/id'],
-    contents: "lorem\n;define.alias('from/id','to/id');"
+    defined: ['from/id.js'],
+    contents: "lorem\n;define.alias('from/id.js','to/id.js');"
   });
   t.end();
 });
@@ -69,25 +69,6 @@ test('alias creates aliases for other modules', t => {
     defined: ['raw!from/id.wasm'],
     contents: "lorem\n;define.alias('raw!from/id.wasm','raw!to/id.wasm');"
   });
-  t.end();
-});
-
-test('alias rejects alias between ids with different extname', t => {
-  t.throws(() => alias({
-    alias: 'from/id',
-    defined: ['to/id.json'],
-    contents: 'lorem'
-  }));
-  t.throws(() => alias({
-    alias: 'from/id.js',
-    defined: ['to/id.json'],
-    contents: 'lorem'
-  }));
-  t.throws(() => alias({
-    alias: 'from/id.html',
-    defined: ['to/id.htm'],
-    contents: 'lorem'
-  }));
   t.end();
 });
 
