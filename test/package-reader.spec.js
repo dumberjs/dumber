@@ -1045,3 +1045,32 @@ test('packageReader reads traced file', t => {
     }
   ).then(t.end);
 });
+
+test('packageReader reads main file with troublesome name', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index.cjs.js"}',
+    'node_modules/foo/index.cjs.js': "lorem"
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/index.cjs.js',
+          contents: 'lorem',
+          moduleId: 'foo/index.cjs',
+          packageName: 'foo',
+          packageMainPath: 'index.cjs.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.cjs.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
