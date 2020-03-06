@@ -1,3 +1,7 @@
+## [1.11.5](https://github.com/dumberjs/dumber/compare/v1.11.4...v1.11.5) (2020-03-06)
+
+
+
 ## [1.11.4](https://github.com/dumberjs/dumber/compare/v1.11.3...v1.11.4) (2020-03-05)
 
 
