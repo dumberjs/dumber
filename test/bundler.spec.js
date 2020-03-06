@@ -56,8 +56,8 @@ test('Bundler traces files', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app.js'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -81,26 +81,26 @@ test('Bundler traces files', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
             },
             {
               "path": "src/page/one.js",
-              "contents": "define('page/one',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
+              "contents": "define('page/one.js',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": ";\ndefine('foo/bar',function(){});\n"
+              "contents": ";\ndefine('foo/bar.js',function(){});\n"
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": "define('foo/index',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define.alias('foo','foo/index');"
+              "contents": "define('foo/index.js',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define.alias('foo','foo/index.js');"
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo',function(){});\n\n;define.alias('loo','loo/loo');"
+              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -140,7 +140,7 @@ test('Bundler can optionally skip dumber-module-loader', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: '', moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: '', moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -156,7 +156,7 @@ test('Bundler can optionally skip dumber-module-loader', t => {
             },
             {
               "path": "src/app.js",
-              "contents": ";\ndefine('app',function(){});\n"
+              "contents": ";\ndefine('app.js',function(){});\n"
             }
           ],
           "config": {
@@ -192,8 +192,8 @@ test('Bundler traces files, split bundles', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app.js'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -217,11 +217,11 @@ test('Bundler traces files, split bundles', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
             },
             {
               "path": "src/page/one.js",
-              "contents": "define('page/one',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
+              "contents": "define('page/one.js',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
             }
           ],
           "appendFiles": [
@@ -241,10 +241,10 @@ test('Bundler traces files, split bundles', t => {
                 "user": [],
                 "package": [
                   "foo",
-                  "foo/bar",
-                  "foo/index",
+                  "foo/bar.js",
+                  "foo/index.js",
                   "loo",
-                  "loo/loo"
+                  "loo/loo.js"
                 ]
               }
             }
@@ -257,15 +257,15 @@ test('Bundler traces files, split bundles', t => {
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": ";\ndefine('foo/bar',function(){});\n"
+              "contents": ";\ndefine('foo/bar.js',function(){});\n"
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": "define('foo/index',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define.alias('foo','foo/index');"
+              "contents": "define('foo/index.js',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define.alias('foo','foo/index.js');"
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo',function(){});\n\n;define.alias('loo','loo/loo');"
+              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -306,8 +306,8 @@ test('Bundler traces files, split bundles, case2', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app.js'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -342,20 +342,20 @@ test('Bundler traces files, split bundles, case2', t => {
             "bundles": {
               "app": {
                 "user": [
-                  "app",
-                  "page/one"
+                  "app.js",
+                  "page/one.js"
                 ],
                 "package": [
                   "loo",
-                  "loo/loo"
+                  "loo/loo.js"
                 ]
               },
               "vendor": {
                 "user": [],
                 "package": [
                   "foo",
-                  "foo/bar",
-                  "foo/index"
+                  "foo/bar.js",
+                  "foo/index.js"
                 ]
               }
             }
@@ -368,18 +368,18 @@ test('Bundler traces files, split bundles, case2', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
             },
             {
               "path": "src/page/one.js",
-              "contents": "define('page/one',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
+              "contents": "define('page/one.js',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo',function(){});\n\n;define.alias('loo','loo/loo');"
+              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -393,11 +393,11 @@ test('Bundler traces files, split bundles, case2', t => {
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": ";\ndefine('foo/bar',function(){});\n"
+              "contents": ";\ndefine('foo/bar.js',function(){});\n"
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": "define('foo/index',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define.alias('foo','foo/index');"
+              "contents": "define('foo/index.js',['require','exports','module','loo'],function (require, exports, module) {\nrequire('loo');\n});\n\n;define.alias('foo','foo/index.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -428,7 +428,7 @@ test('Bundler traces files, sorts shim', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('fs');require('bootstrap');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('fs');require('bootstrap');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -445,7 +445,7 @@ test('Bundler traces files, sorts shim', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','fs','bootstrap'],function (require, exports, module) {\nrequire('fs');require('bootstrap');\n});\n"
+              "contents": "define('app.js',['require','exports','module','fs','bootstrap'],function (require, exports, module) {\nrequire('fs');require('bootstrap');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
@@ -456,11 +456,11 @@ test('Bundler traces files, sorts shim', t => {
             },
             {
               "path": "node_modules/bootstrap/dist/bootstrap.js",
-              "contents": ";\ndefine('bootstrap/dist/bootstrap',['jquery'],(function (global) {\n  return function () {\n    return global.jQuery;\n  };\n}(this)));\n\n;define.alias('bootstrap','bootstrap/dist/bootstrap');"
+              "contents": ";\ndefine('bootstrap/dist/bootstrap.js',['jquery'],(function (global) {\n  return function () {\n    return global.jQuery;\n  };\n}(this)));\n\n;define.alias('bootstrap','bootstrap/dist/bootstrap.js');"
             },
             {
               "path": "node_modules/fs-browser-stub/index.js",
-              "contents": ";\ndefine('fs/index',function(){});\n\n;define.alias('fs','fs/index');"
+              "contents": ";\ndefine('fs/index.js',function(){});\n\n;define.alias('fs','fs/index.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -492,7 +492,7 @@ test('Bundler traces files, always sort jquery and moment on top', t => {
   const bundler = createBundler(fakeFs);
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('aaa');require('jquery');require('moment');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('aaa');require('jquery');require('moment');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -509,7 +509,7 @@ test('Bundler traces files, always sort jquery and moment on top', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','aaa','jquery','moment'],function (require, exports, module) {\nrequire('aaa');require('jquery');require('moment');\n});\n"
+              "contents": "define('app.js',['require','exports','module','aaa','jquery','moment'],function (require, exports, module) {\nrequire('aaa');require('jquery');require('moment');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
@@ -520,11 +520,11 @@ test('Bundler traces files, always sort jquery and moment on top', t => {
             },
             {
               "path": "node_modules/moment/moment.js",
-              "contents": ";\ndefine('moment/moment',function(){});\n\n;define.alias('moment','moment/moment');"
+              "contents": ";\ndefine('moment/moment.js',function(){});\n\n;define.alias('moment','moment/moment.js');"
             },
             {
               "path": "node_modules/aaa/aaa.js",
-              "contents": ";\ndefine('aaa/aaa',function(){});\n\n;define.alias('aaa','aaa/aaa');"
+              "contents": ";\ndefine('aaa/aaa.js',function(){});\n\n;define.alias('aaa','aaa/aaa.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -554,7 +554,7 @@ test('Bundler ignores module when onRequire returns false', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -571,7 +571,7 @@ test('Bundler ignores module when onRequire returns false', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
             }
           ],
           "config": {
@@ -602,7 +602,7 @@ test('Bundler replaces deps when onRequire returns array', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -619,18 +619,18 @@ test('Bundler replaces deps when onRequire returns array', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/bar/index.js",
-              "contents": ";\ndefine('bar/index',function(){});\n\n;define.alias('bar','bar/index');"
+              "contents": ";\ndefine('bar/index.js',function(){});\n\n;define.alias('bar','bar/index.js');"
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo',function(){});\n\n;define.alias('loo','loo/loo');"
+              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -663,7 +663,7 @@ test('Bundler supports implementation returned by onRequire', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -680,7 +680,7 @@ test('Bundler supports implementation returned by onRequire', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
@@ -691,7 +691,7 @@ test('Bundler supports implementation returned by onRequire', t => {
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo',function(){});\n\n;define.alias('loo','loo/loo');"
+              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -723,7 +723,7 @@ test('Bundler swallows onRequire exception', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -740,14 +740,14 @@ test('Bundler swallows onRequire exception', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/foo/foo.js",
-              "contents": ";\ndefine('foo/foo',function(){});\n\n;define.alias('foo','foo/foo');"
+              "contents": ";\ndefine('foo/foo.js',function(){});\n\n;define.alias('foo','foo/foo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -779,7 +779,7 @@ test('Bundler swallows onRequire promise rejection', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -796,14 +796,14 @@ test('Bundler swallows onRequire promise rejection', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo'],function (require, exports, module) {\nrequire('foo');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/foo/foo.js",
-              "contents": ";\ndefine('foo/foo',function(){});\n\n;define.alias('foo','foo/foo');"
+              "contents": ";\ndefine('foo/foo.js',function(){});\n\n;define.alias('foo','foo/foo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -864,8 +864,8 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: '', moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app.js'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: '', moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -884,13 +884,13 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             "bundles": {
               "app-bundle": {
                 "user": [
-                  "app"
+                  "app.js"
                 ],
                 "package": []
               },
               "page-bundle": {
                 "user": [
-                  "page/one"
+                  "page/one.js"
                 ],
                 "package": []
               },
@@ -898,7 +898,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
                 "user": [],
                 "package": [
                   "foo",
-                  "foo/index"
+                  "foo/index.js"
                 ]
               }
             }
@@ -911,7 +911,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
             }
           ]
         },
@@ -922,7 +922,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "src/page/one.js",
-              "contents": ";\ndefine('page/one',function(){});\n"
+              "contents": ";\ndefine('page/one.js',function(){});\n"
             }
           ]
         },
@@ -933,7 +933,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": ";\ndefine('foo/index',function(){});\n\n;define.alias('foo','foo/index');"
+              "contents": ";\ndefine('foo/index.js',function(){});\n\n;define.alias('foo','foo/index.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -944,7 +944,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
     },
     err => t.fail(err.stack)
   )
-  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one'}))
+  .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -961,7 +961,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo',function(){});\n\n;define.alias('loo','loo/loo');"
+              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -973,13 +973,13 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             "bundles": {
               "app-bundle": {
                 "user": [
-                  "app"
+                  "app.js"
                 ],
                 "package": []
               },
               "page-bundle": {
                 "user": [
-                  "page/one"
+                  "page/one.js"
                 ],
                 "package": []
               },
@@ -987,8 +987,8 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
                 "user": [],
                 "package": [
                   "foo",
-                  "foo/bar",
-                  "foo/index"
+                  "foo/bar.js",
+                  "foo/index.js"
                 ]
               }
             }
@@ -1001,7 +1001,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "src/page/one.js",
-              "contents": "define('page/one',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
+              "contents": "define('page/one.js',['require','exports','module','foo/bar','loo'],function (require, exports, module) {\nrequire('foo/bar');require('loo');\n});\n"
             }
           ]
         },
@@ -1012,11 +1012,11 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": ";\ndefine('foo/bar',function(){});\n"
+              "contents": ";\ndefine('foo/bar.js',function(){});\n"
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": ";\ndefine('foo/index',function(){});\n\n;define.alias('foo','foo/index');"
+              "contents": ";\ndefine('foo/index.js',function(){});\n\n;define.alias('foo','foo/index.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1027,8 +1027,8 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
     },
     err => t.fail(err.stack)
   )
-  .then(() => bundler.capture({path: 'src/goo.js', contents: '', moduleId: 'goo'}))
-  .then(() => bundler.capture({path: 'src/goo2.js', contents: '', moduleId: 'goo2'}))
+  .then(() => bundler.capture({path: 'src/goo.js', contents: '', moduleId: 'goo.js'}))
+  .then(() => bundler.capture({path: 'src/goo2.js', contents: '', moduleId: 'goo2.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -1045,7 +1045,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo',function(){});\n\n;define.alias('loo','loo/loo');"
+              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1057,15 +1057,15 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             "bundles": {
               "app-bundle": {
                 "user": [
-                  "app",
-                  "goo",
-                  "goo2"
+                  "app.js",
+                  "goo.js",
+                  "goo2.js"
                 ],
                 "package": []
               },
               "page-bundle": {
                 "user": [
-                  "page/one"
+                  "page/one.js"
                 ],
                 "package": []
               },
@@ -1073,8 +1073,8 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
                 "user": [],
                 "package": [
                   "foo",
-                  "foo/bar",
-                  "foo/index"
+                  "foo/bar.js",
+                  "foo/index.js"
                 ]
               }
             }
@@ -1087,15 +1087,15 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo','page/one'],function (require, exports, module) {\nrequire('foo');require('page/one');\n});\n"
             },
             {
               "path": "src/goo.js",
-              "contents": ";\ndefine('goo',function(){});\n"
+              "contents": ";\ndefine('goo.js',function(){});\n"
             },
             {
               "path": "src/goo2.js",
-              "contents": ";\ndefine('goo2',function(){});\n"
+              "contents": ";\ndefine('goo2.js',function(){});\n"
             }
           ]
         }
@@ -1116,7 +1116,7 @@ test('Bundler supports inject css by default', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('c.css')", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('c.css')", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -1134,7 +1134,7 @@ test('Bundler supports inject css by default', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','c.css'],function (require, exports, module) {\nrequire('c.css')\n});\n"
+              "contents": "define('app.js',['require','exports','module','c.css'],function (require, exports, module) {\nrequire('c.css')\n});\n"
             },
             {
               "path": "src/c.css",
@@ -1149,7 +1149,7 @@ test('Bundler supports inject css by default', t => {
             },
             {
               "path": "node_modules/dumber/lib/inject-css.js",
-              "contents": ";\ndefine('dumber/lib/inject-css',function(){});\n"
+              "contents": ";\ndefine('dumber/lib/inject-css.js',function(){});\n"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1178,7 +1178,7 @@ test('Bundler supports inject css (relative path) by default', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('./c.scss')", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('./c.scss')", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -1196,7 +1196,7 @@ test('Bundler supports inject css (relative path) by default', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','./c.scss'],function (require, exports, module) {\nrequire('./c.scss')\n});\n"
+              "contents": "define('app.js',['require','exports','module','./c.scss'],function (require, exports, module) {\nrequire('./c.scss')\n});\n"
             },
             {
               "path": "src/c.css",
@@ -1211,7 +1211,7 @@ test('Bundler supports inject css (relative path) by default', t => {
             },
             {
               "path": "node_modules/dumber/lib/inject-css.js",
-              "contents": ";\ndefine('dumber/lib/inject-css',function(){});\n"
+              "contents": ";\ndefine('dumber/lib/inject-css.js',function(){});\n"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1241,7 +1241,7 @@ test('Bundler can optionally turn off inject css', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('c.css')", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('c.css')", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -1259,7 +1259,7 @@ test('Bundler can optionally turn off inject css', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','c.css'],function (require, exports, module) {\nrequire('c.css')\n});\n"
+              "contents": "define('app.js',['require','exports','module','c.css'],function (require, exports, module) {\nrequire('c.css')\n});\n"
             },
             {
               "path": "src/c.css",
@@ -1297,9 +1297,9 @@ test('Bundler traces files with paths mapping', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'el!foo';", moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/common/foo.js', contents: '', moduleId: 'common/foo'}))
-  .then(() => bundler.capture({path: 'test/app.spec.js', contents: "import '../src/app';", moduleId: '../test/app.spec'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'el!foo';", moduleId: 'app.js'}))
+  .then(() => bundler.capture({path: 'src/common/foo.js', contents: '', moduleId: 'common/foo.js'}))
+  .then(() => bundler.capture({path: 'test/app.spec.js', contents: "import '../src/app';", moduleId: '../test/app.spec.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -1316,22 +1316,22 @@ test('Bundler traces files with paths mapping', t => {
             },
             {
               "path": "test/app.spec.js",
-              "contents": "define('../test/app.spec',['require','exports','module','../src/app'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"../src/app\");\n});\n"
+              "contents": "define('../test/app.spec.js',['require','exports','module','../src/app'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"../src/app\");\n});\n"
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','el!foo'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"el!foo\");\n});\n"
+              "contents": "define('app.js',['require','exports','module','el!foo'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"el!foo\");\n});\n"
             },
             {
               "path": "src/common/foo.js",
-              "contents": ";\ndefine('common/foo',function(){});\n"
+              "contents": ";\ndefine('common/foo.js',function(){});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/bar/el.js",
-              "contents": "define('bar/el',['require','exports','module'],function (require, exports, module) {\nexports.el = 1;\n});\n"
+              "contents": "define('bar/el.js',['require','exports','module'],function (require, exports, module) {\nexports.el = 1;\n});\n"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1366,8 +1366,8 @@ test('Bundler allows same modules in both user and package space', t => {
   const bundler = createBundler(fakeFs);
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'foo';\nimport './util'", moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/util.js', contents: 'export default function(){}', moduleId: 'util'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'foo';\nimport './util'", moduleId: 'app.js'}))
+  .then(() => bundler.capture({path: 'src/util.js', contents: 'export default function(){}', moduleId: 'util.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -1384,22 +1384,22 @@ test('Bundler allows same modules in both user and package space', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','foo','./util'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"foo\");\n\nrequire(\"./util\");\n});\n"
+              "contents": "define('app.js',['require','exports','module','foo','./util'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"foo\");\n\nrequire(\"./util\");\n});\n"
             },
             {
               "path": "src/util.js",
-              "contents": "define('util',['require','exports','module'],function (require, exports, module) {\n\"use strict\";\n\nexports.__esModule = true;\nexports.default = _default;\n\nfunction _default() {}\n});\n"
+              "contents": "define('util.js',['require','exports','module'],function (require, exports, module) {\n\"use strict\";\n\nexports.__esModule = true;\nexports.default = _default;\n\nfunction _default() {}\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": "define('foo/index',['require','exports','module','util'],function (require, exports, module) {\nrequire('util');\n});\n\n;define.alias('foo','foo/index');"
+              "contents": "define('foo/index.js',['require','exports','module','util'],function (require, exports, module) {\nrequire('util');\n});\n\n;define.alias('foo','foo/index.js');"
             },
             {
               "path": "node_modules/util/util.js",
-              "contents": "define('util/util',['require','exports','module'],function (require, exports, module) {\nexports.util = 1;\n});\n\n;define.alias('util','util/util');"
+              "contents": "define('util/util.js',['require','exports','module'],function (require, exports, module) {\nexports.util = 1;\n});\n\n;define.alias('util','util/util.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1434,8 +1434,8 @@ test('Bundler supports deps alias', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'bar';", moduleId: 'app'}))
-  .then(() => bundler.capture({path: 'src/foo.js', contents: "import 'bar/bar';", moduleId: 'foo'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'bar';", moduleId: 'app.js'}))
+  .then(() => bundler.capture({path: 'src/foo.js', contents: "import 'bar/bar';", moduleId: 'foo.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -1452,22 +1452,22 @@ test('Bundler supports deps alias', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar\");\n});\n"
+              "contents": "define('app.js',['require','exports','module','bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar\");\n});\n"
             },
             {
               "path": "src/foo.js",
-              "contents": "define('foo',['require','exports','module','bar/bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar/bar\");\n});\n"
+              "contents": "define('foo.js',['require','exports','module','bar/bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar/bar\");\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": "define('bar/bar',['require','exports','module'],function (require, exports, module) {\nexports.bar = 1;\n});\n"
+              "contents": "define('bar/bar.js',['require','exports','module'],function (require, exports, module) {\nexports.bar = 1;\n});\n"
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": "define('bar/index',['require','exports','module'],function (require, exports, module) {\nexports.foo = 1;\n});\n\n;define.alias('bar','bar/index');"
+              "contents": "define('bar/index.js',['require','exports','module'],function (require, exports, module) {\nexports.foo = 1;\n});\n\n;define.alias('bar','bar/index.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1502,7 +1502,7 @@ test('Bundler supports package alias with lazyMain mode', t => {
   });
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'bar/bar';", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "import 'bar/bar';", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -1519,14 +1519,14 @@ test('Bundler supports package alias with lazyMain mode', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','bar/bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar/bar\");\n});\n"
+              "contents": "define('app.js',['require','exports','module','bar/bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar/bar\");\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": "define('bar/bar',['require','exports','module'],function (require, exports, module) {\nexports.bar = 1;\n});\n"
+              "contents": "define('bar/bar.js',['require','exports','module'],function (require, exports, module) {\nexports.bar = 1;\n});\n"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1554,7 +1554,7 @@ test('Bundler creates correct alias for named AMD module which does not match pa
   const bundler = createBundler(fakeFs);
 
   Promise.resolve()
-  .then(() => bundler.capture({path: 'src/app.js', contents: "require('noty');", moduleId: 'app'}))
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('noty');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
   .then(
@@ -1571,7 +1571,7 @@ test('Bundler creates correct alias for named AMD module which does not match pa
             },
             {
               "path": "src/app.js",
-              "contents": "define('app',['require','exports','module','noty'],function (require, exports, module) {\nrequire('noty');\n});\n"
+              "contents": "define('app.js',['require','exports','module','noty'],function (require, exports, module) {\nrequire('noty');\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
