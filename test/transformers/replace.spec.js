@@ -21,10 +21,10 @@ test('replace transform cleanup dep, even with empty replacement', t => {
     require('o/a.js');
   })`;
 
-  const result = `define('foo', ['require', 'module-a.js', './bar', 'o/a'], function (require) {
+  const result = `define('foo', ['require', 'module-a.js', './bar', 'o/a.js'], function (require) {
     require('module-a.js');
     require('./bar');
-    require('o/a');
+    require('o/a.js');
   })`;
 
   const unit = replace({
@@ -47,13 +47,13 @@ test('replace transform does replacement', t => {
   const replacement = {
     'module-a': '__ignore__',
     'module-b': './shims/module/b',
-    './server/only': './shims/client-only'
+    './server/only.js': './shims/client-only.js'
   }
 
-  const result = `define('foo', ['require', '__ignore__', './bar', './shims/client-only'], function (require) {
+  const result = `define('foo', ['require', '__ignore__', './bar', './shims/client-only.js'], function (require) {
     require('__ignore__');
     require('./bar');
-    require('./shims/client-only');
+    require('./shims/client-only.js');
   })`;
 
   const unit = replace({
@@ -76,13 +76,13 @@ test('replace transform does replacement for anonymous amd module', t => {
   const replacement = {
     'module-a': '__ignore__',
     'module-b': './shims/module/b',
-    './server/only': './shims/client-only'
+    './server/only.js': './shims/client-only.js'
   }
 
-  const result = `define(['require', '__ignore__', './bar', './shims/client-only'], function (require) {
+  const result = `define(['require', '__ignore__', './bar', './shims/client-only.js'], function (require) {
     require('__ignore__');
     require('./bar');
-    require('./shims/client-only');
+    require('./shims/client-only.js');
   })`;
 
   const unit = replace({
@@ -122,7 +122,7 @@ test('replace transform does replacement for npm file', t => {
     replacement: {
       'module-a': '__ignore__',
       'module-b.js': '../shims/module/b',
-      '../server/only': '../shims/client-only'
+      '../server/only.js': '../shims/client-only.js'
     },
     sourceMap: {
       version: 3,
@@ -132,7 +132,7 @@ test('replace transform does replacement for npm file', t => {
     }
   });
 
-  t.equal(unit.contents, "require('__ignore__');require('../shims/module/b');require('module-c');require('../shims/client-only');")
+  t.equal(unit.contents, "require('__ignore__');require('../shims/module/b');require('module-c');require('../shims/client-only.js');")
   t.equal(unit.sourceMap.file, 'foo/lib/bar.js');
   t.deepEqual(unit.sourceMap.sources, ['foo/lib/bar.js']);
   t.end();
