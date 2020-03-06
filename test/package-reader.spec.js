@@ -18,7 +18,7 @@ test('packageReader falls back to main:index when package.json is missing', t =>
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: 'lorem',
-          moduleId: 'foo/index',
+          moduleId: 'foo/index.js',
           alias: 'foo',
           packageName: 'foo',
           packageMainPath: 'index.js',
@@ -63,7 +63,7 @@ test('packageReader can still read resource when main is missing', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/bar.js',
           contents: 'lorem',
-          moduleId: 'foo/bar',
+          moduleId: 'foo/bar.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           sourceMap: undefined
@@ -91,7 +91,7 @@ test('packageReader uses default index.js as main path if main file is missing b
         t.deepEqual(unit, {
           path: 'node_modules/foo/bar.js',
           contents: 'lorem',
-          moduleId: 'foo/bar',
+          moduleId: 'foo/bar.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           sourceMap: undefined
@@ -119,7 +119,7 @@ test('packageReader reads main file', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: 'lorem',
-          moduleId: 'foo/index',
+          moduleId: 'foo/index.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           alias: 'foo',
@@ -148,7 +148,7 @@ test('packageReader reads resource file which is actually main', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: 'lorem',
-          moduleId: 'foo/index',
+          moduleId: 'foo/index.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           alias: 'foo',
@@ -177,7 +177,7 @@ test('packageReader tolerate invalid package.json', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: 'lorem',
-          moduleId: 'foo/index',
+          moduleId: 'foo/index.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           alias: 'foo',
@@ -205,7 +205,7 @@ test('packageReader use default main index.js', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: 'lorem',
-          moduleId: 'foo/index',
+          moduleId: 'foo/index.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           alias: 'foo',
@@ -234,7 +234,7 @@ test('packageReader reads module over main field', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/es.js',
           contents: 'es',
-          moduleId: 'foo/es',
+          moduleId: 'foo/es.js',
           packageName: 'foo',
           packageMainPath: 'es.js',
           alias: 'foo',
@@ -264,7 +264,7 @@ test('packageReader reads browser over module/main field', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/br.js',
           contents: 'br',
-          moduleId: 'foo/br',
+          moduleId: 'foo/br.js',
           packageName: 'foo',
           packageMainPath: 'br.js',
           alias: 'foo',
@@ -295,7 +295,7 @@ test('packageReader reads dumberForcedMain over browser/module/main field', t =>
         t.deepEqual(unit, {
           path: 'node_modules/foo/hc.js',
           contents: 'hc',
-          moduleId: 'foo/hc',
+          moduleId: 'foo/hc.js',
           packageName: 'foo',
           packageMainPath: 'hc.js',
           alias: 'foo',
@@ -323,7 +323,7 @@ test('packageReader reads main file with explicit ext', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo.js/main.js',
           contents: 'lorem',
-          moduleId: 'foo.js/main',
+          moduleId: 'foo.js/main.js',
           packageName: 'foo.js',
           packageMainPath: 'main.js',
           alias: 'foo.js',
@@ -378,7 +378,7 @@ test('packageReader reads implicit main file', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/index.js',
           contents: 'lorem',
-          moduleId: 'foo/lib/index',
+          moduleId: 'foo/lib/index.js',
           packageName: 'foo',
           packageMainPath: 'lib/index.js',
           alias: 'foo',
@@ -422,7 +422,7 @@ test('packageReader reads resource', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/bar.js',
           contents: 'lorem2',
-          moduleId: 'foo/lib/bar',
+          moduleId: 'foo/lib/bar.js',
           packageName: 'foo',
           packageMainPath: 'lib/main.js',
           sourceMap: undefined
@@ -450,7 +450,7 @@ test('packageReader reads relative resource', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/bar.js',
           contents: 'lorem2',
-          moduleId: 'foo/lib/bar',
+          moduleId: 'foo/lib/bar.js',
           packageName: 'foo',
           packageMainPath: 'lib/main.js',
           alias: 'foo/bar',
@@ -479,7 +479,7 @@ test('packageReader reads deep relative resource', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/dist/cjs/foo/bar.js',
           contents: 'lorem2',
-          moduleId: 'foo/dist/cjs/foo/bar',
+          moduleId: 'foo/dist/cjs/foo/bar.js',
           packageName: 'foo',
           packageMainPath: 'dist/cjs/main.js',
           alias: 'foo/foo/bar',
@@ -507,7 +507,7 @@ test('packageReader reads deep relative resource which is actually main', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/dist/cjs/main.js',
           contents: 'lorem',
-          moduleId: 'foo/dist/cjs/main',
+          moduleId: 'foo/dist/cjs/main.js',
           packageName: 'foo',
           packageMainPath: 'dist/cjs/main.js',
           alias: ['foo', 'foo/main'],
@@ -565,10 +565,9 @@ test('packageReader reads directory index.js', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/index.js',
           contents: 'lorem2',
-          moduleId: 'foo/lib/index',
+          moduleId: 'foo/lib/index.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
-          alias: 'foo/lib',
           sourceMap: undefined
         });
 
@@ -597,7 +596,6 @@ test('packageReader reads directory index.json', t => {
           moduleId: 'foo/lib/index.json',
           packageName: 'foo',
           packageMainPath: 'index.js',
-          alias: 'foo/lib',
           sourceMap: undefined
         });
 
@@ -625,7 +623,7 @@ test('packageReader reads directory package.json', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/es/index.js',
           contents: 'es',
-          moduleId: 'foo/lib/es/index',
+          moduleId: 'foo/lib/es/index.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           alias: 'foo/lib',
@@ -680,14 +678,14 @@ test('packageReader reads browser replacement in package.json', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: 'lorem',
-          moduleId: 'foo/index',
+          moduleId: 'foo/index.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           alias: 'foo',
           replacement: {
             'module-a': '__ignore__',
-            'module-b.js': './shims/module/b',
-            './server/only': './shims/client-only'
+            'module-b.js': './shims/module/b.js',
+            './server/only.js': './shims/client-only.js'
           },
           sourceMap: undefined
         });
@@ -696,8 +694,8 @@ test('packageReader reads browser replacement in package.json', t => {
         t.equal(r.mainPath, 'index.js');
         t.deepEqual(r.browserReplacement, {
           'module-a': false,
-          'module-b.js': './shims/module/b',
-          './server/only': './shims/client-only'
+          'module-b.js': './shims/module/b.js',
+          './server/only.js': './shims/client-only.js'
         });
       },
       err => {
@@ -720,18 +718,58 @@ test('packageReader uses browser replacement in package.json to normalize replac
     }`,
     'node_modules/foo/shims/client-only.js': "require('module-a');require('module-b.js');require('module-c');"
   }).then(r => {
+    r.readResource('server/only.js').then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/shims/client-only.js',
+          contents: "require('module-a');require('module-b.js');require('module-c');",
+          moduleId: 'foo/shims/client-only.js',
+          packageName: 'foo',
+          packageMainPath: 'index.js',
+          replacement: {
+            'module-a': '__ignore__',
+            'module-b.js': './module/b.js',
+            '../server/only.js': './client-only.js'
+          },
+          alias: 'foo/server/only.js',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.js');
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader uses browser replacement in package.json to normalize replacement, case 2', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "module-a": false,
+        "module-b.js": "./shims/module/b.js",
+        "./server/only.js": "./shims/client-only.js"
+      }
+    }`,
+    'node_modules/foo/shims/client-only.js': "require('module-a');require('module-b.js');require('module-c');"
+  }).then(r => {
     r.readResource('server/only').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/shims/client-only.js',
           contents: "require('module-a');require('module-b.js');require('module-c');",
-          moduleId: 'foo/shims/client-only',
+          moduleId: 'foo/shims/client-only.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           replacement: {
             'module-a': '__ignore__',
-            'module-b.js': './module/b',
-            '../server/only': './client-only'
+            'module-b.js': './module/b.js',
+            '../server/only.js': './client-only.js'
           },
           alias: 'foo/server/only',
           sourceMap: undefined
@@ -764,11 +802,11 @@ test('packageReader uses browser replacement in package.json to normalize main r
         t.deepEqual(unit, {
           path: 'node_modules/foo/browser.js',
           contents: "browser",
-          moduleId: 'foo/browser',
+          moduleId: 'foo/browser.js',
           packageName: 'foo',
           packageMainPath: 'browser.js',
           alias: 'foo',
-          replacement: { './index': './browser' },
+          replacement: { './index.js': './browser.js' },
           sourceMap: undefined
         });
 
@@ -799,11 +837,11 @@ test('packageReader uses browser replacement in package.json to normalize resour
         t.deepEqual(unit, {
           path: 'node_modules/foo/browser.js',
           contents: "browser",
-          moduleId: 'foo/browser',
+          moduleId: 'foo/browser.js',
           packageName: 'foo',
           packageMainPath: 'browser.js',
           alias: 'foo',
-          replacement: { './index': './browser' },
+          replacement: { './index.js': './browser.js' },
           sourceMap: undefined
         });
 
@@ -835,14 +873,14 @@ test('packageReader uses browser replacement in package.json to normalize main r
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: "require('module-a');require('module-b.js');require('module-c');require('./server/only.js');",
-          moduleId: 'foo/index',
+          moduleId: 'foo/index.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           alias: 'foo',
           replacement: {
             'module-a': '__ignore__',
-            'module-b.js': './shims/module/b',
-            './server/only': './shims/client-only'
+            'module-b.js': './shims/module/b.js',
+            './server/only.js': './shims/client-only.js'
           },
           sourceMap: undefined
         });
@@ -876,13 +914,13 @@ test('packageReader uses browser replacement in package.json to normalize replac
         t.deepEqual(unit, {
           path: 'node_modules/foo/server/bar.js',
           contents: "require('module-a');require('module-b.js');require('module-c');require('./only.js');",
-          moduleId: 'foo/server/bar',
+          moduleId: 'foo/server/bar.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           replacement: {
             'module-a': '__ignore__',
-            'module-b.js': '../shims/module/b',
-            './only': '../shims/client-only'
+            'module-b.js': '../shims/module/b.js',
+            './only.js': '../shims/client-only.js'
           },
           sourceMap: undefined
         });
@@ -916,13 +954,13 @@ test('packageReader uses browser replacement in package.json to normalize replac
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/bar.js',
           contents: "require('module-a');require('module-b.js');require('module-c');require('../server/only.js');",
-          moduleId: 'foo/lib/bar',
+          moduleId: 'foo/lib/bar.js',
           packageName: 'foo',
           packageMainPath: 'index.js',
           replacement: {
             'module-a': '__ignore__',
-            'module-b.js': '../shims/module/b',
-            '../server/only': '../shims/client-only'
+            'module-b.js': '../shims/module/b.js',
+            '../server/only.js': '../shims/client-only.js'
           },
           sourceMap: undefined
         });
@@ -948,7 +986,7 @@ test('packageReader reads main file for package alias', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
           contents: 'lorem',
-          moduleId: 'bar/index',
+          moduleId: 'bar/index.js',
           packageName: 'bar',
           packageMainPath: 'index.js',
           alias: 'bar',
@@ -978,7 +1016,7 @@ test('packageReader reads resource file for package alias', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lo.js',
           contents: 'lorem2',
-          moduleId: 'bar/lo',
+          moduleId: 'bar/lo.js',
           packageName: 'bar',
           packageMainPath: 'index.js',
           sourceMap: undefined
@@ -1001,10 +1039,10 @@ test('packageReader reads traced file', t => {
       return Promise.resolve({
         path: 'node_modules/foo/index.js',
         contents: 'traced',
-        moduleId: 'foo/index',
+        moduleId: 'foo/index.js',
         packageName: 'foo',
         packageMainPath: 'index.js',
-        defined: ['foo/index', 'foo'],
+        defined: ['foo/index.js', 'foo'],
         deps: []
       });
     } else if (filePath === 'package.json') {
@@ -1029,10 +1067,10 @@ test('packageReader reads traced file', t => {
       t.deepEqual(unit, {
         path: 'node_modules/foo/index.js',
         contents: 'traced',
-        moduleId: 'foo/index',
+        moduleId: 'foo/index.js',
         packageName: 'foo',
         packageMainPath: 'index.js',
-        defined: ['foo/index', 'foo'],
+        defined: ['foo/index.js', 'foo'],
         deps: []
       });
 
@@ -1057,7 +1095,7 @@ test('packageReader reads main file with troublesome name', t => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.cjs.js',
           contents: 'lorem',
-          moduleId: 'foo/index.cjs',
+          moduleId: 'foo/index.cjs.js',
           packageName: 'foo',
           packageMainPath: 'index.cjs.js',
           alias: 'foo',
