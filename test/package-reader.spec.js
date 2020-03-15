@@ -1112,3 +1112,119 @@ test('packageReader reads main file with troublesome name', t => {
     ).then(t.end);
   });
 });
+
+test('packageReader reads mjs main file', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index.mjs"}',
+    'node_modules/foo/index.mjs': "lorem"
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/index.mjs',
+          contents: 'lorem',
+          moduleId: 'foo/index.mjs',
+          packageName: 'foo',
+          packageMainPath: 'index.mjs',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.mjs');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader reads mjs resource file', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index.mjs"}',
+    'node_modules/foo/index.mjs': "index",
+    'node_modules/foo/bar.mjs': "lorem"
+  }).then(r => {
+    r.readResource('bar.mjs').then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/bar.mjs',
+          contents: 'lorem',
+          moduleId: 'foo/bar.mjs',
+          packageName: 'foo',
+          packageMainPath: 'index.mjs',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.mjs');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader reads cjs main file', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index.cjs"}',
+    'node_modules/foo/index.cjs': "lorem"
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/index.cjs',
+          contents: 'lorem',
+          moduleId: 'foo/index.cjs',
+          packageName: 'foo',
+          packageMainPath: 'index.cjs',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.cjs');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader reads cjs resource file', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index.cjs"}',
+    'node_modules/foo/index.cjs': "index",
+    'node_modules/foo/bar.cjs': "lorem"
+  }).then(r => {
+    r.readResource('bar.cjs').then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/bar.cjs',
+          contents: 'lorem',
+          moduleId: 'foo/bar.cjs',
+          packageName: 'foo',
+          packageMainPath: 'index.cjs',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.cjs');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
