@@ -1,3 +1,12 @@
+## [1.11.6](https://github.com/dumberjs/dumber/compare/v1.11.5...v1.11.6) (2020-03-18)
+
+
+### Bug Fixes
+
+* alias should alias module id too ([28b6fc8](https://github.com/dumberjs/dumber/commit/28b6fc8b4d68f8efffb2c26a801b7e25d8d54d49))
+
+
+
 ## [1.11.5](https://github.com/dumberjs/dumber/compare/v1.11.4...v1.11.5) (2020-03-06)
 
 
