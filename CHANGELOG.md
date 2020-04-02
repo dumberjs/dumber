@@ -1,3 +1,12 @@
+## [1.12.1](https://github.com/dumberjs/dumber/compare/v1.12.0...v1.12.1) (2020-04-02)
+
+
+### Bug Fixes
+
+* meriyah is dep, not devDep ([887b570](https://github.com/dumberjs/dumber/commit/887b57013fd1bb898ea7ab4aac766219665c84a2))
+
+
+
 # [1.12.0](https://github.com/dumberjs/dumber/compare/v1.11.6...v1.12.0) (2020-04-02)
 
 
