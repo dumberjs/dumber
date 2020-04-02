@@ -54,6 +54,7 @@
     "dumber-module-loader": "^1.1.5",
     "escope": "^3.6.0",
     "fs-browser-stub": "^1.0.1",
+    "meriyah": "^1.9.12",
     "mkdirp": "^0.5.1",
     "modify-code": "^1.2.0",
     "node-fetch": "^2.6.0",
@@ -63,7 +64,6 @@
     "source-map": "^0.7.3"
   },
   "devDependencies": {
-    "meriyah": "^1.9.12",
     "browser-do": "^2.0.1",
     "browserify": "^16.5.1",
     "eslint": "^6.8.0",
