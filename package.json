@@ -20,7 +20,7 @@
     "lint": "eslint index.js lib test",
     "preversion": "npm test",
     "version": "standard-changelog && git add CHANGELOG.md",
-    "postversion": "git push && git push --tags && npm publish --tag test",
+    "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
     "nodejs-test": "tape test/hide-log.js \"test/**/*.spec.js\" | tap-nirvana",
     "coverage": "nyc --reporter=lcov tape test/hide-log.js \"test/**/*.spec.js\" | tap-nirvana",
