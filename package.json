@@ -20,7 +20,7 @@
     "lint": "eslint index.js lib test",
     "preversion": "npm test",
     "version": "standard-changelog && git add CHANGELOG.md",
-    "postversion": "git push && git push --tags && npm publish",
+    "postversion": "git push && git push --tags && npm publish --tag test",
     "pretest": "npm run lint",
     "nodejs-test": "tape test/hide-log.js \"test/**/*.spec.js\" | tap-nirvana",
     "coverage": "nyc --reporter=lcov tape test/hide-log.js \"test/**/*.spec.js\" | tap-nirvana",
@@ -44,18 +44,18 @@
   },
   "homepage": "https://github.com/dumberjs/dumber#readme",
   "dependencies": {
-    "@babel/core": "^7.8.4",
+    "@babel/core": "^7.9.0",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-modules-commonjs": "^7.8.3",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.0",
     "ast-matcher": "^1.1.1",
     "base64-arraybuffer": "^0.2.0",
     "convert-source-map": "^1.7.0",
     "del": "^5.1.0",
-    "dumber-module-loader": "^1.1.1",
+    "dumber-module-loader": "^1.1.5",
     "escope": "^3.6.0",
     "fs-browser-stub": "^1.0.1",
     "mkdirp": "^0.5.1",
-    "modify-code": "^1.1.0",
+    "modify-code": "^1.2.0",
     "node-fetch": "^2.6.0",
     "node-libs-browser": "^2.2.1",
     "readable-stream": "^2.3.6",
@@ -63,14 +63,14 @@
     "source-map": "^0.7.3"
   },
   "devDependencies": {
-    "@babel/parser": "^7.8.4",
-    "browser-do": "^1.0.0",
-    "browserify": "^16.5.0",
+    "meriyah": "^1.9.12",
+    "browser-do": "^2.0.1",
+    "browserify": "^16.5.1",
     "eslint": "^6.8.0",
     "nyc": "^15.0.0",
     "sourcemap-codec": "^1.4.8",
     "standard-changelog": "^2.0.21",
     "tap-nirvana": "^1.1.0",
-    "tape": "^4.13.0"
+    "tape": "^4.13.2"
   }
 }
