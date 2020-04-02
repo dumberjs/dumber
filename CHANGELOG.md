@@ -1,3 +1,12 @@
+# [1.12.0](https://github.com/dumberjs/dumber/compare/v1.11.6...v1.12.0) (2020-04-02)
+
+
+### Features
+
+* switch from babel parser to meriyah for performance ([4c817af](https://github.com/dumberjs/dumber/commit/4c817af231e89856201c264f9d844c2cc86a555e))
+
+
+
 ## [1.11.6](https://github.com/dumberjs/dumber/compare/v1.11.5...v1.11.6) (2020-03-18)
 
 
