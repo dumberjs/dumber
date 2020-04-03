@@ -1,3 +1,12 @@
+## [1.12.4](https://github.com/dumberjs/dumber/compare/v1.12.3...v1.12.4) (2020-04-03)
+
+
+### Bug Fixes
+
+* delay version message to construct ([7a8367a](https://github.com/dumberjs/dumber/commit/7a8367af88660eb656d02aa5cc980d1c5733957e))
+
+
+
 ## [1.12.3](https://github.com/dumberjs/dumber/compare/v1.12.2...v1.12.3) (2020-04-03)
 
 
