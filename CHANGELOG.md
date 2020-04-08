@@ -1,3 +1,12 @@
+## [1.12.7](https://github.com/dumberjs/dumber/compare/v1.12.6...v1.12.7) (2020-04-08)
+
+
+### Bug Fixes
+
+* don't detect false cjs require, properly detect global require usage ([8e25d19](https://github.com/dumberjs/dumber/commit/8e25d19c0c3f781bb9e03cd76cb8f81ceb90ddf6))
+
+
+
 ## [1.12.6](https://github.com/dumberjs/dumber/compare/v1.12.5...v1.12.6) (2020-04-03)
 
 
