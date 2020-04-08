@@ -1,3 +1,12 @@
+## [1.12.8](https://github.com/dumberjs/dumber/compare/v1.12.7...v1.12.8) (2020-04-08)
+
+
+### Bug Fixes
+
+* fix runtime loading on module with paths mapped https:// ([c1b132e](https://github.com/dumberjs/dumber/commit/c1b132e22edc9f8ab0a7b89e7a42f844dcd204f1))
+
+
+
 ## [1.12.7](https://github.com/dumberjs/dumber/compare/v1.12.6...v1.12.7) (2020-04-08)
 
 
