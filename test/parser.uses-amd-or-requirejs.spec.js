@@ -23,7 +23,7 @@ test('usesAmdOrRequireJs catpures define case2', t => {
 test('usesAmdOrRequireJs catpures amd require with opts', t => {
   t.deepEqual(
     usesAmdOrRequireJs("require({ baseUrl: 'scripts' }, ['main']);"),
-    {require: true}
+    {require: ['main']}
   );
   t.end();
 });
@@ -31,7 +31,7 @@ test('usesAmdOrRequireJs catpures amd require with opts', t => {
 test('usesAmdOrRequireJs catpures amd requirejs with opts', t => {
   t.deepEqual(
     usesAmdOrRequireJs("requirejs({ baseUrl: 'scripts' }, ['main']);"),
-    {requirejs: true}
+    {requirejs: ['main']}
   );
   t.end();
 });
@@ -47,15 +47,7 @@ test('usesAmdOrRequireJs catpures require.config', t => {
 test('usesAmdOrRequireJs catpures amd require', t => {
   t.deepEqual(
     usesAmdOrRequireJs("require(['something']);"),
-    {require: true}
-  );
-  t.end();
-});
-
-test('usesAmdOrRequireJs catpures amd require', t => {
-  t.deepEqual(
-    usesAmdOrRequireJs("require(['something']);"),
-    {require: true}
+    {require: ['something']}
   );
   t.end();
 });
@@ -63,7 +55,7 @@ test('usesAmdOrRequireJs catpures amd require', t => {
 test('usesAmdOrRequireJs catpures amd require with callback', t => {
   t.deepEqual(
     usesAmdOrRequireJs("require(['something'], function (s) {});"),
-    {require: true}
+    {require: ['something']}
   );
   t.end();
 });
@@ -71,7 +63,7 @@ test('usesAmdOrRequireJs catpures amd require with callback', t => {
 test('usesAmdOrRequireJs catpures requirejs', t => {
   t.deepEqual(
     usesAmdOrRequireJs("requirejs(['something']);"),
-    {requirejs: true}
+    {requirejs: ['something']}
   );
   t.end();
 });
@@ -79,7 +71,7 @@ test('usesAmdOrRequireJs catpures requirejs', t => {
 test('usesAmdOrRequireJs catpures requirejs with callback', t => {
   t.deepEqual(
     usesAmdOrRequireJs("requirejs(['something'], function (s) {});"),
-    {requirejs: true}
+    {requirejs: ['something']}
   );
   t.end();
 });
@@ -96,7 +88,7 @@ test('usesAmdOrRequireJs catpures define with es6 arrow func and cjs wrapper', t
 test('usesAmdOrRequireJs catpures amd require with es6 arrow func, behind function scope', t => {
   t.deepEqual(
     usesAmdOrRequireJs("(() => require(['a'], (a) => { console.log(a); }))()"),
-    {require: true}
+    {require: ['a']}
   );
   t.end();
 });

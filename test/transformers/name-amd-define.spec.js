@@ -133,7 +133,7 @@ test('nameDefine fills up module name', t => {
   t.end();
 });
 
-test('nameDefine fills up module name', t => {
+test('nameDefine fills up module name, case 2', t => {
   const good2 = '//    define([\'bad\'], function () {});\n' +
                 'define([\'foo\'], function () {});';
 
@@ -198,6 +198,28 @@ test('nameDefine ignores inner deps', t => {
     defined: ['foo', 'bar'],
     deps: ['loo']
   });
+  t.end();
+});
+
+test('nameDefine ignores false cjs require', t => {
+  const good = 'define(function() {\n' +
+               'function bar(require) { require("lo"); }\n' +
+               'bar(console.log);\n' +
+               '});\n';
+  const expected = 'define(\'foo\',function() {\n' +
+                   'function bar(require) { require("lo"); }\n' +
+                   'bar(console.log);\n' +
+                   '});\n';
+  const unit = {
+    contents: good,
+    moduleId: 'foo',
+    path: 'src/foo.js'
+  }
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['foo']);
+  t.deepEqual(r.deps, []);
+  t.deepEqual(r.contents, expected);
+  t.equal(r.sourceMap.file, 'src/foo.js');
   t.end();
 });
 
@@ -441,7 +463,7 @@ test('nameDefine inserts correctly for cjs wrapper define case 3', t => {
 
 test('nameDefine inserts correctly for cjs wrapper define case 4, keep deps order', t => {
   const good5 = 'if ("function" === typeof define && define.amd) {\n' +
-                '    define(function (require, exports, module) {\n' +
+                '    define((require, exports, module) => {\n' +
                 '        return {\n' +
                 '            name: "five",\n' +
                 '            c: require("./c"),\n' +
@@ -451,7 +473,7 @@ test('nameDefine inserts correctly for cjs wrapper define case 4, keep deps orde
                 '    });\n' +
                 '}';
   const goodExpected5 = 'if ("function" === typeof define && define.amd) {\n' +
-                        '    define(\'good/5\',[\'require\',\'exports\',\'module\',\'./c\',\'./a\',\'./b\'],function (require, exports, module) {\n' +
+                        '    define(\'good/5\',[\'require\',\'exports\',\'module\',\'./c\',\'./a\',\'./b\'],(require, exports, module) => {\n' +
                         '        return {\n' +
                         '            name: "five",\n' +
                         '            c: require("./c"),\n' +
@@ -572,7 +594,7 @@ test('nameDefine get requirejs deps', t => {
   t.end();
 });
 
-test('nameDefine fills up module name', t => {
+test('nameDefine fills up module name, case 3', t => {
   const cjs = "define(['require','exports','module','./a'],function(require, exports, module){var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0];});}; imp0r_('hello');});";
   const cjsExpected = "define('cjs',['require','exports','module','./a'],function(require, exports, module){var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0];});}; imp0r_('hello');});";
 

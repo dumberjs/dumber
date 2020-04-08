@@ -6,7 +6,7 @@ const {usesCommonJs} = require('../lib/parser');
 // for usesCommonJs
 
 test('usesCommonJs captures require("dep")', t => {
-  t.deepEqual(usesCommonJs("var dep = require('dep');"), {require: true});
+  t.deepEqual(usesCommonJs("var dep = require('dep');"), {require: ['dep']});
   t.end();
 });
 
@@ -21,7 +21,7 @@ test('usesCommonJs captures module.exports =', t => {
 });
 
 test('usesCommonJs captures require("dep") and exports.foo =', t => {
-  t.deepEqual(usesCommonJs("var a = require('a'); something(); exports.b = a;"), {require: true, exports: true});
+  t.deepEqual(usesCommonJs("var a = require('a'); something(); exports.b = a;"), {require: ['a'], exports: true});
   t.end();
 });
 
@@ -64,7 +64,7 @@ test('usesCommonJs ignores local exports case2', t => {
 
 test('usesCommonJs only ignores local exports after seeing it', t => {
   t.deepEqual(usesCommonJs("require('a'); exports.foo = 1; function t() {var exports; exports.foo = 'bar';}"),
-    {require: true, exports: true});
+    {require: ['a'], exports: true});
   t.end();
 });
 
@@ -87,7 +87,7 @@ test('usesCommonJs ignores local exports only in scope', t => {
 });
 
 test('usesCommonJs understands amdefine', t => {
-  t.deepEqual(usesCommonJs("if (typeof define !== 'function') { var define = require('amdefine')(module); }\ndefine(function(require) {})"), {require: true, moduleExports: true});
+  t.deepEqual(usesCommonJs("if (typeof define !== 'function') { var define = require('amdefine')(module); }\ndefine(function(require) {})"), {require: ['amdefine'], moduleExports: true});
   t.end();
 });
 
@@ -107,7 +107,7 @@ module.exports = require('./_library') || !require('./_fails')(function () {
   __defineSetter__.call(null, K, function () { /* empty */ });
   delete require('./_global')[K];
 });`;
-  t.deepEqual(usesCommonJs(code), {require: true, moduleExports: true});
+  t.deepEqual(usesCommonJs(code), {require: ['./_library', './_fails', './_global'], moduleExports: true});
   t.end();
 });
 
