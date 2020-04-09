@@ -1,3 +1,12 @@
+## [1.12.9](https://github.com/dumberjs/dumber/compare/v1.12.8...v1.12.9) (2020-04-09)
+
+
+### Bug Fixes
+
+* ignores runtime modules mapped by paths ([52d7102](https://github.com/dumberjs/dumber/commit/52d7102475bbc2fa470b1810615fa29d5d406428))
+
+
+
 ## [1.12.8](https://github.com/dumberjs/dumber/compare/v1.12.7...v1.12.8) (2020-04-08)
 
 
