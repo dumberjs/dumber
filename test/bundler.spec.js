@@ -1596,3 +1596,51 @@ test('Bundler creates correct alias for named AMD module which does not match pa
   )
   .then(t.end);
 });
+
+test('Bundler ignores runtime modules mapped by paths', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
+  };
+  const bundler = createBundler(fakeFs, {
+    paths: {
+      foo: '/path/to/foo/',
+      bar: 'https://some.cdn.com/bar/'
+    }
+  });
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('bar');", moduleId: 'app.js'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app.js',['require','exports','module','foo','bar'],function (require, exports, module) {\nrequire('foo');require('bar');\n});\n"
+            }
+          ],
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {
+              foo: '/path/to/foo',
+              bar: 'https://some.cdn.com/bar'
+            },
+            "bundles": {}
+          }
+        }
+      });
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
