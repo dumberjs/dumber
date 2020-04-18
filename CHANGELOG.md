@@ -1,3 +1,12 @@
+# [1.13.0](https://github.com/dumberjs/dumber/compare/v1.12.9...v1.13.0) (2020-04-18)
+
+
+### Features
+
+* upgrade to stream-browserify v3 ([889abe0](https://github.com/dumberjs/dumber/commit/889abe011afcbea48a6ebb1f6f55722feea285ce))
+
+
+
 ## [1.12.9](https://github.com/dumberjs/dumber/compare/v1.12.8...v1.12.9) (2020-04-09)
 
 
