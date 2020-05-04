@@ -25,6 +25,7 @@ require('./transformers/process-env.spec');
 // require('./shared.fs.spec');
 require('./shared.spec');
 require('./stub-module.spec');
+// require('./stub-module-packages.spec');
 require('./inject-css.spec');
 require('./modules-done.spec');
 require('./modules-todo.spec');
