@@ -1644,3 +1644,43 @@ test('Bundler ignores runtime modules mapped by paths', t => {
   )
   .then(t.end);
 });
+
+test('Bundler ignores runtime modules', t => {
+  const fakeFs = {
+    'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
+  };
+  const bundler = createBundler(fakeFs);
+
+  Promise.resolve()
+  .then(() => bundler.capture({path: 'src/app.js', contents: "require('https://some.cdn.com/foo.js');", moduleId: 'app.js'}))
+  .then(() => bundler.resolve())
+  .then(() => bundler.bundle())
+  .then(
+    bundleMap => {
+      t.deepEqual(bundleMap, {
+        "entry-bundle": {
+          "files": [
+            {
+              "path": "node_modules/dumber-module-loader/dist/index.debug.js",
+              "contents": "dumber-module-loader;"
+            },
+            {
+              "contents": "define.switchToUserSpace();"
+            },
+            {
+              "path": "src/app.js",
+              "contents": "define('app.js',['require','exports','module','https://some.cdn.com/foo.js'],function (require, exports, module) {\nrequire('https://some.cdn.com/foo.js');\n});\n"
+            }
+          ],
+          "config": {
+            "baseUrl": "/dist",
+            "paths": {},
+            "bundles": {}
+          }
+        }
+      });
+    },
+    err => t.fail(err.stack)
+  )
+  .then(t.end);
+});
