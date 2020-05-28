@@ -71,7 +71,7 @@
     "path-browserify": "1.0.1",
     "process": "^0.11.10",
     "punycode": "^2.1.1",
-    "querystring-es3": "^1.0.0-0",
+    "querystring-browser-stub": "^1.0.0",
     "readable-stream": "^3.6.0",
     "resolve": "^1.17.0",
     "source-map": "^0.7.3",

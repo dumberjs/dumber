@@ -32,7 +32,7 @@ test('stubModule stubs http', t => {
 test('stubModule stubs querystring', t => {
   t.deepEqual(stubModule('querystring', resolve),{
     name: 'querystring',
-    location: resolve('querystring-es3')
+    location: resolve('querystring-browser-stub')
   });
   t.end();
 });
