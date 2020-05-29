@@ -13,4 +13,5 @@ npx makes dumberjs
 ```
 
 View examples of gulp-dumber in action https://github.com/dumberjs/examples
+
 Use dumber in a lightweight browser IDE https://gist.dumber.app
