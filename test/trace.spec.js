@@ -220,7 +220,7 @@ test('trace transforms json', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.json',
-      contents: "define('text!foo/bar.json',function(){return \"{\\\"a\\\":1}\";});define('foo/bar.json',['text!foo/bar.json'],function(m){return JSON.parse(m);});",
+      contents: "define('foo/bar.json',function(){return JSON.parse(\"{\\\"a\\\":1}\");});",
       sourceMap: {
         version: 3,
         file: 'src/foo/bar.json',
@@ -230,7 +230,7 @@ test('trace transforms json', t => {
         sourcesContent: [ '{"a":1}' ]
       },
       moduleId: 'foo/bar.json',
-      defined: ['foo/bar.json', 'text!foo/bar.json'],
+      defined: ['foo/bar.json'],
       deps: []
     });
     t.end();
