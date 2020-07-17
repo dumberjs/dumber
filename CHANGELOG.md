@@ -1,3 +1,12 @@
+## [1.13.2](https://github.com/dumberjs/dumber/compare/v1.13.1...v1.13.2) (2020-07-17)
+
+
+### Bug Fixes
+
+* fix above the surface json module (e.g. ../package.json) ([b1a7f59](https://github.com/dumberjs/dumber/commit/b1a7f599bad9b8d06d8a50b25dc945db6ec12676))
+
+
+
 ## [1.13.1](https://github.com/dumberjs/dumber/compare/v1.13.0...v1.13.1) (2020-05-28)
 
 
