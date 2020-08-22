@@ -73,7 +73,6 @@
     "punycode": "^2.1.1",
     "querystring-browser-stub": "^1.0.0",
     "readable-stream": "^3.6.0",
-    "resolve": "^1.17.0",
     "source-map": "^0.7.3",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.1.1",
