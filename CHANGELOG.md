@@ -1,3 +1,12 @@
+## [1.13.3](https://github.com/dumberjs/dumber/compare/v1.13.2...v1.13.3) (2020-09-16)
+
+
+### Bug Fixes
+
+* correctly handle browser field "." replacement ([647d73d](https://github.com/dumberjs/dumber/commit/647d73da807e1c9cb5b87557d29724e0b6980d2e))
+
+
+
 ## [1.13.2](https://github.com/dumberjs/dumber/compare/v1.13.1...v1.13.2) (2020-07-17)
 
 
