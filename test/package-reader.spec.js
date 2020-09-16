@@ -282,6 +282,36 @@ test('packageReader reads browser over module/main field', t => {
   });
 });
 
+test('packageReader reads browser "." mapping over module/main field', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "browser": {".": "br"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
 test('packageReader reads dumberForcedMain over browser/module/main field', t => {
   getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "browser": "br", "module": "es", "main": "index", "dumberForcedMain": "hc"}',
@@ -967,6 +997,42 @@ test('packageReader uses browser replacement in package.json to normalize replac
 
         t.equal(r.name, 'foo');
         t.equal(r.mainPath, 'index.js');
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader uses browser "." replacement in package.json to normalize main read', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': `{
+      "name": "foo",
+      "main": "index",
+      "browser": {
+        "foo": "./local-foo.js",
+        ".": "./browser.js"
+      }
+    }`,
+    'node_modules/foo/index.js': "index",
+    'node_modules/foo/browser.js': "browser"
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/browser.js',
+          contents: "browser",
+          moduleId: 'foo/browser.js',
+          packageName: 'foo',
+          packageMainPath: 'browser.js',
+          alias: 'foo',
+          replacement: { 'foo': './local-foo.js' },
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'browser.js');
       },
       err => {
         t.fail(err.message);
