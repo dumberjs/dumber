@@ -1,3 +1,12 @@
+## [1.13.4](https://github.com/dumberjs/dumber/compare/v1.13.3...v1.13.4) (2020-10-02)
+
+
+### Bug Fixes
+
+* fix possible failing resolve due to new exports field in package.json ([09d409e](https://github.com/dumberjs/dumber/commit/09d409e89d80a117d35f2ed6a05a22d13b568294))
+
+
+
 ## [1.13.3](https://github.com/dumberjs/dumber/compare/v1.13.2...v1.13.3) (2020-09-16)
 
 
