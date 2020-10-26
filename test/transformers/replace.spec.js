@@ -7,10 +7,12 @@ test('replace transform ignores empty replacement', t => {
     require('./bar');
   })`;
 
-  t.notOk(replace({
+  const unit = replace({
     contents: source,
     path: 'src/foo.js'
-  }));
+  });
+  t.deepEqual(Object.keys(unit), ['parsed']);
+  t.equal(unit.parsed.body[0].type, 'ExpressionStatement');
   t.end();
 });
 
@@ -106,10 +108,12 @@ module.exports = require('./bar.js');
 });
 `;
 
-  t.notOk(replace({
+  const unit = replace({
     contents: umd,
     path: 'src/foo.js'
-  }));
+  });
+  t.deepEqual(Object.keys(unit), ['parsed']);
+  t.equal(unit.parsed.body[0].type, 'ExpressionStatement');
   t.end();
 });
 

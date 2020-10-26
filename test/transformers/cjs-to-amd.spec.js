@@ -10,7 +10,9 @@ test('cjs transform ignores amd code', t => {
     path: 'src/foo.js',
     moduleId: 'foo'
   };
-  t.notOk(cjs(unit));
+  const newUnit = cjs(unit);
+  t.deepEqual(Object.keys(newUnit), ['parsed']);
+  t.equal(newUnit.parsed.body[0].type, 'ExpressionStatement');
   t.end();
 });
 
@@ -20,7 +22,9 @@ test('cjs transform ignores amd code case 2', t => {
     path: 'src/foo.js',
     moduleId: 'foo'
   };
-  t.notOk(cjs(unit));
+  const newUnit = cjs(unit);
+  t.deepEqual(Object.keys(newUnit), ['parsed']);
+  t.equal(newUnit.parsed.body[0].type, 'ExpressionStatement');
   t.end();
 });
 

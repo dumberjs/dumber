@@ -264,11 +264,65 @@ test('transform bypass nil transform', t => {
   ).then(t.end);
 });
 
+test('transform reuses parsed on nil transform', t => {
+  const unit = {
+    contents: 'a;\nb;\n',
+    path: 'src/foo.js',
+    moduleId: 'foo',
+    sourceMap: {
+      version: 3,
+      file: 'src/foo.js',
+      sources: [ 'src/foo.js' ],
+      sourcesContent: [ 'a;b;\n' ],
+      names: [],
+      mappings: encode([
+        [
+          [0, 0, 0, 0]
+        ],
+        [
+          [0, 0, 0, 3]
+        ]
+      ])
+    }
+  };
+
+  function noop() { return { parsed: {lorem: 1}}}
+
+  transform(unit, noop)
+  .then(
+    newUnit => {
+      t.deepEqual(newUnit, {
+        parsed: {lorem: 1},
+        contents: 'a;\nb;\n',
+        path: 'src/foo.js',
+        moduleId: 'foo',
+        sourceMap: {
+          version: 3,
+          file: 'src/foo.js',
+          sources: [ 'src/foo.js' ],
+          sourcesContent: [ 'a;b;\n' ],
+          names: [],
+          mappings: encode([
+            [
+              [0, 0, 0, 0]
+            ],
+            [
+              [0, 0, 0, 3]
+            ]
+          ])
+        }
+      })
+    },
+    t.fail
+  ).then(t.end);
+});
+
 test('transform merges defined', t => {
   const unit = {
     contents: 'a,b',
     path: 'src/foo.js',
-    moduleId: 'foo'
+    moduleId: 'foo',
+    parsed: {lorem: 1} // previous parsed is discarded
   };
 
   function findDefines(unit) {

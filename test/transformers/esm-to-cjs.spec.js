@@ -8,7 +8,8 @@ test('esm skips non-ES module', t => {
     moduleId: 'file'
   };
   const newUnit = esm(unit);
-  t.notOk(newUnit);
+  t.deepEqual(Object.keys(newUnit), ['parsed']);
+  t.equal(newUnit.parsed.body[0].type, 'ExpressionStatement');
   t.end();
 });
 
@@ -19,7 +20,8 @@ test('esm skips non-ES module', t => {
     moduleId: 'file'
   };
   const newUnit = esm(unit);
-  t.notOk(newUnit);
+  t.deepEqual(Object.keys(newUnit), ['parsed']);
+  t.equal(newUnit.parsed.body[0].type, 'ExpressionStatement');
   t.end();
 });
 
