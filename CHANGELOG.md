@@ -1,3 +1,12 @@
+# [1.14.0](https://github.com/dumberjs/dumber/compare/v1.13.5...v1.14.0) (2020-10-26)
+
+
+### Features
+
+* improve tracing performance by avoid parsing unchanged code ([b2c2e38](https://github.com/dumberjs/dumber/commit/b2c2e3810ad1e4671b403a12cdebe12a12c1c045))
+
+
+
 ## [1.13.5](https://github.com/dumberjs/dumber/compare/v1.13.4...v1.13.5) (2020-10-16)
 
 
