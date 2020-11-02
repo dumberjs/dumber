@@ -1,3 +1,12 @@
+## [1.14.1](https://github.com/dumberjs/dumber/compare/v1.14.0...v1.14.1) (2020-11-02)
+
+
+### Bug Fixes
+
+* leave dynamic import with full url untouched ([f2205f0](https://github.com/dumberjs/dumber/commit/f2205f0c9ef5574cc71d6053ee7e0fb87738159e)), closes [#21](https://github.com/dumberjs/dumber/issues/21)
+
+
+
 # [1.14.0](https://github.com/dumberjs/dumber/compare/v1.13.5...v1.14.0) (2020-10-26)
 
 
