@@ -241,3 +241,51 @@ test('cjs supports dynamic import() in ES module', t => {
   t.ok(newUnit.contents.includes("imp0r_('./a')"))
   t.end();
 });
+
+test('cjs leaves dynamic import() with full https url', t => {
+  const unit = {
+    contents: "import('https://example.com/path');",
+    path: 'src/foo.js',
+    moduleId: 'foo'
+  };
+  const newUnit = cjs(unit);
+  t.notOk(newUnit.contents);
+  t.ok(newUnit.parsed);
+  t.end();
+});
+
+test('cjs leaves dynamic import() with full http url', t => {
+  const unit = {
+    contents: "import('http://example.com/path');",
+    path: 'src/foo.js',
+    moduleId: 'foo'
+  };
+  const newUnit = cjs(unit);
+  t.notOk(newUnit.contents);
+  t.ok(newUnit.parsed);
+  t.end();
+});
+
+test('cjs leaves dynamic import() with protocol-less url', t => {
+  const unit = {
+    contents: "import('//example.com/path');",
+    path: 'src/foo.js',
+    moduleId: 'foo'
+  };
+  const newUnit = cjs(unit);
+  t.notOk(newUnit.contents);
+  t.ok(newUnit.parsed);
+  t.end();
+});
+
+test('cjs leaves dynamic import() with root path', t => {
+  const unit = {
+    contents: "import('/path');",
+    path: 'src/foo.js',
+    moduleId: 'foo'
+  };
+  const newUnit = cjs(unit);
+  t.notOk(newUnit.contents);
+  t.ok(newUnit.parsed);
+  t.end();
+});
