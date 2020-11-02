@@ -244,48 +244,44 @@ test('cjs supports dynamic import() in ES module', t => {
 
 test('cjs leaves dynamic import() with full https url', t => {
   const unit = {
-    contents: "import('https://example.com/path');",
+    contents: "exports.default = import('https://example.com/path');",
     path: 'src/foo.js',
     moduleId: 'foo'
   };
   const newUnit = cjs(unit);
-  t.notOk(newUnit.contents);
-  t.ok(newUnit.parsed);
+  t.equal(newUnit.contents, 'define(function (require, exports, module) {\nexports.default = import(\'https://example.com/path\');\n});\n');
   t.end();
 });
 
 test('cjs leaves dynamic import() with full http url', t => {
   const unit = {
-    contents: "import('http://example.com/path');",
+    contents: "exports.default = import('http://example.com/path');",
     path: 'src/foo.js',
     moduleId: 'foo'
   };
   const newUnit = cjs(unit);
-  t.notOk(newUnit.contents);
-  t.ok(newUnit.parsed);
+  t.equal(newUnit.contents, 'define(function (require, exports, module) {\nexports.default = import(\'http://example.com/path\');\n});\n');
   t.end();
 });
 
 test('cjs leaves dynamic import() with protocol-less url', t => {
   const unit = {
-    contents: "import('//example.com/path');",
+    contents: "exports.default = import('//example.com/path');",
     path: 'src/foo.js',
     moduleId: 'foo'
   };
   const newUnit = cjs(unit);
-  t.notOk(newUnit.contents);
-  t.ok(newUnit.parsed);
+  t.equal(newUnit.contents, 'define(function (require, exports, module) {\nexports.default = import(\'//example.com/path\');\n});\n');
   t.end();
 });
 
 test('cjs leaves dynamic import() with root path', t => {
   const unit = {
-    contents: "import('/path');",
+    contents: "exports.default = import('/path');",
     path: 'src/foo.js',
     moduleId: 'foo'
   };
   const newUnit = cjs(unit);
-  t.notOk(newUnit.contents);
-  t.ok(newUnit.parsed);
+  t.equal(newUnit.contents, 'define(function (require, exports, module) {\nexports.default = import(\'/path\');\n});\n');
   t.end();
 });
