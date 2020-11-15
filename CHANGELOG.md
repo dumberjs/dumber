@@ -1,3 +1,12 @@
+## [1.14.2](https://github.com/dumberjs/dumber/compare/v1.14.1...v1.14.2) (2020-11-15)
+
+
+### Bug Fixes
+
+* bring back "resolve" for yarn2 compatibility ([512a740](https://github.com/dumberjs/dumber/commit/512a7404ae0c6723227f67d477b137cb592183e4)), closes [#22](https://github.com/dumberjs/dumber/issues/22)
+
+
+
 ## [1.14.1](https://github.com/dumberjs/dumber/compare/v1.14.0...v1.14.1) (2020-11-02)
 
 
