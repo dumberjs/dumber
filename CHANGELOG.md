@@ -1,3 +1,12 @@
+## [1.14.4](https://github.com/dumberjs/dumber/compare/v1.14.3...v1.14.4) (2020-12-19)
+
+
+### Bug Fixes
+
+* fallback gracefully for broken browser or module field in package.json ([1e220f5](https://github.com/dumberjs/dumber/commit/1e220f5f1b4ee886fa072b50b20593155e5a6b87)), closes [#23](https://github.com/dumberjs/dumber/issues/23)
+
+
+
 ## [1.14.3](https://github.com/dumberjs/dumber/compare/v1.14.2...v1.14.3) (2020-11-15)
 
 
