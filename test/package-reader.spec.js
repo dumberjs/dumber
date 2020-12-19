@@ -343,6 +343,25 @@ test('packageReader reads dumberForcedMain over browser/module/main field', t =>
   });
 });
 
+test('packageReader fails broken dumberForcedMain without fallback', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "version": "1.0.0", "browser": "br", "module": "es", "main": "index", "dumberForcedMain": "hc"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    r.readMain().then(
+      () => {
+        t.fail('should not pass');
+      },
+      () => {
+        t.equal(r.version, '1.0.0');
+        t.pass('it throws');
+      }
+    ).then(t.end);
+  });
+});
+
 test('packageReader reads main file with explicit ext', t => {
   getReader('foo.js', {
     'node_modules/foo.js/package.json': '{"name":"foo.js", "main": "./main.js"}',
@@ -746,6 +765,7 @@ test('packageReader uses browser replacement in package.json to normalize replac
         "./server/only.js": "./shims/client-only.js"
       }
     }`,
+    'node_modules/foo/index.js': '',
     'node_modules/foo/shims/client-only.js': "require('module-a');require('module-b.js');require('module-c');"
   }).then(r => {
     r.readResource('server/only.js').then(
@@ -1286,6 +1306,94 @@ test('packageReader reads cjs resource file', t => {
 
         t.equal(r.name, 'foo');
         t.equal(r.mainPath, 'index.cjs');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader reads module field main file when browser field is broken', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index", "module": "esm.js", "browser": "br.js"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/esm.js': "lorem2"
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/esm.js',
+          contents: 'lorem2',
+          moduleId: 'foo/esm.js',
+          packageName: 'foo',
+          packageMainPath: 'esm.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'esm.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader reads main field main file when browser field is broken', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index", "browser": "br.js"}',
+    'node_modules/foo/index.js': "lorem"
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/index.js',
+          contents: 'lorem',
+          moduleId: 'foo/index.js',
+          packageName: 'foo',
+          packageMainPath: 'index.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    ).then(t.end);
+  });
+});
+
+test('packageReader reads main field main file when module field is broken', t => {
+  getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "main": "index", "module": "esm.js"}',
+    'node_modules/foo/index.js': "lorem"
+  }).then(r => {
+    r.readMain().then(
+      unit => {
+        t.equal(r.version, 'N/A');
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/index.js',
+          contents: 'lorem',
+          moduleId: 'foo/index.js',
+          packageName: 'foo',
+          packageMainPath: 'index.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'index.js');
         t.deepEqual(r.browserReplacement, {});
       },
       err => {
