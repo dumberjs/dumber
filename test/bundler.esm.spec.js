@@ -90,7 +90,7 @@ test('Bundler traces mixed mjs and cjs npm packages', t => {
             },
             {
               "path": "node_modules/loo/loo.mjs",
-              "contents": ";\ndefine('loo/loo.mjs',function(){});\n\n;define.alias('loo','loo/loo.mjs');"
+              "contents": "define('loo/loo.mjs',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('loo','loo/loo.mjs');"
             },
             {
               "contents": "define.switchToUserSpace();"

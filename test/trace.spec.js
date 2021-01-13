@@ -730,3 +730,65 @@ test('trace bypasses traced unit', t => {
     }
   );
 });
+
+test('trace forces commonjs on local empty code', t => {
+  const unit = {
+    path: 'src/foo/bar.js',
+    contents: "",
+    moduleId: 'foo/bar'
+  };
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'src/foo/bar.js',
+      contents: "define('foo/bar',['require','exports','module'],function (require, exports, module) {\n\n});\n",
+      sourceMap: {
+        version: 3,
+        sources: [ 'src/foo/bar.js' ],
+        names: [],
+        mappings: '',
+        file: 'src/foo/bar.js',
+        sourcesContent: [ "" ]
+      },
+      moduleId: 'foo/bar',
+      defined: ['foo/bar'],
+      deps: [],
+      forceWrap: true
+    });
+    t.end();
+  });
+});
+
+test('trace forces commonjs on npm empty code', t => {
+  const unit = {
+    path: 'node_modules/foo/bar.js',
+    contents: "",
+    moduleId: 'foo/bar',
+    packageName: 'foo',
+    packageMainPath: 'bar.js'
+  };
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'node_modules/foo/bar.js',
+      contents: "define('foo/bar',['require','exports','module'],function (require, exports, module) {\n\n});\n",
+      sourceMap: {
+        version: 3,
+        sources: [ 'node_modules/foo/bar.js' ],
+        names: [],
+        mappings: '',
+        file: 'node_modules/foo/bar.js',
+        sourcesContent: [ "" ]
+      },
+      moduleId: 'foo/bar',
+      defined: ['foo/bar'],
+      deps: [],
+      packageName: 'foo',
+      packageMainPath: 'bar.js',
+      forceWrap: true
+    });
+    t.end();
+  });
+});
+
+

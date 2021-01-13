@@ -229,6 +229,24 @@ test('cjs forces cjs wrap with npm package file path contains commonjs', t => {
   t.end();
 });
 
+test('cjs forces cjs wrap on empty code', t => {
+  const unit = {
+    contents: '// empty cjs code',
+    path: 'node_module/foo/index.js',
+    packageName: 'foo',
+    moduleId: 'foo/index'
+  };
+  const newUnit = cjs(unit);
+  t.equal(newUnit.contents, 'define(function (require, exports, module) {\n' +
+    '// empty cjs code' +
+    '\n});\n');
+  t.deepEqual(newUnit.sourceMap.sources, ['node_module/foo/index.js']);
+  t.equal(newUnit.sourceMap.file, 'node_module/foo/index.js');
+  t.ok(newUnit.sourceMap.mappings);
+  t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
+  t.end();
+});
+
 test('cjs supports dynamic import() in ES module', t => {
   const unit = {
     contents: "exports.default = import('./a');",

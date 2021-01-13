@@ -92,7 +92,7 @@ test('Bundler traces files', t => {
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": ";\ndefine('foo/bar.js',function(){});\n"
+              "contents": "define('foo/bar.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             },
             {
               "path": "node_modules/foo/index.js",
@@ -100,7 +100,7 @@ test('Bundler traces files', t => {
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
+              "contents": "define('loo/loo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -156,7 +156,7 @@ test('Bundler can optionally skip dumber-module-loader', t => {
             },
             {
               "path": "src/app.js",
-              "contents": ";\ndefine('app.js',function(){});\n"
+              "contents": "define('app.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             }
           ],
           "config": {
@@ -257,7 +257,7 @@ test('Bundler traces files, split bundles', t => {
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": ";\ndefine('foo/bar.js',function(){});\n"
+              "contents": "define('foo/bar.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             },
             {
               "path": "node_modules/foo/index.js",
@@ -265,7 +265,7 @@ test('Bundler traces files, split bundles', t => {
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
+              "contents": "define('loo/loo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -379,7 +379,7 @@ test('Bundler traces files, split bundles, case2', t => {
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
+              "contents": "define('loo/loo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -393,7 +393,7 @@ test('Bundler traces files, split bundles, case2', t => {
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": ";\ndefine('foo/bar.js',function(){});\n"
+              "contents": "define('foo/bar.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             },
             {
               "path": "node_modules/foo/index.js",
@@ -460,7 +460,7 @@ test('Bundler traces files, sorts shim', t => {
             },
             {
               "path": "node_modules/fs-browser-stub/index.js",
-              "contents": ";\ndefine('fs/index.js',function(){});\n\n;define.alias('fs','fs/index.js');"
+              "contents": "define('fs/index.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('fs','fs/index.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -520,11 +520,11 @@ test('Bundler traces files, always sort jquery and moment on top', t => {
             },
             {
               "path": "node_modules/moment/moment.js",
-              "contents": ";\ndefine('moment/moment.js',function(){});\n\n;define.alias('moment','moment/moment.js');"
+              "contents": "define('moment/moment.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('moment','moment/moment.js');"
             },
             {
               "path": "node_modules/aaa/aaa.js",
-              "contents": ";\ndefine('aaa/aaa.js',function(){});\n\n;define.alias('aaa','aaa/aaa.js');"
+              "contents": "define('aaa/aaa.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('aaa','aaa/aaa.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -626,11 +626,11 @@ test('Bundler replaces deps when onRequire returns array', t => {
             },
             {
               "path": "node_modules/bar/index.js",
-              "contents": ";\ndefine('bar/index.js',function(){});\n\n;define.alias('bar','bar/index.js');"
+              "contents": "define('bar/index.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('bar','bar/index.js');"
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
+              "contents": "define('loo/loo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -691,7 +691,7 @@ test('Bundler supports implementation returned by onRequire', t => {
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
+              "contents": "define('loo/loo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -747,7 +747,7 @@ test('Bundler swallows onRequire exception', t => {
             },
             {
               "path": "node_modules/foo/foo.js",
-              "contents": ";\ndefine('foo/foo.js',function(){});\n\n;define.alias('foo','foo/foo.js');"
+              "contents": "define('foo/foo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('foo','foo/foo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -803,7 +803,7 @@ test('Bundler swallows onRequire promise rejection', t => {
             },
             {
               "path": "node_modules/foo/foo.js",
-              "contents": ";\ndefine('foo/foo.js',function(){});\n\n;define.alias('foo','foo/foo.js');"
+              "contents": "define('foo/foo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('foo','foo/foo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -922,7 +922,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "src/page/one.js",
-              "contents": ";\ndefine('page/one.js',function(){});\n"
+              "contents": "define('page/one.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             }
           ]
         },
@@ -933,7 +933,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": ";\ndefine('foo/index.js',function(){});\n\n;define.alias('foo','foo/index.js');"
+              "contents": "define('foo/index.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('foo','foo/index.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -961,7 +961,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
+              "contents": "define('loo/loo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1012,11 +1012,11 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "node_modules/foo/bar.js",
-              "contents": ";\ndefine('foo/bar.js',function(){});\n"
+              "contents": "define('foo/bar.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             },
             {
               "path": "node_modules/foo/index.js",
-              "contents": ";\ndefine('foo/index.js',function(){});\n\n;define.alias('foo','foo/index.js');"
+              "contents": "define('foo/index.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('foo','foo/index.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1045,7 +1045,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "node_modules/loo/loo.js",
-              "contents": ";\ndefine('loo/loo.js',function(){});\n\n;define.alias('loo','loo/loo.js');"
+              "contents": "define('loo/loo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n\n;define.alias('loo','loo/loo.js');"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1091,11 +1091,11 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
             },
             {
               "path": "src/goo.js",
-              "contents": ";\ndefine('goo.js',function(){});\n"
+              "contents": "define('goo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             },
             {
               "path": "src/goo2.js",
-              "contents": ";\ndefine('goo2.js',function(){});\n"
+              "contents": "define('goo2.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             }
           ]
         }
@@ -1149,7 +1149,7 @@ test('Bundler supports inject css by default', t => {
             },
             {
               "path": "node_modules/dumber/lib/inject-css.js",
-              "contents": ";\ndefine('dumber/lib/inject-css.js',function(){});\n"
+              "contents": "define('dumber/lib/inject-css.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1211,7 +1211,7 @@ test('Bundler supports inject css (relative path) by default', t => {
             },
             {
               "path": "node_modules/dumber/lib/inject-css.js",
-              "contents": ";\ndefine('dumber/lib/inject-css.js',function(){});\n"
+              "contents": "define('dumber/lib/inject-css.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             },
             {
               "contents": "define.switchToUserSpace();"
@@ -1324,7 +1324,7 @@ test('Bundler traces files with paths mapping', t => {
             },
             {
               "path": "src/common/foo.js",
-              "contents": ";\ndefine('common/foo.js',function(){});\n"
+              "contents": "define('common/foo.js',['require','exports','module'],function (require, exports, module) {\n\n});\n"
             },
             {
               "contents": "define.switchToPackageSpace();"
