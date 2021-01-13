@@ -1,3 +1,12 @@
+## [1.14.6](https://github.com/dumberjs/dumber/compare/v1.14.5...v1.14.6) (2021-01-13)
+
+
+### Bug Fixes
+
+* correctly treat empty commonjs code ([89046fd](https://github.com/dumberjs/dumber/commit/89046fdaefe7c212d3e13164393c99c0624fed05))
+
+
+
 ## [1.14.5](https://github.com/dumberjs/dumber/compare/v1.14.4...v1.14.5) (2021-01-13)
 
 
