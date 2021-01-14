@@ -58,12 +58,12 @@
     "crypto-browserify": "^3.12.0",
     "del": "^5.1.0",
     "domain-browser": "^4.19.0",
-    "dumber-module-loader": "^1.1.10",
+    "dumber-module-loader": "^1.1.11",
     "eslint-scope": "^5.1.1",
     "events": "^3.2.0",
     "fs-browser-stub": "^1.0.1",
     "https-browserify": "^1.0.0",
-    "meriyah": "^3.1.6",
+    "meriyah": "^4.0.0",
     "mkdirp-classic": "^0.5.3",
     "modify-code": "^1.2.0",
     "node-fetch": "^2.6.1",
@@ -87,12 +87,12 @@
   "devDependencies": {
     "browser-do": "^3.0.2",
     "browserify": "^17.0.0",
-    "eslint": "^7.16.0",
+    "eslint": "^7.17.0",
     "nyc": "^15.1.0",
     "semver": "^7.3.4",
     "sourcemap-codec": "^1.4.8",
     "standard-changelog": "^2.0.27",
     "tap-nirvana": "^1.1.0",
-    "tape": "^5.0.1"
+    "tape": "^5.1.1"
   }
 }
