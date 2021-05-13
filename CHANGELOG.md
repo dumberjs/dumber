@@ -1,3 +1,12 @@
+## [1.14.8](https://github.com/dumberjs/dumber/compare/v1.14.7...v1.14.8) (2021-05-13)
+
+
+### Bug Fixes
+
+* handle indirect define in special UMD module ([4961f2d](https://github.com/dumberjs/dumber/commit/4961f2d0a3e707a61d69a3f08a97906f513c171b)), closes [#25](https://github.com/dumberjs/dumber/issues/25)
+
+
+
 ## [1.14.7](https://github.com/dumberjs/dumber/compare/v1.14.6...v1.14.7) (2021-01-14)
 
 
