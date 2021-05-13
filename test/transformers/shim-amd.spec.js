@@ -194,4 +194,4 @@ test('shimAmd add empty shim for non-amd module even when shim config is not pro
   t.equal(r.contents, shimExpected);
   t.equal(r.sourceMap.file, 'src/shim.js');
   t.end();
-})
+});

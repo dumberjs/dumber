@@ -248,20 +248,6 @@ test('nameDefine does not rewrite named define', t => {
   t.end();
 });
 
-test('nameDefine does not rewrite indirect define call', t => {
-  const unit = {
-    contents: '(function (define) {define(["jquery"], function(){});})(typeof define === "function" && define.amd ? define : function(deps, factory) {})\n',
-    moduleId: 'foo',
-    path: 'src/foo.js'
-  }
-  const r = nameDefine(unit);
-  t.deepEqual(r, {
-    defined: [],
-    deps: []
-  });
-  t.end();
-});
-
 test('nameDefine ignore  define call without implementation', t => {
   const unit = {
     contents: 'define(["a"]);\n',
@@ -602,11 +588,91 @@ test('nameDefine fills up module name, case 3', t => {
     contents: cjs,
     moduleId: 'cjs',
     path: 'src/cjs.js'
-  }
+  };
   const r = nameDefine(unit);
   t.deepEqual(r.defined, ['cjs']);
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./a', 'hello']);
   t.equal(r.contents, cjsExpected);
+  t.end();
+});
+
+test('nameDefine treats special UMD module as anoymous AMD module', t => {
+  const umd = `(function(define) {
+  define(['jquery'], function($) {
+    return 1;
+  });
+}(typeof define === 'function' && define.amd ? define : function(deps, factory) {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = factory(require('jquery'));
+  } else {
+    window.toastr = factory(window.jQuery);
+  }
+}));
+`;
+  const expected = `(function(define) {
+  define(['jquery'], function($) {
+    return 1;
+  });
+}(typeof define === 'function' && define.amd ? define : function(deps, factory) {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = factory(require('jquery'));
+  } else {
+    window.toastr = factory(window.jQuery);
+  }
+}));
+
+;define.nameAnonymous('toastr/toastr.js');
+`;
+  const unit = {
+    contents: umd,
+    moduleId: 'toastr/toastr.js',
+    path: 'node_modules/toastr/toastr.js'
+  };
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['toastr/toastr.js']);
+  t.notOk(r.shimed);
+  t.deepEqual(r.deps, ['jquery']);
+  t.equal(r.contents, expected);
+  t.end();
+});
+
+test('nameDefine treats special UMD module as anoymous AMD module, case 2', t => {
+  const umd = `(function(define) {
+  define(function() {
+    return 1;
+  });
+}(typeof define === 'function' && define.amd ? define : function(factory) {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = factory();
+  } else {
+    window.toastr = factory();
+  }
+}));
+`;
+  const expected = `(function(define) {
+  define(function() {
+    return 1;
+  });
+}(typeof define === 'function' && define.amd ? define : function(factory) {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = factory();
+  } else {
+    window.toastr = factory();
+  }
+}));
+
+;define.nameAnonymous('toastr/toastr.js');
+`;
+  const unit = {
+    contents: umd,
+    moduleId: 'toastr/toastr.js',
+    path: 'node_modules/toastr/toastr.js'
+  };
+  const r = nameDefine(unit);
+  t.deepEqual(r.defined, ['toastr/toastr.js']);
+  t.notOk(r.shimed);
+  t.deepEqual(r.deps, []);
+  t.equal(r.contents, expected);
   t.end();
 });
