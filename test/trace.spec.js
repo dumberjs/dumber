@@ -507,7 +507,7 @@ test('trace patches momentjs to expose global var "moment"', t => {
 
 ;(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? (function(){var m=factory();if(typeof moment === 'undefined'){window.moment=m;} define('moment/moment',function(){return m;})})() :
+    typeof define === 'function' && define.amd ? (function(){var m=factory();if(typeof moment === 'undefined' && typeof global !== 'undefined'){global.moment=m;} define('moment/moment',function(){return m;})})() :
     global.moment = factory()
 }(this, (function () {})));`;
 
@@ -535,7 +535,7 @@ test('trace patches momentjs to expose global var "moment"', t => {
         names: [],
         mappings: '',
         file: 'node_modules/moment/moment.js',
-        sourcesContent: [ '//! moment.js\n\n;(function (global, factory) {\n    typeof exports === \'object\' && typeof module !== \'undefined\' ? module.exports = factory() :\n    typeof define === \'function\' && define.amd ? (function(){var m=factory();if(typeof moment === \'undefined\'){window.moment=m;} define(function(){return m;})})() :\n    global.moment = factory()\n}(this, (function () {})));' ]
+        sourcesContent: [ '//! moment.js\n\n;(function (global, factory) {\n    typeof exports === \'object\' && typeof module !== \'undefined\' ? module.exports = factory() :\n    typeof define === \'function\' && define.amd ? (function(){var m=factory();if(typeof moment === \'undefined\' && typeof global !== \'undefined\'){global.moment=m;} define(function(){return m;})})() :\n    global.moment = factory()\n}(this, (function () {})));' ]
       }
     });
     t.end();
