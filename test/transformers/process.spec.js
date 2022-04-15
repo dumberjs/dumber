@@ -42,6 +42,6 @@ test('processEnv add NODE_ENV to npm package "process"', t => {
       v8: '8.4.371.23-node.84'
     }
   };
-  t.deepEqual(processEnv(unit, mock), {contents: 'lorem\nprocess.env = {NODE_ENV:"foo"};\nprocess.version = "v14.18.1";\nprocess.versions = {"node":"14.18.1","v8":"8.4.371.23-node.84"};\n'});
+  t.deepEqual(processEnv(unit, mock), {contents: 'lorem\nprocess.env = {NODE_ENV:"foo"};\nprocess.version = "v14.18.1";\nprocess.versions = {"node":"14.18.1","v8":"8.4.371.23-node.84"};\nprocess.execArgv = [];\n'});
   t.end();
 });
