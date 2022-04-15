@@ -1,5 +1,5 @@
 const test = require('tape');
-const processEnv = require('../../lib/transformers/process-env');
+const processEnv = require('../../lib/transformers/process');
 
 test('processEnv bypasses local file', t => {
   const unit = {
@@ -34,7 +34,14 @@ test('processEnv add NODE_ENV to npm package "process"', t => {
     moduleId: 'process/browser',
     packageName: 'process'
   };
-
-  t.deepEqual(processEnv(unit, {NODE_ENV: 'foo'}), {contents: 'lorem\nprocess.env = {"NODE_ENV":"foo"};\n'});
+  const mock = {
+    env: {NODE_ENV: 'foo'},
+    version: 'v14.18.1',
+    versions: {
+      node: '14.18.1',
+      v8: '8.4.371.23-node.84'
+    }
+  };
+  t.deepEqual(processEnv(unit, mock), {contents: 'lorem\nprocess.env = {NODE_ENV:"foo"};\nprocess.version = "v14.18.1";\nprocess.versions = {"node":"14.18.1","v8":"8.4.371.23-node.84"};\n'});
   t.end();
 });
