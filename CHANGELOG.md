@@ -1,3 +1,14 @@
+## [1.14.10](https://github.com/dumberjs/dumber/compare/v1.14.9...v1.14.10) (2022-05-07)
+
+
+### Bug Fixes
+
+* bypass source-map bug on sourceRoot ([6972943](https://github.com/dumberjs/dumber/commit/69729434aa51013df81ada702fc46885346d34bd))
+* fill process.execArgv ([9df7e0b](https://github.com/dumberjs/dumber/commit/9df7e0bc65f639390b8788c443aeedbbafc29729))
+* fill up process.version and process.versions for browser code ([056fe88](https://github.com/dumberjs/dumber/commit/056fe881086b8af30ee7828bc0364eea1fb317aa))
+
+
+
 ## [1.14.9](https://github.com/dumberjs/dumber/compare/v1.14.8...v1.14.9) (2021-11-28)
 
 
