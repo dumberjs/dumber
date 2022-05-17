@@ -1,3 +1,12 @@
+## [1.14.11](https://github.com/dumberjs/dumber/compare/v1.14.10...v1.14.11) (2022-05-17)
+
+
+### Bug Fixes
+
+* update source-map to fix the issue on nodejs v18 ([0565f57](https://github.com/dumberjs/dumber/commit/0565f57b59a313a185f746c3705a44634a643ce7))
+
+
+
 ## [1.14.10](https://github.com/dumberjs/dumber/compare/v1.14.9...v1.14.10) (2022-05-07)
 
 
