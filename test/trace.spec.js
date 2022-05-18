@@ -36,14 +36,6 @@ test('trace does not reject moduleId which is same as packageName', t => {
       t.deepEqual(traced, {
         path: '__stub__/fs.js',
         contents: "define('fs',function(){});",
-        sourceMap: {
-          version: 3,
-          names: [],
-          sources: ['__stub__/fs.js'],
-          file: '__stub__/fs.js',
-          mappings: '',
-          sourcesContent: ['define(function(){});']
-        },
         moduleId: 'fs',
         defined: ['fs'],
         deps: [],
@@ -70,14 +62,6 @@ test('trace traces js', t => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.js',
       contents: "define('foo/bar',['a','text!./b.css'],function() {});",
-      sourceMap: {
-        version: 3,
-        names: [],
-        sources: ['src/foo/bar.js'],
-        file: 'src/foo/bar.js',
-        mappings: '',
-        sourcesContent: ["define(['a','text!./b.css'],function() {});"]
-      },
       moduleId: 'foo/bar',
       defined: ['foo/bar'],
       deps: ['a', 'text!./b.css']
@@ -221,14 +205,6 @@ test('trace transforms json', t => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.json',
       contents: "define('foo/bar.json',function(){return JSON.parse(\"{\\\"a\\\":1}\");});",
-      sourceMap: {
-        version: 3,
-        file: 'src/foo/bar.json',
-        sources: [ 'src/foo/bar.json' ],
-        mappings: '',
-        names: [],
-        sourcesContent: [ '{"a":1}' ]
-      },
       moduleId: 'foo/bar.json',
       defined: ['foo/bar.json'],
       deps: []
@@ -241,7 +217,15 @@ test('trace transforms text file', t => {
   const unit = {
     path: 'src/foo/bar.html',
     contents: '<p></p>',
-    moduleId: 'foo/bar.html'
+    moduleId: 'foo/bar.html',
+    sourceMap: {
+      version: 3,
+      file: 'src/foo/bar.html',
+      sources: [ 'src/foo/bar.html' ],
+      mappings: '',
+      names: [],
+      sourcesContent: [ '<p></p>' ]
+    },
   };
 
   trace(unit).then(traced => {
@@ -275,14 +259,6 @@ test('trace transforms wasm file', t => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.wasm',
       contents: "define('raw!foo/bar.wasm',['base64-arraybuffer'],function(a){return {arrayBuffer: function() {return Promise.resolve(a.decode(\"abc\"));}}});",
-      sourceMap: {
-        version: 3,
-        file: 'src/foo/bar.wasm',
-        sources: [ 'src/foo/bar.wasm' ],
-        mappings: '',
-        names: [],
-        sourcesContent: [ 'abc' ]
-      },
       moduleId: 'foo/bar.wasm',
       defined: ['raw!foo/bar.wasm'],
       deps: ['base64-arraybuffer']
@@ -436,7 +412,15 @@ test('trace traces npm js with dist alias', t => {
     contents: "define(['a','text!./b.css'],function() {});",
     moduleId: 'foo/dist/bar',
     packageName: 'foo',
-    packageMainPath: 'dist/index.js'
+    packageMainPath: 'dist/index.js',
+    sourceMap: {
+      version: 3,
+      sources: [ 'node_modules/foo/dist/bar.js' ],
+      names: [],
+      mappings: '',
+      file: 'node_modules/foo/dist/bar.js',
+      sourcesContent: [ 'define([\'a\',\'text!./b.css\'],function() {});' ]
+    },
   };
 
   trace(unit).then(traced => {
@@ -475,14 +459,6 @@ test('trace traces npm html with dist alias', t => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/cjs/bar.html',
       contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\n;define.alias('text!foo/bar.html','text!foo/dist/cjs/bar.html');\n;define.alias('foo/bar.html','foo/dist/cjs/bar.html');",
-      sourceMap: {
-        version: 3,
-        sources: [ 'node_modules/foo/dist/cjs/bar.html' ],
-        names: [],
-        mappings: '',
-        file: 'node_modules/foo/dist/cjs/bar.html',
-        sourcesContent: [ '<p></p>' ]
-      },
       moduleId: 'foo/dist/cjs/bar.html',
       defined: ['text!foo/dist/cjs/bar.html', 'text!foo/bar.html', 'foo/bar.html'],
       deps: [],
@@ -514,7 +490,6 @@ test('trace patches momentjs to expose global var "moment"', t => {
   const unit = {
     path: 'node_modules/moment/moment.js',
     contents: moment,
-    sourceMap: undefined,
     moduleId: 'moment/moment',
     packageName: 'moment',
     packageMainPath: 'moment.js'
@@ -528,15 +503,7 @@ test('trace patches momentjs to expose global var "moment"', t => {
       defined: ['moment/moment'],
       deps: [],
       packageName: 'moment',
-      packageMainPath: 'moment.js',
-      sourceMap: {
-        version: 3,
-        sources: [ 'node_modules/moment/moment.js' ],
-        names: [],
-        mappings: '',
-        file: 'node_modules/moment/moment.js',
-        sourcesContent: [ '//! moment.js\n\n;(function (global, factory) {\n    typeof exports === \'object\' && typeof module !== \'undefined\' ? module.exports = factory() :\n    typeof define === \'function\' && define.amd ? (function(){var m=factory();if(typeof moment === \'undefined\' && typeof global !== \'undefined\'){global.moment=m;} define(function(){return m;})})() :\n    global.moment = factory()\n}(this, (function () {})));' ]
-      }
+      packageMainPath: 'moment.js'
     });
     t.end();
   });
@@ -611,7 +578,6 @@ exports.foo = 1;
   const unit = {
     path: 'src/foo.js',
     contents: contents,
-    sourceMap: undefined,
     moduleId: 'foo',
   };
 
@@ -622,15 +588,7 @@ exports.foo = 1;
         contents: expected,
         moduleId: 'foo',
         defined: ['foo' ],
-        deps: [],
-        sourceMap: {
-          version: 3,
-          sources: [ 'src/foo.js' ],
-          names: [],
-          mappings: '',
-          file: 'src/foo.js',
-          sourcesContent: [ contents ]
-        }
+        deps: []
       });
 
       process.env.NODE_ENV = oldNodeEnv;
@@ -658,14 +616,6 @@ test('trace traces npm main in cjs', t => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.cjs',
       contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});\n;define.alias('foo','foo/dist/bar');",
-      sourceMap: {
-        version: 3,
-        sources: [ 'node_modules/foo/dist/bar.cjs' ],
-        names: [],
-        mappings: '',
-        file: 'node_modules/foo/dist/bar.cjs',
-        sourcesContent: [ 'define([\'a\',\'text!./b.css\'],function() {});' ]
-      },
       moduleId: 'foo/dist/bar',
       defined: ['foo/dist/bar', 'foo'],
       deps: ['a', 'text!./b.css'],
@@ -691,14 +641,6 @@ test('trace traces npm main in mjs', t => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.mjs',
       contents: "define('foo/dist/bar',['require','exports','module','a'],function (require, exports, module) {\n\"use strict\";\n\nvar _a = _interopRequireDefault(require(\"a\"));\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n});\n\n;define.alias('foo','foo/dist/bar');",
-      sourceMap: {
-        version: 3,
-        sources: [ 'node_modules/foo/dist/bar.mjs' ],
-        names: [],
-        mappings: '',
-        file: 'node_modules/foo/dist/bar.mjs',
-        sourcesContent: [ "import a from 'a';" ]
-      },
       moduleId: 'foo/dist/bar',
       defined: ['foo/dist/bar', 'foo'],
       deps: ['a'],
@@ -737,7 +679,15 @@ test('trace forces commonjs on local empty code', t => {
   const unit = {
     path: 'src/foo/bar.js',
     contents: "",
-    moduleId: 'foo/bar'
+    moduleId: 'foo/bar',
+    sourceMap: {
+      version: 3,
+      sources: [ 'src/foo/bar.js' ],
+      names: [],
+      mappings: '',
+      file: 'src/foo/bar.js',
+      sourcesContent: [ "" ]
+    },
   };
 
   trace(unit).then(traced => {
@@ -761,6 +711,26 @@ test('trace forces commonjs on local empty code', t => {
   });
 });
 
+test('trace forces commonjs on local empty code without sourceMap', t => {
+  const unit = {
+    path: 'src/foo/bar.js',
+    contents: "",
+    moduleId: 'foo/bar'
+  };
+
+  trace(unit).then(traced => {
+    t.deepEqual(traced, {
+      path: 'src/foo/bar.js',
+      contents: "define('foo/bar',['require','exports','module'],function (require, exports, module) {\n\n});\n",
+      moduleId: 'foo/bar',
+      defined: ['foo/bar'],
+      deps: [],
+      forceWrap: true
+    });
+    t.end();
+  });
+});
+
 test('trace forces commonjs on npm empty code', t => {
   const unit = {
     path: 'node_modules/foo/bar.js',
@@ -774,14 +744,6 @@ test('trace forces commonjs on npm empty code', t => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/bar.js',
       contents: "define('foo/bar',['require','exports','module'],function (require, exports, module) {\n\n});\n",
-      sourceMap: {
-        version: 3,
-        sources: [ 'node_modules/foo/bar.js' ],
-        names: [],
-        mappings: '',
-        file: 'node_modules/foo/bar.js',
-        sourcesContent: [ "" ]
-      },
       moduleId: 'foo/bar',
       defined: ['foo/bar'],
       deps: [],

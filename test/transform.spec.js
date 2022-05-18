@@ -17,7 +17,15 @@ test('transform transforms unit contents', t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
-    moduleId: 'foo'
+    moduleId: 'foo',
+    sourceMap: {
+      version: 3,
+      file: 'src/foo.js',
+      sources: [ 'src/foo.js' ],
+      sourcesContent: [ 'a;\nb;\n' ],
+      names: [],
+      mappings: ''
+    }
   };
 
   transform(unit, addLine(3, 'add;'))
@@ -49,7 +57,15 @@ test('transform does multiple transforms and merges unit and sourceMap', t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
-    moduleId: 'foo'
+    moduleId: 'foo',
+    sourceMap: {
+      version: 3,
+      file: 'src/foo.js',
+      sources: [ 'src/foo.js' ],
+      sourcesContent: [ 'a;\nb;\n' ],
+      names: [],
+      mappings: ''
+    }
   };
 
   transform(unit, unit => ({...unit, deps: ['a', 'b']}), addLine(3, 'add;'), addLine(3, 'add2;'))
