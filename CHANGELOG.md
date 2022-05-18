@@ -1,3 +1,12 @@
+## [1.14.12](https://github.com/dumberjs/dumber/compare/v1.14.11...v1.14.12) (2022-05-18)
+
+
+### Bug Fixes
+
+* more accurate time report ([df47a01](https://github.com/dumberjs/dumber/commit/df47a013d7e25a83623194d24a928dd8cdfe10ca))
+
+
+
 ## [1.14.11](https://github.com/dumberjs/dumber/compare/v1.14.10...v1.14.11) (2022-05-17)
 
 
