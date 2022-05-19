@@ -163,8 +163,7 @@ test('transform ignores broken sourceMap', t => {
       t.deepEqual(unit, {
         contents: 'a;\nadd;\nb;\n',
         path: 'src/foo.js',
-        moduleId: 'foo',
-        sourceMap: undefined
+        moduleId: 'foo'
       })
     },
     t.fail
