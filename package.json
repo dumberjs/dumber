@@ -25,7 +25,7 @@
     "nodejs-test": "tape test/hide-log.js \"test/**/*.spec.js\"",
     "coverage": "nyc --reporter=lcov tape test/hide-log.js \"test/**/*.spec.js\"",
     "browser-test": "browserify test/all-browser-spec.js | browser-do --tap",
-    "test": "npm run nodejs-test && npm run browser-test"
+    "test": "npm run nodejs-test"
   },
   "repository": {
     "type": "git",
