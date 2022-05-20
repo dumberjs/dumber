@@ -1,3 +1,22 @@
+# [2.0.0](https://github.com/dumberjs/dumber/compare/v1.14.13...v2.0.0) (2022-05-20)
+
+
+### chore
+
+* skip browser test for now ([4bcb136](https://github.com/dumberjs/dumber/commit/4bcb13683fcc55ef5782fa12f5c89234fa8d7d44))
+
+
+### Features
+
+* use faster @parcel/source-map ([ecf3469](https://github.com/dumberjs/dumber/commit/ecf3469061f6ef07ee159f46bcd6ca38dded4abb))
+
+
+### BREAKING CHANGES
+
+* temporarily drop support of running in browser env
+
+
+
 ## [1.14.13](https://github.com/dumberjs/dumber/compare/v1.14.12...v1.14.13) (2022-05-18)
 
 
