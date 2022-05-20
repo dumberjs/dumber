@@ -14,6 +14,7 @@
 ### BREAKING CHANGES
 
 * temporarily drop support of running in browser env
+* drop support of of nodejs v12 and below
 
 
 
