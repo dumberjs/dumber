@@ -64,7 +64,6 @@
     "fs-browser-stub": "^1.0.1",
     "https-browserify": "^1.0.0",
     "meriyah": "^4.2.1",
-    "mkdirp-classic": "^0.5.3",
     "modify-code": "^2.1.0",
     "node-fetch": "^2.6.7",
     "os-browserify": "^0.3.0",
