@@ -1,3 +1,12 @@
+# [2.1.0](https://github.com/dumberjs/dumber/compare/v2.0.1...v2.1.0) (2022-05-21)
+
+
+### Features
+
+* bring back browser test, use typescript to compile esm ([55db97d](https://github.com/dumberjs/dumber/commit/55db97dea98609bc3a78a22cb71304342191a5fe))
+
+
+
 ## [2.0.1](https://github.com/dumberjs/dumber/compare/v2.0.0...v2.0.1) (2022-05-20)
 
 
