@@ -640,10 +640,10 @@ test('trace traces npm main in mjs', t => {
   trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.mjs',
-      contents: "define('foo/dist/bar',['require','exports','module','a'],function (require, exports, module) {\n\"use strict\";\n\nvar _a = _interopRequireDefault(require(\"a\"));\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n});\n\n;define.alias('foo','foo/dist/bar');",
+      contents: 'define(\'foo/dist/bar\',[\'require\',\'exports\',\'module\',\'tslib\',\'a\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nconst tslib_1 = require("tslib");\nconst a_1 = tslib_1.__importDefault(require("a"));\n\n});\n\n;define.alias(\'foo\',\'foo/dist/bar\');',
       moduleId: 'foo/dist/bar',
       defined: ['foo/dist/bar', 'foo'],
-      deps: ['a'],
+      deps: ['tslib', 'a'],
       packageName: 'foo',
       packageMainPath: 'dist/bar.mjs',
       alias: null,

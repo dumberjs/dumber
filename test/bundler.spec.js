@@ -1316,11 +1316,11 @@ test('Bundler traces files with paths mapping', t => {
             },
             {
               "path": "test/app.spec.js",
-              "contents": "define('../test/app.spec.js',['require','exports','module','../src/app'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"../src/app\");\n});\n"
+              "contents": 'define(\'../test/app.spec.js\',[\'require\',\'exports\',\'module\',\'../src/app\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nrequire("../src/app");\n\n});\n'
             },
             {
               "path": "src/app.js",
-              "contents": "define('app.js',['require','exports','module','el!foo'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"el!foo\");\n});\n"
+              "contents": 'define(\'app.js\',[\'require\',\'exports\',\'module\',\'el!foo\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nrequire("el!foo");\n\n});\n'
             },
             {
               "path": "src/common/foo.js",
@@ -1384,11 +1384,11 @@ test('Bundler allows same modules in both user and package space', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app.js',['require','exports','module','foo','./util'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"foo\");\n\nrequire(\"./util\");\n});\n"
+              "contents": 'define(\'app.js\',[\'require\',\'exports\',\'module\',\'foo\',\'./util\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nrequire("foo");\nrequire("./util");\n\n});\n'
             },
             {
               "path": "src/util.js",
-              "contents": "define('util.js',['require','exports','module'],function (require, exports, module) {\n\"use strict\";\n\nexports.__esModule = true;\nexports.default = _default;\n\nfunction _default() {}\n});\n"
+              "contents": 'define(\'util.js\',[\'require\',\'exports\',\'module\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nfunction default_1() { }\nexports.default = default_1;\n\n});\n'
             },
             {
               "contents": "define.switchToPackageSpace();"
@@ -1452,11 +1452,11 @@ test('Bundler supports deps alias', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app.js',['require','exports','module','bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar\");\n});\n"
+              "contents": 'define(\'app.js\',[\'require\',\'exports\',\'module\',\'bar\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nrequire("bar");\n\n});\n'
             },
             {
               "path": "src/foo.js",
-              "contents": "define('foo.js',['require','exports','module','bar/bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar/bar\");\n});\n"
+              "contents": 'define(\'foo.js\',[\'require\',\'exports\',\'module\',\'bar/bar\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nrequire("bar/bar");\n\n});\n'
             },
             {
               "contents": "define.switchToPackageSpace();"
@@ -1519,7 +1519,7 @@ test('Bundler supports package alias with lazyMain mode', t => {
             },
             {
               "path": "src/app.js",
-              "contents": "define('app.js',['require','exports','module','bar/bar'],function (require, exports, module) {\n\"use strict\";\n\nrequire(\"bar/bar\");\n});\n"
+              "contents": 'define(\'app.js\',[\'require\',\'exports\',\'module\',\'bar/bar\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nrequire("bar/bar");\n\n});\n'
             },
             {
               "contents": "define.switchToPackageSpace();"

@@ -32,7 +32,7 @@ test('can resolve to required stubbing', t => {
 
   t.doesNotThrow(() => require.resolve('domain-browser'));
   t.doesNotThrow(() => require.resolve('stream-http'));
-  t.doesNotThrow(() => require.resolve('querystring-es3'));
+  t.doesNotThrow(() => require.resolve('querystring-browser-stub'));
   t.doesNotThrow(() => require.resolve('browserify-zlib'));
   t.doesNotThrow(() => require.resolve('fs-browser-stub'));
 

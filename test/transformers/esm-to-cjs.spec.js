@@ -76,3 +76,18 @@ test('esm supports dynamic import() in ES module', t => {
   t.ok(newUnit.forceWrap);
   t.end();
 });
+
+test('esm does not transpile latest es syntax', t => {
+  const unit = {
+    contents: 'export async function* foo(a) { yield a?.b; }',
+    path: 'src/file.js',
+    moduleId: 'file'
+  };
+  const newUnit = esm(unit);
+  t.equal(newUnit.contents, '"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nexports.foo = void 0;\nasync function* foo(a) { yield a?.b; }\nexports.foo = foo;\n');
+  t.deepEqual(newUnit.sourceMap.sources, ['src/file.js']);
+  t.equal(newUnit.sourceMap.file, 'src/file.js');
+  t.ok(newUnit.sourceMap.mappings);
+  t.ok(newUnit.forceWrap);
+  t.end();
+})
