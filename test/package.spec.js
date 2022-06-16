@@ -1,10 +1,9 @@
-const test = require('tape');
+const {test} = require('zora');
 const Package = require('../lib/package');
 
 test('package rejects invalid options', t => {
   t.throws(() => new Package());
   t.throws(() => new Package({}));
-  t.end();
 });
 
 test('package takes simple package name', t => {
@@ -14,7 +13,6 @@ test('package takes simple package name', t => {
   t.equal(p.main, undefined);
   t.equal(p.shim, undefined);
   t.notOk(p.lazyMain);
-  t.end();
 });
 
 test('package takes options', t => {
@@ -25,7 +23,6 @@ test('package takes options', t => {
   t.equal(p.version, '2.1.0');
   t.equal(p.shim, undefined);
   t.ok(p.lazyMain);
-  t.end();
 });
 
 test('package takes options case2', t => {
@@ -36,7 +33,6 @@ test('package takes options case2', t => {
   t.equal(p.version, undefined);
   t.equal(p.shim, undefined);
   t.notOk(p.lazyMain);
-  t.end();
 });
 
 test('package takes shim options', t => {
@@ -49,5 +45,4 @@ test('package takes shim options', t => {
     wrapShim: true
   });
   t.notOk(p.lazyMain);
-  t.end();
 });

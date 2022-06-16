@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const jsdelivrFileReader = require('../../lib/package-file-reader/jsdelivr');
 const {decode} = require('base64-arraybuffer');
 
@@ -105,16 +105,16 @@ const fileReader = function (packageConfig) {
   return jsdelivrFileReader(packageConfig, {fetch: mockFetch});
 }
 
-test('jsdelivrFileReader rejects missing package', t => {
-  fileReader({name: 'nope'})
+test('jsdelivrFileReader rejects missing package', async t => {
+  return fileReader({name: 'nope'})
   .then(
     () => t.fail('should not pass'),
-    () => t.pass('reject missing package')
-  ).then(() => t.end());
+    () => t.ok(true, 'reject missing package')
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func for existing package', t => {
-  fileReader({name: 'foo'})
+test('jsdelivrFileReader returns fileRead func for existing package', async t => {
+  return fileReader({name: 'foo'})
   .then(
     fileRead => {
       t.equal(fileRead.packageConfig.name, 'foo');
@@ -130,11 +130,11 @@ test('jsdelivrFileReader returns fileRead func for existing package', t => {
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func for fixed package version', t => {
-  fileReader({name: 'bar', version: '2.0.0-rc1'})
+test('jsdelivrFileReader returns fileRead func for fixed package version', async t => {
+  return fileReader({name: 'bar', version: '2.0.0-rc1'})
   .then(
     fileRead => {
       t.equal(fileRead.packageConfig.name, 'bar');
@@ -151,13 +151,13 @@ test('jsdelivrFileReader returns fileRead func for fixed package version', t => 
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func for alias package', t => {
+test('jsdelivrFileReader returns fileRead func for alias package', async t => {
   const l = fileReader({name: 'bar', location: 'foo', version: '1.0.1'});
 
-  l.then(
+  return l.then(
     fileRead => {
       t.equal(fileRead.packageConfig.name, 'bar');
       t.equal(fileRead.packageConfig.location, 'foo');
@@ -174,25 +174,25 @@ test('jsdelivrFileReader returns fileRead func for alias package', t => {
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func rejects missing file for existing package', t => {
-  fileReader({name: 'foo'})
+test('jsdelivrFileReader returns fileRead func rejects missing file for existing package', async t => {
+  return fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('nope.js')
       .then(
         () => t.fail('should not read non-existing file'),
-        () => t.pass('rejects missing file')
+        () => t.ok(true, 'rejects missing file')
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func for existing scoped package', t => {
-  fileReader({name: '@scoped/pkg'})
+test('jsdelivrFileReader returns fileRead func for existing scoped package', async t => {
+  return fileReader({name: '@scoped/pkg'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -207,25 +207,25 @@ test('jsdelivrFileReader returns fileRead func for existing scoped package', t =
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func rejects missing file for existing scoped package', t => {
-  fileReader({name: '@scoped/pkg'})
+test('jsdelivrFileReader returns fileRead func rejects missing file for existing scoped package', async t => {
+  return fileReader({name: '@scoped/pkg'})
   .then(
     fileRead => {
       return fileRead('nope.js')
       .then(
         () => t.fail('should not read non-existing file'),
-        () => t.pass('rejects missing file')
+        () => t.ok(true, 'rejects missing file')
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader rejects read on dir', t => {
-  fileReader({name: 'foo'})
+test('jsdelivrFileReader rejects read on dir', async t => {
+  return fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('dist')
@@ -235,11 +235,11 @@ test('jsdelivrFileReader rejects read on dir', t => {
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader reads nested file', t => {
-  fileReader({name: 'foo'})
+test('jsdelivrFileReader reads nested file', async t => {
+  return fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('dist/index.js')
@@ -252,11 +252,11 @@ test('jsdelivrFileReader reads nested file', t => {
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader reads .wasm file to base64 string', t => {
-  fileReader({name: 'foo'})
+test('jsdelivrFileReader reads .wasm file to base64 string', async t => {
+  return fileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('fib.wasm')
@@ -268,11 +268,11 @@ test('jsdelivrFileReader reads .wasm file to base64 string', t => {
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func for package with hard coded main', t => {
-  fileReader({name: 'foo', main: 'lib/main'})
+test('jsdelivrFileReader returns fileRead func for package with hard coded main', async t => {
+  return fileReader({name: 'foo', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -288,11 +288,11 @@ test('jsdelivrFileReader returns fileRead func for package with hard coded main'
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func for package with custom path and hard coded main', t => {
-  fileReader({name: 'foo', location: 'bar@2.0.0-rc1', main: 'lib/main'})
+test('jsdelivrFileReader returns fileRead func for package with custom path and hard coded main', async t => {
+  return fileReader({name: 'foo', location: 'bar@2.0.0-rc1', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -308,11 +308,11 @@ test('jsdelivrFileReader returns fileRead func for package with custom path and 
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead func for package with custom path, version and hard coded main', t => {
-  fileReader({name: 'foo', location: 'bar', version: '2.0.0-rc1', main: 'lib/main'})
+test('jsdelivrFileReader returns fileRead func for package with custom path, version and hard coded main', async t => {
+  return fileReader({name: 'foo', location: 'bar', version: '2.0.0-rc1', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('./package.json')
@@ -328,11 +328,11 @@ test('jsdelivrFileReader returns fileRead func for package with custom path, ver
       );
     },
     err => t.fail(err)
-  ).then(() => t.end());
+  );
 });
 
-test('jsdelivrFileReader returns fileRead.exists func', t => {
-  fileReader({name: 'foo'})
+test('jsdelivrFileReader returns fileRead.exists func', async t => {
+  return fileReader({name: 'foo'})
   .then(
     fileRead => {
       return Promise.all([
@@ -358,8 +358,5 @@ test('jsdelivrFileReader returns fileRead.exists func', t => {
       );
     },
     err => t.fail(err.stack)
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });

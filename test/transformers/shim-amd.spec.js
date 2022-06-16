@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const shimAmd = require('../../lib/transformers/shim-amd');
 
 test('shimAmd shims', t => {
@@ -23,7 +23,6 @@ test('shimAmd shims', t => {
   t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.equal(r.sourceMap.file, 'src/shim.js');
-  t.end();
 });
 
 test('shimAmd shims without deps', t => {
@@ -48,7 +47,6 @@ test('shimAmd shims without deps', t => {
   t.deepEqual(r.deps, []);
   t.equal(r.contents, shimExpected);
   t.equal(r.sourceMap.file, 'src/shim.js');
-  t.end();
 });
 
 test('shimAmd shims without exports', t => {
@@ -75,7 +73,6 @@ test('shimAmd shims without exports', t => {
   t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.equal(r.sourceMap.file, 'shim.js');
-  t.end();
 });
 
 test('shimAmd wrapShim', t => {
@@ -103,7 +100,6 @@ test('shimAmd wrapShim', t => {
   t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
   t.equal(r.sourceMap.file, 'src/shim.js');
-  t.end();
 });
 
 test('shimAmd wrapShim without deps', t => {
@@ -129,7 +125,6 @@ test('shimAmd wrapShim without deps', t => {
   t.ok(r.shimed);
   t.equal(r.deps.length, 0);
   t.equal(r.contents, shimExpected);
-  t.end();
 });
 
 test('shimAmd wrapShim without exports', t => {
@@ -155,7 +150,6 @@ test('shimAmd wrapShim without exports', t => {
   t.ok(r.shimed);
   t.deepEqual(r.deps, ['bar']);
   t.equal(r.contents, shimExpected);
-  t.end();
 });
 
 test('shimAmd ignores shim settings if source code already defined amd module', t => {
@@ -173,7 +167,6 @@ test('shimAmd ignores shim settings if source code already defined amd module', 
   }
   const r = shimAmd(unit);
   t.notOk(r);
-  t.end();
 });
 
 test('shimAmd add empty shim for non-amd module even when shim config is not provided', t => {
@@ -193,5 +186,4 @@ test('shimAmd add empty shim for non-amd module even when shim config is not pro
   t.deepEqual(r.deps, []);
   t.equal(r.contents, shimExpected);
   t.equal(r.sourceMap.file, 'src/shim.js');
-  t.end();
 });

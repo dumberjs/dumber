@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const _trace = require('../lib/trace');
 
 function trace(unit, opts) {
@@ -9,7 +9,7 @@ function trace(unit, opts) {
   });
 }
 
-test('trace rejects not-matching packageName and moduleId', t => {
+test('trace rejects not-matching packageName and moduleId', async t => {
   const unit = {
     path: 'node_module/foo/bar.js',
     contents: "lorem",
@@ -17,13 +17,12 @@ test('trace rejects not-matching packageName and moduleId', t => {
     packageName: 'foo',
     packageMainPath: 'index.js'
   };
-  trace(unit).catch(err => {
+  return trace(unit).catch(err => {
     t.ok(err);
-    t.end();
   })
 });
 
-test('trace does not reject moduleId which is same as packageName', t => {
+test('trace does not reject moduleId which is same as packageName', async t => {
   const unit = {
     path: '__stub__/fs.js',
     contents: "define(function(){});",
@@ -31,7 +30,7 @@ test('trace does not reject moduleId which is same as packageName', t => {
     packageName: 'fs',
     packageMainPath: 'index.js'
   };
-  trace(unit).then(
+  return trace(unit).then(
     traced => {
       t.deepEqual(traced, {
         path: '__stub__/fs.js',
@@ -42,23 +41,21 @@ test('trace does not reject moduleId which is same as packageName', t => {
         packageName: 'fs',
         packageMainPath: 'index.js'
       });
-      t.end();
     },
     err => {
       t.fail(err);
-      t.end();
     }
   );
 });
 
-test('trace traces js', t => {
+test('trace traces js', async t => {
   const unit = {
     path: 'src/foo/bar.js',
     contents: "define(['a','text!./b.css'],function() {});",
     moduleId: 'foo/bar'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.js',
       contents: "define('foo/bar',['a','text!./b.css'],function() {});",
@@ -66,11 +63,10 @@ test('trace traces js', t => {
       defined: ['foo/bar'],
       deps: ['a', 'text!./b.css']
     });
-    t.end();
   });
 });
 
-test('trace traces js and update sourceMap', t => {
+test('trace traces js and update sourceMap', async t => {
   const unit = {
     path: 'src/foo/bar.js',
     contents: "exports.bar = require('./a');",
@@ -85,7 +81,7 @@ test('trace traces js and update sourceMap', t => {
     moduleId: 'foo/bar'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.js',
       contents: "define('foo/bar',['require','exports','module','./a'],function (require, exports, module) {\n" +
@@ -102,11 +98,10 @@ test('trace traces js and update sourceMap', t => {
       defined: ['foo/bar'],
       deps: ['./a']
     });
-    t.end();
   });
 });
 
-test('trace traces shimed js and update sourceMap', t => {
+test('trace traces shimed js and update sourceMap', async t => {
   const unit = {
     path: 'node_modules/bar/bar.js',
     contents: "var Bar = 1;",
@@ -124,7 +119,7 @@ test('trace traces shimed js and update sourceMap', t => {
     shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true}
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/bar/bar.js',
       contents: '(function(root) {\n' +
@@ -149,11 +144,10 @@ test('trace traces shimed js and update sourceMap', t => {
       shim: { deps: ['foo'], 'exports': 'Bar', wrapShim: true},
       shimed: true
     });
-    t.end();
   });
 });
 
-test('trace forces shim on old js and update sourceMap', t => {
+test('trace forces shim on old js and update sourceMap', async t => {
   const unit = {
     path: 'node_modules/bar/bar.js',
     contents: "var Bar = 1;",
@@ -170,7 +164,7 @@ test('trace forces shim on old js and update sourceMap', t => {
     packageMainPath: 'index.js'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/bar/bar.js',
       contents: 'var Bar = 1;;\n' +
@@ -190,18 +184,17 @@ test('trace forces shim on old js and update sourceMap', t => {
       packageMainPath: 'index.js',
       shimed: true
     });
-    t.end();
   });
 });
 
-test('trace transforms json', t => {
+test('trace transforms json', async t => {
   const unit = {
     path: 'src/foo/bar.json',
     contents: '{"a":1}',
     moduleId: 'foo/bar.json'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.json',
       contents: "define('foo/bar.json',function(){return JSON.parse(\"{\\\"a\\\":1}\");});",
@@ -209,11 +202,10 @@ test('trace transforms json', t => {
       defined: ['foo/bar.json'],
       deps: []
     });
-    t.end();
   });
 });
 
-test('trace transforms text file', t => {
+test('trace transforms text file', async t => {
   const unit = {
     path: 'src/foo/bar.html',
     contents: '<p></p>',
@@ -228,7 +220,7 @@ test('trace transforms text file', t => {
     },
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.html',
       contents: "define('text!foo/bar.html',function(){return \"<p></p>\";});",
@@ -244,18 +236,17 @@ test('trace transforms text file', t => {
       defined: ['text!foo/bar.html'],
       deps: []
     });
-    t.end();
   });
 });
 
-test('trace transforms wasm file', t => {
+test('trace transforms wasm file', async t => {
   const unit = {
     path: 'src/foo/bar.wasm',
     contents: 'abc',
     moduleId: 'foo/bar.wasm'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.wasm',
       contents: "define('raw!foo/bar.wasm',['base64-arraybuffer'],function(a){return {arrayBuffer: function() {return Promise.resolve(a.decode(\"abc\"));}}});",
@@ -263,11 +254,10 @@ test('trace transforms wasm file', t => {
       defined: ['raw!foo/bar.wasm'],
       deps: ['base64-arraybuffer']
     });
-    t.end();
   });
 });
 
-test('trace supports optional depsFinder returns deps directly', t => {
+test('trace supports optional depsFinder returns deps directly', async t => {
   const depsFinder = function (path, contents) {
     if (path.endsWith('.js')) return ['./x'];
     if (path.endsWith('.html')) {
@@ -278,7 +268,7 @@ test('trace supports optional depsFinder returns deps directly', t => {
     return [];
   };
 
-  Promise.all([
+  return Promise.all([
     trace({
       path: 'src/foo/bar.js',
       contents: 'require("./b");',
@@ -294,11 +284,10 @@ test('trace supports optional depsFinder returns deps directly', t => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
-    t.end();
   });
 });
 
-test('trace supports optional depsFinder returns deps in promise', t => {
+test('trace supports optional depsFinder returns deps in promise', async t => {
   const depsFinder = function (path, contents) {
     return new Promise(resolve => {
       if (path.endsWith('.js')) return resolve(['./x']);
@@ -311,7 +300,7 @@ test('trace supports optional depsFinder returns deps in promise', t => {
     });
   };
 
-  Promise.all([
+  return Promise.all([
     trace({
       path: 'src/foo/bar.js',
       contents: 'require("./b");',
@@ -327,11 +316,10 @@ test('trace supports optional depsFinder returns deps in promise', t => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
-    t.end();
   });
 });
 
-test('trace supports cache', t => {
+test('trace supports cache', async t => {
   const tracedPath = {};
   const depsFinder = function (path, contents) {
     if (tracedPath[path]) {
@@ -363,7 +351,7 @@ test('trace supports cache', t => {
     clearCache: () => cached = {}
   }
 
-  Promise.all([
+  return Promise.all([
     trace({
       path: 'src/foo/bar.js',
       contents: 'require("./b");',
@@ -402,11 +390,10 @@ test('trace supports cache', t => {
     const [traced1, traced2] = result;
     t.deepEqual(traced1.deps, ['./b', './x']);
     t.deepEqual(traced2.deps, ['lorem']);
-    t.end();
   });
 });
 
-test('trace traces npm js with dist alias', t => {
+test('trace traces npm js with dist alias', async t => {
   const unit = {
     path: 'node_modules/foo/dist/bar.js',
     contents: "define(['a','text!./b.css'],function() {});",
@@ -423,7 +410,7 @@ test('trace traces npm js with dist alias', t => {
     },
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.js',
       contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});\n;define.alias('foo/bar','foo/dist/bar');",
@@ -442,11 +429,10 @@ test('trace traces npm js with dist alias', t => {
       packageMainPath: 'dist/index.js',
       alias: null
     });
-    t.end();
   });
 });
 
-test('trace traces npm html with dist alias', t => {
+test('trace traces npm html with dist alias', async t => {
   const unit = {
     path: 'node_modules/foo/dist/cjs/bar.html',
     contents: "<p></p>",
@@ -455,7 +441,7 @@ test('trace traces npm html with dist alias', t => {
     packageMainPath: 'dist/cjs/index.js'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/cjs/bar.html',
       contents: "define('text!foo/dist/cjs/bar.html',function(){return \"<p></p>\";});\n;define.alias('text!foo/bar.html','text!foo/dist/cjs/bar.html');\n;define.alias('foo/bar.html','foo/dist/cjs/bar.html');",
@@ -466,11 +452,10 @@ test('trace traces npm html with dist alias', t => {
       packageMainPath: 'dist/cjs/index.js',
       alias: null
     });
-    t.end();
   });
 });
 
-test('trace patches momentjs to expose global var "moment"', t => {
+test('trace patches momentjs to expose global var "moment"', async t => {
   const moment = `//! moment.js
 
 ;(function (global, factory) {
@@ -495,7 +480,7 @@ test('trace patches momentjs to expose global var "moment"', t => {
     packageMainPath: 'moment.js'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/moment/moment.js',
       contents: transformedMoment,
@@ -505,13 +490,12 @@ test('trace patches momentjs to expose global var "moment"', t => {
       packageName: 'moment',
       packageMainPath: 'moment.js'
     });
-    t.end();
   });
 });
 
 // FIXME: lib/transformers/process.js now patches more than just NODE_ENV.
 //
-// test('trace patches npm package process for NODE_ENV', t => {
+// test('trace patches npm package process for NODE_ENV', async t => {
 //   const processFile = 'var process = module.exports = {};';
 //
 //   const nodeEnv = process.env.NODE_ENV || '';
@@ -535,7 +519,7 @@ test('trace patches momentjs to expose global var "moment"', t => {
 //     alias: 'process',
 //   };
 //
-//   trace(unit).then(traced => {
+//   return trace(unit).then(traced => {
 //     t.deepEqual(traced, {
 //       path: 'node_modules/process/browser.js',
 //       contents: transformedProcessFile,
@@ -554,11 +538,10 @@ test('trace patches momentjs to expose global var "moment"', t => {
 //         sourcesContent: [ patchedProcessFile ]
 //       }
 //     });
-//     t.end();
 //   });
 // });
 
-test('trace removes conditional NODE_ENV branch', t => {
+test('trace removes conditional NODE_ENV branch', async t => {
   const contents = `if (process.env.NODE_ENV === "production") {
   doIt();
 }
@@ -581,7 +564,7 @@ exports.foo = 1;
     moduleId: 'foo',
   };
 
-  trace(unit).then(
+  return trace(unit).then(
     traced => {
       t.deepEqual(traced, {
         path: 'src/foo.js',
@@ -592,17 +575,15 @@ exports.foo = 1;
       });
 
       process.env.NODE_ENV = oldNodeEnv;
-      t.end();
     },
     err => {
       process.env.NODE_ENV = oldNodeEnv;
       t.fail(err);
-      t.end();
     }
   );
 });
 
-test('trace traces npm main in cjs', t => {
+test('trace traces npm main in cjs', async t => {
   const unit = {
     path: 'node_modules/foo/dist/bar.cjs',
     contents: "define(['a','text!./b.css'],function() {});",
@@ -612,7 +593,7 @@ test('trace traces npm main in cjs', t => {
     alias: 'foo'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.cjs',
       contents: "define('foo/dist/bar',['a','text!./b.css'],function() {});\n;define.alias('foo','foo/dist/bar');",
@@ -623,11 +604,10 @@ test('trace traces npm main in cjs', t => {
       packageMainPath: 'dist/bar.cjs',
       alias: null
     });
-    t.end();
   });
 });
 
-test('trace traces npm main in mjs', t => {
+test('trace traces npm main in mjs', async t => {
   const unit = {
     path: 'node_modules/foo/dist/bar.mjs',
     contents: "import a from 'a';",
@@ -637,7 +617,7 @@ test('trace traces npm main in mjs', t => {
     alias: 'foo'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.mjs',
       contents: 'define(\'foo/dist/bar\',[\'require\',\'exports\',\'module\',\'tslib\',\'a\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nconst tslib_1 = require("tslib");\nconst a_1 = tslib_1.__importDefault(require("a"));\n\n});\n\n;define.alias(\'foo\',\'foo/dist/bar\');',
@@ -649,11 +629,10 @@ test('trace traces npm main in mjs', t => {
       alias: null,
       forceWrap: true
     });
-    t.end();
   });
 });
 
-test('trace bypasses traced unit', t => {
+test('trace bypasses traced unit', async t => {
   const unit = {
     path: 'some/file.s',
     contents: "traced",
@@ -663,19 +642,17 @@ test('trace bypasses traced unit', t => {
     defined: ['some/file'],
     deps: []
   };
-  trace(unit).then(
+  return trace(unit).then(
     traced => {
       t.deepEqual(traced, unit);
-      t.end();
     },
     err => {
       t.fail(err);
-      t.end();
     }
   );
 });
 
-test('trace forces commonjs on local empty code', t => {
+test('trace forces commonjs on local empty code', async t => {
   const unit = {
     path: 'src/foo/bar.js',
     contents: "",
@@ -690,7 +667,7 @@ test('trace forces commonjs on local empty code', t => {
     },
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.js',
       contents: "define('foo/bar',['require','exports','module'],function (require, exports, module) {\n\n});\n",
@@ -707,18 +684,17 @@ test('trace forces commonjs on local empty code', t => {
       deps: [],
       forceWrap: true
     });
-    t.end();
   });
 });
 
-test('trace forces commonjs on local empty code without sourceMap', t => {
+test('trace forces commonjs on local empty code without sourceMap', async t => {
   const unit = {
     path: 'src/foo/bar.js',
     contents: "",
     moduleId: 'foo/bar'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'src/foo/bar.js',
       contents: "define('foo/bar',['require','exports','module'],function (require, exports, module) {\n\n});\n",
@@ -727,11 +703,10 @@ test('trace forces commonjs on local empty code without sourceMap', t => {
       deps: [],
       forceWrap: true
     });
-    t.end();
   });
 });
 
-test('trace forces commonjs on npm empty code', t => {
+test('trace forces commonjs on npm empty code', async t => {
   const unit = {
     path: 'node_modules/foo/bar.js',
     contents: "",
@@ -740,7 +715,7 @@ test('trace forces commonjs on npm empty code', t => {
     packageMainPath: 'bar.js'
   };
 
-  trace(unit).then(traced => {
+  return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/bar.js',
       contents: "define('foo/bar',['require','exports','module'],function (require, exports, module) {\n\n});\n",
@@ -751,7 +726,6 @@ test('trace forces commonjs on npm empty code', t => {
       packageMainPath: 'bar.js',
       forceWrap: true
     });
-    t.end();
   });
 });
 

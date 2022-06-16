@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const transform = require('../lib/transform');
 const modifyCode = require('modify-code').default;
 const {encode} = require('sourcemap-codec');
@@ -13,7 +13,7 @@ function addLine(idx, line) {
   };
 }
 
-test('transform transforms unit contents', t => {
+test('transform transforms unit contents', async t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
@@ -28,7 +28,7 @@ test('transform transforms unit contents', t => {
     }
   };
 
-  transform(unit, addLine(3, 'add;'))
+  return transform(unit, addLine(3, 'add;'))
   .then(
     unit => {
       t.deepEqual(unit, {
@@ -50,10 +50,10 @@ test('transform transforms unit contents', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform does multiple transforms and merges unit and sourceMap', t => {
+test('transform does multiple transforms and merges unit and sourceMap', async t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
@@ -68,7 +68,7 @@ test('transform does multiple transforms and merges unit and sourceMap', t => {
     }
   };
 
-  transform(unit, unit => ({...unit, deps: ['a', 'b']}), addLine(3, 'add;'), addLine(3, 'add2;'))
+  return transform(unit, unit => ({...unit, deps: ['a', 'b']}), addLine(3, 'add;'), addLine(3, 'add2;'))
   .then(
     unit => {
       t.deepEqual(unit, {
@@ -92,10 +92,10 @@ test('transform does multiple transforms and merges unit and sourceMap', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform merges original unit sourceMap', t => {
+test('transform merges original unit sourceMap', async t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
@@ -117,7 +117,7 @@ test('transform merges original unit sourceMap', t => {
     }
   };
 
-  transform(unit, addLine(3, 'add;'))
+  return transform(unit, addLine(3, 'add;'))
   .then(
     unit => {
       t.deepEqual(unit, {
@@ -139,10 +139,10 @@ test('transform merges original unit sourceMap', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform ignores broken sourceMap', t => {
+test('transform ignores broken sourceMap', async t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
@@ -157,7 +157,7 @@ test('transform ignores broken sourceMap', t => {
     }
   };
 
-  transform(unit, addLine(3, 'add;'))
+  return transform(unit, addLine(3, 'add;'))
   .then(
     unit => {
       t.deepEqual(unit, {
@@ -167,10 +167,10 @@ test('transform ignores broken sourceMap', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform keeps original unit sourceMap if transformer did not supply source map', t => {
+test('transform keeps original unit sourceMap if transformer did not supply source map', async t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
@@ -198,7 +198,7 @@ test('transform keeps original unit sourceMap if transformer did not supply sour
     };
   }
 
-  transform(unit, append('/* hello */'))
+  return transform(unit, append('/* hello */'))
   .then(
     unit => {
       t.deepEqual(unit, {
@@ -223,10 +223,10 @@ test('transform keeps original unit sourceMap if transformer did not supply sour
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform bypass nil transform', t => {
+test('transform bypass nil transform', async t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
@@ -250,7 +250,7 @@ test('transform bypass nil transform', t => {
 
   function noop() {}
 
-  transform(unit, noop)
+  return transform(unit, noop)
   .then(
     newUnit => {
       t.equal(newUnit, unit);
@@ -276,10 +276,10 @@ test('transform bypass nil transform', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform reuses parsed on nil transform', t => {
+test('transform reuses parsed on nil transform', async t => {
   const unit = {
     contents: 'a;\nb;\n',
     path: 'src/foo.js',
@@ -303,7 +303,7 @@ test('transform reuses parsed on nil transform', t => {
 
   function noop() { return { parsed: {lorem: 1}}}
 
-  transform(unit, noop)
+  return transform(unit, noop)
   .then(
     newUnit => {
       t.deepEqual(newUnit, {
@@ -329,10 +329,10 @@ test('transform reuses parsed on nil transform', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform merges defined', t => {
+test('transform merges defined', async t => {
   const unit = {
     contents: 'a,b',
     path: 'src/foo.js',
@@ -344,7 +344,7 @@ test('transform merges defined', t => {
     return {defined: unit.contents.split(',')};
   }
 
-  transform(unit, findDefines)
+  return transform(unit, findDefines)
   .then(
     newUnit => {
       t.deepEqual(newUnit, {
@@ -355,10 +355,10 @@ test('transform merges defined', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform merges defined, avoid duplication', t => {
+test('transform merges defined, avoid duplication', async t => {
   const unit = {
     contents: 'a,b',
     path: 'src/foo.js',
@@ -370,7 +370,7 @@ test('transform merges defined, avoid duplication', t => {
     return {defined: unit.contents.split(',')};
   }
 
-  transform(unit, findDefines)
+  return transform(unit, findDefines)
   .then(
     newUnit => {
       t.deepEqual(newUnit, {
@@ -381,10 +381,10 @@ test('transform merges defined, avoid duplication', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform merges deps', t => {
+test('transform merges deps', async t => {
   const unit = {
     contents: 'a,b',
     path: 'src/foo.js',
@@ -395,7 +395,7 @@ test('transform merges deps', t => {
     return {deps: unit.contents.split(',')};
   }
 
-  transform(unit, findDefines)
+  return transform(unit, findDefines)
   .then(
     newUnit => {
       t.deepEqual(newUnit, {
@@ -406,10 +406,10 @@ test('transform merges deps', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });
 
-test('transform merges deps, avoid duplication', t => {
+test('transform merges deps, avoid duplication', async t => {
   const unit = {
     contents: 'a,b',
     path: 'src/foo.js',
@@ -421,7 +421,7 @@ test('transform merges deps, avoid duplication', t => {
     return {deps: unit.contents.split(',')};
   }
 
-  transform(unit, findDefines)
+  return transform(unit, findDefines)
   .then(
     newUnit => {
       t.deepEqual(newUnit, {
@@ -432,5 +432,5 @@ test('transform merges deps, avoid duplication', t => {
       })
     },
     t.fail
-  ).then(t.end);
+  );
 });

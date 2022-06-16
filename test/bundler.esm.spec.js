@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const Bundler = require('../lib/index');
 const {contentOrFile} = require('../lib/shared');
 const {mockResolve, buildReadFile, mockPackageFileReader} = require('./mock');
@@ -39,7 +39,7 @@ function createBundler(fakeFs = {}, opts = {}) {
   return bundler;
 }
 
-test('Bundler traces mixed mjs and cjs npm packages', t => {
+test('Bundler traces mixed mjs and cjs npm packages', async t => {
   const fakeFs = {
     'local/setup.js': 'setup',
     'local/after.js': 'after',
@@ -54,7 +54,7 @@ test('Bundler traces mixed mjs and cjs npm packages', t => {
     appends: ['local/after.js', 'var ape = 1;']
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -114,6 +114,5 @@ test('Bundler traces mixed mjs and cjs npm packages', t => {
       })
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });

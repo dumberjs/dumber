@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const nameDefine = require('../../lib/transformers/name-amd-define');
 
 // copied from r.js/build/tests/buildUtils.js
@@ -14,8 +14,7 @@ test('nameDefine ignores non-global define', t => {
   t.deepEqual(r, {
     defined: [],
     deps: []
-  })
-  t.end();
+  });
 });
 
 test('nameDefine ignores xdefine', t => {
@@ -28,8 +27,7 @@ test('nameDefine ignores xdefine', t => {
   t.deepEqual(r, {
     defined: [],
     deps: []
-  })
-  t.end();
+  });
 });
 
 test('nameDefine ignores non-global define case2', t => {
@@ -42,8 +40,7 @@ test('nameDefine ignores non-global define case2', t => {
   t.deepEqual(r, {
     defined: [],
     deps: []
-  })
-  t.end();
+  });
 });
 
 test('nameDefine ignores dynamic deps', t => {
@@ -56,8 +53,7 @@ test('nameDefine ignores dynamic deps', t => {
   t.deepEqual(r, {
     defined: [],
     deps: []
-  })
-  t.end();
+  });
 });
 
 test('nameDefine ignores dynamic name or factory', t => {
@@ -71,7 +67,6 @@ test('nameDefine ignores dynamic name or factory', t => {
     defined: [],
     deps: []
   })
-  t.end();
 });
 
 test('nameDefine ignores multiple nameDefine', t => {
@@ -105,8 +100,7 @@ test('nameDefine ignores multiple nameDefine', t => {
   t.deepEqual(r, {
     defined: [],
     deps: []
-  })
-  t.end();
+  });
 });
 
 test('nameDefine fills up module name', t => {
@@ -130,7 +124,6 @@ test('nameDefine fills up module name', t => {
   t.equal(r.contents, goodExpected1);
   t.equal(r.sourceMap.file, 'src/good/1.js');
   t.deepEqual(r.sourceMap.sources, ['src/good/1.js']);
-  t.end();
 });
 
 test('nameDefine fills up module name, case 2', t => {
@@ -150,7 +143,6 @@ test('nameDefine fills up module name, case 2', t => {
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['foo']);
   t.equal(r.contents, goodExpected2);
-  t.end();
 });
 
 test('nameDefine ignores multiple nameDefine case 2', t => {
@@ -166,7 +158,6 @@ test('nameDefine ignores multiple nameDefine case 2', t => {
     defined: ['foo', 'bar'],
     deps: []
   });
-  t.end();
 });
 
 test('nameDefine ignores multiple nameDefine case 3', t => {
@@ -182,7 +173,6 @@ test('nameDefine ignores multiple nameDefine case 3', t => {
     defined: ['foo', 'bar'],
     deps: ['a', 'b', 'c']
   });
-  t.end();
 });
 
 test('nameDefine ignores inner deps', t => {
@@ -198,7 +188,6 @@ test('nameDefine ignores inner deps', t => {
     defined: ['foo', 'bar'],
     deps: ['loo']
   });
-  t.end();
 });
 
 test('nameDefine ignores false cjs require', t => {
@@ -220,7 +209,6 @@ test('nameDefine ignores false cjs require', t => {
   t.deepEqual(r.deps, []);
   t.deepEqual(r.contents, expected);
   t.equal(r.sourceMap.file, 'src/foo.js');
-  t.end();
 });
 
 test('nameDefine ignores empty define call', t => {
@@ -231,7 +219,6 @@ test('nameDefine ignores empty define call', t => {
   }
   const r = nameDefine(unit);
   t.deepEqual(r, {defined: [], deps: []});
-  t.end();
 });
 
 test('nameDefine does not rewrite named define', t => {
@@ -245,7 +232,6 @@ test('nameDefine does not rewrite named define', t => {
     defined: ['foo'],
     deps: []
   });
-  t.end();
 });
 
 test('nameDefine ignore  define call without implementation', t => {
@@ -259,7 +245,6 @@ test('nameDefine ignore  define call without implementation', t => {
     defined: [],
     deps: []
   });
-  t.end();
 });
 
 test('nameDefine wraps multi anonymous define', t => {
@@ -303,7 +288,6 @@ test('nameDefine wraps multi anonymous define', t => {
   t.deepEqual(r.deps, ['b']);
   t.deepEqual(r.contents, multiAnonWrappedExpected);
   t.equal(r.sourceMap.file, 'src/multiAnonWrapped.js');
-  t.end();
 });
 
 test('nameDefine inserts correctly for define across multiple lines', t => {
@@ -329,7 +313,6 @@ test('nameDefine inserts correctly for define across multiple lines', t => {
   t.deepEqual(r.deps, ['some/dep']);
   t.deepEqual(r.contents, goodExpected3);
   t.equal(r.sourceMap.file, 'src/good/3.js');
-  t.end();
 });
 
 test('nameDefine inserts correctly for factory define', t => {
@@ -345,7 +328,6 @@ test('nameDefine inserts correctly for factory define', t => {
   t.deepEqual(r.deps, []);
   t.deepEqual(r.contents, goodExpected4);
   t.equal(r.sourceMap.file, 'src/good/4.js');
-  t.end();
 });
 
 // modified test. we don't do namespace.
@@ -384,7 +366,6 @@ test('nameDefine inserts correctly for cjs wrapper define', t => {
   t.equal(r.contents, goodExpected5);
   t.equal(r.sourceMap.file, 'good/5.js');
   t.deepEqual(r.sourceMap.sources, ['good/5.js']);
-  t.end();
 });
 
 test('nameDefine inserts correctly for cjs wrapper define case 2', t => {
@@ -414,7 +395,6 @@ test('nameDefine inserts correctly for cjs wrapper define case 2', t => {
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./six']);
   t.equal(r.contents, goodExpected5);
-  t.end();
 });
 
 test('nameDefine inserts correctly for cjs wrapper define case 3', t => {
@@ -444,7 +424,6 @@ test('nameDefine inserts correctly for cjs wrapper define case 3', t => {
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./six']);
   t.equal(r.contents, goodExpected5);
-  t.end();
 });
 
 test('nameDefine inserts correctly for cjs wrapper define case 4, keep deps order', t => {
@@ -478,7 +457,6 @@ test('nameDefine inserts correctly for cjs wrapper define case 4, keep deps orde
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./c', './a', './b']);
   t.equal(r.contents, goodExpected5);
-  t.end();
 });
 
 test('nameDefine get requirejs deps', t => {
@@ -577,7 +555,6 @@ test('nameDefine get requirejs deps', t => {
       deps: ['a', './b']
     }
   );
-  t.end();
 });
 
 test('nameDefine fills up module name, case 3', t => {
@@ -594,7 +571,6 @@ test('nameDefine fills up module name, case 3', t => {
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['./a', 'hello']);
   t.equal(r.contents, cjsExpected);
-  t.end();
 });
 
 test('nameDefine treats special UMD module as anoymous AMD module', t => {
@@ -634,7 +610,6 @@ test('nameDefine treats special UMD module as anoymous AMD module', t => {
   t.notOk(r.shimed);
   t.deepEqual(r.deps, ['jquery']);
   t.equal(r.contents, expected);
-  t.end();
 });
 
 test('nameDefine treats special UMD module as anoymous AMD module, case 2', t => {
@@ -674,5 +649,4 @@ test('nameDefine treats special UMD module as anoymous AMD module, case 2', t =>
   t.notOk(r.shimed);
   t.deepEqual(r.deps, []);
   t.equal(r.contents, expected);
-  t.end();
 });

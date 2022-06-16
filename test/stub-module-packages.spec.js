@@ -1,14 +1,14 @@
-const test = require('tape');
+const {test} = require('zora');
 
 test('can resolve to required stubbing', t => {
-  t.doesNotThrow(() => require.resolve('assert/'));
-  t.doesNotThrow(() => require.resolve('buffer/'));
-  t.doesNotThrow(() => require.resolve('events/'));
-  t.doesNotThrow(() => require.resolve('punycode/'));
-  t.doesNotThrow(() => require.resolve('process/'));
-  t.doesNotThrow(() => require.resolve('string_decoder/'));
-  t.doesNotThrow(() => require.resolve('url/'));
-  t.doesNotThrow(() => require.resolve('util/'));
+  require.resolve('assert/');
+  require.resolve('buffer/');
+  require.resolve('events/');
+  require.resolve('punycode/');
+  require.resolve('process/');
+  require.resolve('string_decoder/');
+  require.resolve('url/');
+  require.resolve('util/');
 
   t.throws(() => require.resolve('child_process/'));
   t.throws(() => require.resolve('cluster/'));
@@ -21,20 +21,18 @@ test('can resolve to required stubbing', t => {
   t.throws(() => require.resolve('worker_thread/'));
   t.throws(() => require.resolve('sys/'));
 
-  t.doesNotThrow(() => require.resolve('crypto-browserify'));
-  t.doesNotThrow(() => require.resolve('https-browserify'));
-  t.doesNotThrow(() => require.resolve('os-browserify'));
-  t.doesNotThrow(() => require.resolve('path-browserify'));
-  t.doesNotThrow(() => require.resolve('stream-browserify'));
-  t.doesNotThrow(() => require.resolve('timers-browserify'));
-  t.doesNotThrow(() => require.resolve('tty-browserify'));
-  t.doesNotThrow(() => require.resolve('vm-browserify'));
+  require.resolve('crypto-browserify');
+  require.resolve('https-browserify');
+  require.resolve('os-browserify');
+  require.resolve('path-browserify');
+  require.resolve('stream-browserify');
+  require.resolve('timers-browserify');
+  require.resolve('tty-browserify');
+  require.resolve('vm-browserify');
 
-  t.doesNotThrow(() => require.resolve('domain-browser'));
-  t.doesNotThrow(() => require.resolve('stream-http'));
-  t.doesNotThrow(() => require.resolve('querystring-browser-stub'));
-  t.doesNotThrow(() => require.resolve('browserify-zlib'));
-  t.doesNotThrow(() => require.resolve('fs-browser-stub'));
-
-  t.end();
+  require.resolve('domain-browser');
+  require.resolve('stream-http');
+  require.resolve('querystring-browser-stub');
+  require.resolve('browserify-zlib');
+  require.resolve('fs-browser-stub');
 });

@@ -22,8 +22,8 @@
     "version": "standard-changelog && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
-    "test:node": "tape test/hide-log.js \"test/**/*.spec.js\"",
-    "coverage": "nyc --reporter=lcov tape test/hide-log.js \"test/**/*.spec.js\"",
+    "test:node": "pta test/hide-log.js \"test/**/*.spec.js\"",
+    "coverage": "nyc --reporter=lcov pta test/hide-log.js \"test/**/*.spec.js\"",
     "pretest:browser": "gulp",
     "test:browser": "browser-do --tap < dist/entry-bundle.js",
     "test": "npm run test:node && npm run test:browser"
@@ -87,9 +87,10 @@
     "gulp": "^4.0.2",
     "gulp-dumber": "^2.0.0",
     "nyc": "^15.1.0",
+    "pta": "^1.0.2",
     "semver": "^7.3.7",
     "sourcemap-codec": "^1.4.8",
     "standard-changelog": "^2.0.27",
-    "tape": "^5.5.3"
+    "zora": "^5.0.3"
   }
 }

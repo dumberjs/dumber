@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const wasm = require('../../lib/transformers/wasm');
 
 test('wasm wraps wasm into amd module', t => {
@@ -22,7 +22,6 @@ test('wasm wraps wasm into amd module', t => {
       sourcesContent: [source]
     }
   });
-  t.end();
 });
 
 test('wasm skips identity source map when there is existing map', t => {
@@ -46,5 +45,4 @@ test('wasm skips identity source map when there is existing map', t => {
     contents: target,
     deps: ['base64-arraybuffer']
   });
-  t.end();
 });
