@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const conventionalAlias = require('../../lib/transformers/conventional-alias');
 
 test('conventionalAlias ignores resource did not follow the convention', t => {
@@ -7,7 +7,6 @@ test('conventionalAlias ignores resource did not follow the convention', t => {
     moduleId: 'foo/bar/lo',
     defined: ['foo/bar/lo']
   }));
-  t.end();
 });
 
 test('conventionalAlias ignores local file', t => {
@@ -15,7 +14,6 @@ test('conventionalAlias ignores local file', t => {
     moduleId: 'local/dist/lo',
     defined: ['local/dist/lo']
   }));
-  t.end();
 });
 
 test('conventionalAlias ignores unexpected module', t => {
@@ -31,7 +29,6 @@ test('conventionalAlias ignores unexpected module', t => {
     moduleId: 'foo/dist/lo',
     defined: ['m', 'n']
   }));
-  t.end();
 });
 
 test('conventionalAlias does not create alias if main does not have same prefix', t => {
@@ -76,7 +73,6 @@ test('conventionalAlias does not create alias if main does not have same prefix'
     moduleId: 'foo/libs/lo',
     defined: ['foo/libs/lo']
   }));
-  t.end();
 });
 
 test('conventionalAlias shorten dist folder', t => {
@@ -121,7 +117,6 @@ test('conventionalAlias shorten dist folder', t => {
     moduleId: 'foo/libs/lo',
     defined: ['foo/libs/lo']
   }), {alias: 'foo/lo'});
-  t.end();
 });
 
 test('conventionalAlias does not create alias if main does not have same prefix', t => {
@@ -173,7 +168,6 @@ test('conventionalAlias does not create alias if main does not have same prefix'
     moduleId: 'foo/libs/native-modules/lo',
     defined: ['foo/libs/native-modules/lo']
   }));
-  t.end();
 });
 
 test('conventionalAlias shorten dist+format folder', t => {
@@ -225,5 +219,4 @@ test('conventionalAlias shorten dist+format folder', t => {
     moduleId: 'foo/libs/native-modules/lo',
     defined: ['foo/libs/native-modules/lo']
   }), {alias: 'foo/lo'});
-  t.end();
 });

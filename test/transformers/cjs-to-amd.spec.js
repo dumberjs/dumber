@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const cjs = require('../../lib/transformers/cjs-to-amd');
 
 // copied from r.js/build/tests/convert.js
@@ -13,7 +13,6 @@ test('cjs transform ignores amd code', t => {
   const newUnit = cjs(unit);
   t.deepEqual(Object.keys(newUnit), ['parsed']);
   t.equal(newUnit.parsed.body[0].type, 'ExpressionStatement');
-  t.end();
 });
 
 test('cjs transform ignores amd code case 2', t => {
@@ -25,7 +24,6 @@ test('cjs transform ignores amd code case 2', t => {
   const newUnit = cjs(unit);
   t.deepEqual(Object.keys(newUnit), ['parsed']);
   t.equal(newUnit.parsed.body[0].type, 'ExpressionStatement');
-  t.end();
 });
 
 test('cjs transform does not ignore amd code with requirejs usage', t => {
@@ -40,7 +38,6 @@ test('cjs transform does not ignore amd code with requirejs usage', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs transform wraps cjs code', t => {
@@ -55,7 +52,6 @@ test('cjs transform wraps cjs code', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs transform wraps cjs code, uses file name on existing source map', t => {
@@ -76,7 +72,6 @@ test('cjs transform wraps cjs code, uses file name on existing source map', t =>
   t.equal(newUnit.sourceMap.file, 'foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs transform wraps cjs code case 2', t => {
@@ -91,7 +86,6 @@ test('cjs transform wraps cjs code case 2', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs transform wraps cjs code with require call', t => {
@@ -106,7 +100,6 @@ test('cjs transform wraps cjs code with require call', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs transform wraps cjs code with __dirname', t => {
@@ -123,7 +116,6 @@ test('cjs transform wraps cjs code with __dirname', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs transform wraps cjs code with __filename', t => {
@@ -140,7 +132,6 @@ test('cjs transform wraps cjs code with __filename', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs transform wraps cjs code case 3', t => {
@@ -155,7 +146,6 @@ test('cjs transform wraps cjs code case 3', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs transform wraps cjs code with global, process, and Buffer', t => {
@@ -172,7 +162,6 @@ test('cjs transform wraps cjs code with global, process, and Buffer', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs forces cjs wrap', t => {
@@ -190,7 +179,6 @@ test('cjs forces cjs wrap', t => {
   t.equal(newUnit.sourceMap.file, 'src/foo.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs forces cjs wrap with npm package file path contains cjs', t => {
@@ -208,7 +196,6 @@ test('cjs forces cjs wrap with npm package file path contains cjs', t => {
   t.equal(newUnit.sourceMap.file, 'node_module/foo/dist/cjs/index.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs forces cjs wrap with npm package file path contains commonjs', t => {
@@ -226,7 +213,6 @@ test('cjs forces cjs wrap with npm package file path contains commonjs', t => {
   t.equal(newUnit.sourceMap.file, 'node_module/foo/dist/commonjs/index.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs forces cjs wrap on empty code', t => {
@@ -244,7 +230,6 @@ test('cjs forces cjs wrap on empty code', t => {
   t.equal(newUnit.sourceMap.file, 'node_module/foo/index.js');
   t.ok(newUnit.sourceMap.mappings);
   t.equal(newUnit.sourceMap.sourcesContent[0], unit.contents);
-  t.end();
 });
 
 test('cjs supports dynamic import() in ES module', t => {
@@ -257,7 +242,6 @@ test('cjs supports dynamic import() in ES module', t => {
   t.ok(newUnit.contents.startsWith('define(function (require, exports, module) {' +
                                   'var imp0r_ = function(d){return requirejs([requirejs.resolveModuleId(module.id,d)]).then(function(r){return r[0];});};\n'));
   t.ok(newUnit.contents.includes("imp0r_('./a')"))
-  t.end();
 });
 
 test('cjs leaves dynamic import() with full https url', t => {
@@ -268,7 +252,6 @@ test('cjs leaves dynamic import() with full https url', t => {
   };
   const newUnit = cjs(unit);
   t.equal(newUnit.contents, 'define(function (require, exports, module) {\nexports.default = import(\'https://example.com/path\');\n});\n');
-  t.end();
 });
 
 test('cjs leaves dynamic import() with full http url', t => {
@@ -279,7 +262,6 @@ test('cjs leaves dynamic import() with full http url', t => {
   };
   const newUnit = cjs(unit);
   t.equal(newUnit.contents, 'define(function (require, exports, module) {\nexports.default = import(\'http://example.com/path\');\n});\n');
-  t.end();
 });
 
 test('cjs leaves dynamic import() with protocol-less url', t => {
@@ -290,7 +272,6 @@ test('cjs leaves dynamic import() with protocol-less url', t => {
   };
   const newUnit = cjs(unit);
   t.equal(newUnit.contents, 'define(function (require, exports, module) {\nexports.default = import(\'//example.com/path\');\n});\n');
-  t.end();
 });
 
 test('cjs leaves dynamic import() with root path', t => {
@@ -301,5 +282,4 @@ test('cjs leaves dynamic import() with root path', t => {
   };
   const newUnit = cjs(unit);
   t.equal(newUnit.contents, 'define(function (require, exports, module) {\nexports.default = import(\'/path\');\n});\n');
-  t.end();
 });

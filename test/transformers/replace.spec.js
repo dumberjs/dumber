@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const replace = require('../../lib/transformers/replace');
 
 test('replace transform ignores empty replacement', t => {
@@ -13,7 +13,6 @@ test('replace transform ignores empty replacement', t => {
   });
   t.deepEqual(Object.keys(unit), ['parsed']);
   t.equal(unit.parsed.body[0].type, 'ExpressionStatement');
-  t.end();
 });
 
 test('replace transform cleanup dep, even with empty replacement', t => {
@@ -36,7 +35,6 @@ test('replace transform cleanup dep, even with empty replacement', t => {
 
   t.equal(unit.contents, result);
   t.equal(unit.sourceMap.file, 'src/foo.js');
-  t.end();
 });
 
 test('replace transform does replacement', t => {
@@ -65,7 +63,6 @@ test('replace transform does replacement', t => {
   });
 
   t.equal(unit.contents, result);
-  t.end();
 });
 
 test('replace transform does replacement for anonymous amd module', t => {
@@ -94,7 +91,6 @@ test('replace transform does replacement for anonymous amd module', t => {
   });
 
   t.equal(unit.contents, result);
-  t.end();
 });
 
 
@@ -114,7 +110,6 @@ module.exports = require('./bar.js');
   });
   t.deepEqual(Object.keys(unit), ['parsed']);
   t.equal(unit.parsed.body[0].type, 'ExpressionStatement');
-  t.end();
 });
 
 test('replace transform does replacement for npm file', t => {
@@ -139,5 +134,4 @@ test('replace transform does replacement for npm file', t => {
   t.equal(unit.contents, "require('__ignore__');require('../shims/module/b');require('module-c');require('../shims/client-only.js');")
   t.equal(unit.sourceMap.file, 'foo/lib/bar.js');
   t.deepEqual(unit.sourceMap.sources, ['foo/lib/bar.js']);
-  t.end();
 })

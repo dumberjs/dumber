@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const hackMoment = require('../../lib/transformers/hack-moment');
 
 test('hackMoment patches momentjs to expose global var "moment"', t => {
@@ -27,7 +27,6 @@ test('hackMoment patches momentjs to expose global var "moment"', t => {
   }
 
   t.deepEqual(hackMoment(unit), {contents: transformedMoment});
-  t.end();
 });
 
 test('hackMoment ignores other package name', t => {
@@ -49,7 +48,6 @@ test('hackMoment ignores other package name', t => {
   }
 
   t.notOk(hackMoment(unit));
-  t.end();
 });
 
 test('hackMoment ignores local file', t => {
@@ -70,5 +68,4 @@ test('hackMoment ignores local file', t => {
   }
 
   t.notOk(hackMoment(unit));
-  t.end();
 });

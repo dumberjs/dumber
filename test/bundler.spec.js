@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const Bundler = require('../lib/index');
 const {contentOrFile} = require('../lib/shared');
 const {mockResolve, buildReadFile, mockPackageFileReader} = require('./mock');
@@ -39,7 +39,7 @@ function createBundler(fakeFs = {}, opts = {}) {
   return bundler;
 }
 
-test('Bundler traces files', t => {
+test('Bundler traces files', async t => {
   const fakeFs = {
     'local/setup.js': 'setup',
     'local/after.js': 'after',
@@ -55,7 +55,7 @@ test('Bundler traces files', t => {
     appends: ['local/after.js', 'var ape = 1;']
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
@@ -124,11 +124,10 @@ test('Bundler traces files', t => {
       })
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler can optionally skip dumber-module-loader', t => {
+test('Bundler can optionally skip dumber-module-loader', async t => {
   const fakeFs = {
     'local/setup.js': 'setup',
     'local/after.js': 'after',
@@ -139,7 +138,7 @@ test('Bundler can optionally skip dumber-module-loader', t => {
     prepends: ['dev-dumber-module-loader']
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: '', moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -168,11 +167,10 @@ test('Bundler can optionally skip dumber-module-loader', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler traces files, split bundles', t => {
+test('Bundler traces files, split bundles', async t => {
   const fakeFs = {
     'local/setup.js': 'setup',
     'local/after.js': 'after',
@@ -191,7 +189,7 @@ test('Bundler traces files, split bundles', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
@@ -275,11 +273,10 @@ test('Bundler traces files, split bundles', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler traces files, split bundles, case2', t => {
+test('Bundler traces files, split bundles, case2', async t => {
   const fakeFs = {
     'local/setup.js': 'setup',
     'local/after.js': 'after',
@@ -305,7 +302,7 @@ test('Bundler traces files, split bundles, case2', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/page/one.js', contents: "require('foo/bar');require('loo');", moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
@@ -407,11 +404,10 @@ test('Bundler traces files, split bundles, case2', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler traces files, sorts shim', t => {
+test('Bundler traces files, sorts shim', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/jquery/package.json': JSON.stringify({name: 'jquery', main: 'dist/jquery'}),
@@ -427,7 +423,7 @@ test('Bundler traces files, sorts shim', t => {
     ]
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('fs');require('bootstrap');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -475,11 +471,10 @@ test('Bundler traces files, sorts shim', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler traces files, always sort jquery and moment on top', t => {
+test('Bundler traces files, always sort jquery and moment on top', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/jquery/package.json': JSON.stringify({name: 'jquery', main: 'dist/jquery'}),
@@ -491,7 +486,7 @@ test('Bundler traces files, always sort jquery and moment on top', t => {
   };
   const bundler = createBundler(fakeFs);
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('aaa');require('jquery');require('moment');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -539,11 +534,10 @@ test('Bundler traces files, always sort jquery and moment on top', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler ignores module when onRequire returns false', t => {
+test('Bundler ignores module when onRequire returns false', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
   };
@@ -553,7 +547,7 @@ test('Bundler ignores module when onRequire returns false', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -583,11 +577,10 @@ test('Bundler ignores module when onRequire returns false', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler replaces deps when onRequire returns array', t => {
+test('Bundler replaces deps when onRequire returns array', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/bar/package.json': '{"name":"bar"}',
@@ -601,7 +594,7 @@ test('Bundler replaces deps when onRequire returns array', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -645,11 +638,10 @@ test('Bundler replaces deps when onRequire returns array', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler supports implementation returned by onRequire', t => {
+test('Bundler supports implementation returned by onRequire', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/loo/package.json': '{"name":"loo","main":"loo"}',
@@ -662,7 +654,7 @@ test('Bundler supports implementation returned by onRequire', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -706,11 +698,10 @@ test('Bundler supports implementation returned by onRequire', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler swallows onRequire exception', t => {
+test('Bundler swallows onRequire exception', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': '{"name":"foo","main":"foo"}',
@@ -722,7 +713,7 @@ test('Bundler swallows onRequire exception', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -762,11 +753,10 @@ test('Bundler swallows onRequire exception', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler swallows onRequire promise rejection', t => {
+test('Bundler swallows onRequire promise rejection', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': '{"name":"foo","main":"foo"}',
@@ -778,7 +768,7 @@ test('Bundler swallows onRequire promise rejection', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -818,20 +808,17 @@ test('Bundler swallows onRequire promise rejection', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
 test('Bundler can use cache', t => {
   const bundler = createBundler({}, {cache: true});
   t.ok(bundler._cache);
-  t.end();
 });
 
 test('Bundler can turn off cache', t => {
   const bundler = createBundler({}, {cache: false});
   t.notOk(bundler._cache);
-  t.end();
 });
 
 test('Bundler can customise cache implementation', t => {
@@ -840,10 +827,9 @@ test('Bundler can customise cache implementation', t => {
   const clearCache = () => {};
   const bundler = createBundler({}, {cache: {getCache, setCache, clearCache}});
   t.deepEqual(bundler._cache, {getCache, setCache, clearCache});
-  t.end();
 });
 
-test('Bundler traces files, split bundles, continuously update bundles in watch mode', t => {
+test('Bundler traces files, split bundles, continuously update bundles in watch mode', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
@@ -863,7 +849,7 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('page/one');", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/page/one.js', contents: '', moduleId: 'page/one.js'}))
   .then(() => bundler.resolve())
@@ -1102,11 +1088,10 @@ test('Bundler traces files, split bundles, continuously update bundles in watch 
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler supports inject css by default', t => {
+test('Bundler supports inject css by default', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
@@ -1115,7 +1100,7 @@ test('Bundler supports inject css by default', t => {
   const bundler = createBundler(fakeFs, {
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('c.css')", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
@@ -1164,11 +1149,10 @@ test('Bundler supports inject css by default', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler supports inject css (relative path) by default', t => {
+test('Bundler supports inject css (relative path) by default', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
@@ -1177,7 +1161,7 @@ test('Bundler supports inject css (relative path) by default', t => {
   const bundler = createBundler(fakeFs, {
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('./c.scss')", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
@@ -1226,11 +1210,10 @@ test('Bundler supports inject css (relative path) by default', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler can optionally turn off inject css', t => {
+test('Bundler can optionally turn off inject css', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/dumber/package.json':  JSON.stringify({name: 'dumber', main: './dist/index'}),
@@ -1240,7 +1223,7 @@ test('Bundler can optionally turn off inject css', t => {
     injectCss: false
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('c.css')", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/c.css', contents: 'lorem', moduleId: 'c.css'}))
   .then(() => bundler.resolve())
@@ -1275,11 +1258,10 @@ test('Bundler can optionally turn off inject css', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler traces files with paths mapping', t => {
+test('Bundler traces files with paths mapping', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
@@ -1296,7 +1278,7 @@ test('Bundler traces files with paths mapping', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "import 'el!foo';", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/common/foo.js', contents: '', moduleId: 'common/foo.js'}))
   .then(() => bundler.capture({path: 'test/app.spec.js', contents: "import '../src/app';", moduleId: '../test/app.spec.js'}))
@@ -1350,11 +1332,10 @@ test('Bundler traces files with paths mapping', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler allows same modules in both user and package space', t => {
+test('Bundler allows same modules in both user and package space', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
@@ -1365,7 +1346,7 @@ test('Bundler allows same modules in both user and package space', t => {
   };
   const bundler = createBundler(fakeFs);
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "import 'foo';\nimport './util'", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/util.js', contents: 'export default function(){}', moduleId: 'util.js'}))
   .then(() => bundler.resolve())
@@ -1414,11 +1395,10 @@ test('Bundler allows same modules in both user and package space', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler supports deps alias', t => {
+test('Bundler supports deps alias', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
@@ -1433,7 +1413,7 @@ test('Bundler supports deps alias', t => {
     }]
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "import 'bar';", moduleId: 'app.js'}))
   .then(() => bundler.capture({path: 'src/foo.js', contents: "import 'bar/bar';", moduleId: 'foo.js'}))
   .then(() => bundler.resolve())
@@ -1482,11 +1462,10 @@ test('Bundler supports deps alias', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler supports package alias with lazyMain mode', t => {
+test('Bundler supports package alias with lazyMain mode', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/foo/package.json': JSON.stringify({name: 'foo', main: 'index'}),
@@ -1501,7 +1480,7 @@ test('Bundler supports package alias with lazyMain mode', t => {
     }]
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "import 'bar/bar';", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -1541,11 +1520,10 @@ test('Bundler supports package alias with lazyMain mode', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler creates correct alias for named AMD module which does not match package name', t => {
+test('Bundler creates correct alias for named AMD module which does not match package name', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
     'node_modules/noty/package.json': JSON.stringify({name: 'noty', main: 'lib/noty.js'}),
@@ -1553,7 +1531,7 @@ test('Bundler creates correct alias for named AMD module which does not match pa
   };
   const bundler = createBundler(fakeFs);
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('noty');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -1593,11 +1571,10 @@ test('Bundler creates correct alias for named AMD module which does not match pa
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler ignores runtime modules mapped by paths', t => {
+test('Bundler ignores runtime modules mapped by paths', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
   };
@@ -1608,7 +1585,7 @@ test('Bundler ignores runtime modules mapped by paths', t => {
     }
   });
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('foo');require('bar');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -1641,17 +1618,16 @@ test('Bundler ignores runtime modules mapped by paths', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });
 
-test('Bundler ignores runtime modules', t => {
+test('Bundler ignores runtime modules', async t => {
   const fakeFs = {
     'node_modules/dumber-module-loader/dist/index.debug.js': 'dumber-module-loader',
   };
   const bundler = createBundler(fakeFs);
 
-  Promise.resolve()
+  return Promise.resolve()
   .then(() => bundler.capture({path: 'src/app.js', contents: "require('https://some.cdn.com/foo.js');", moduleId: 'app.js'}))
   .then(() => bundler.resolve())
   .then(() => bundler.bundle())
@@ -1681,6 +1657,5 @@ test('Bundler ignores runtime modules', t => {
       });
     },
     err => t.fail(err.stack)
-  )
-  .then(t.end);
+  );
 });

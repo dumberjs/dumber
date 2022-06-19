@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const processEnv = require('../../lib/transformers/process');
 
 test('processEnv bypasses local file', t => {
@@ -10,7 +10,6 @@ test('processEnv bypasses local file', t => {
   };
 
   t.notOk(processEnv(unit));
-  t.end();
 });
 
 test('processEnv bypasses other npm package', t => {
@@ -23,7 +22,6 @@ test('processEnv bypasses other npm package', t => {
   };
 
   t.notOk(processEnv(unit));
-  t.end();
 });
 
 test('processEnv add NODE_ENV to npm package "process"', t => {
@@ -43,5 +41,4 @@ test('processEnv add NODE_ENV to npm package "process"', t => {
     }
   };
   t.deepEqual(processEnv(unit, mock), {contents: 'lorem\nprocess.env = {NODE_ENV:"foo"};\nprocess.version = "v14.18.1";\nprocess.versions = {"node":"14.18.1","v8":"8.4.371.23-node.84"};\nprocess.execArgv = [];\n'});
-  t.end();
 });

@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const esm = require('../../lib/transformers/esm-to-cjs');
 
 test('esm skips non-ES module', t => {
@@ -10,7 +10,6 @@ test('esm skips non-ES module', t => {
   const newUnit = esm(unit);
   t.deepEqual(Object.keys(newUnit), ['parsed']);
   t.equal(newUnit.parsed.body[0].type, 'ExpressionStatement');
-  t.end();
 });
 
 test('esm skips non-ES module', t => {
@@ -22,7 +21,6 @@ test('esm skips non-ES module', t => {
   const newUnit = esm(unit);
   t.deepEqual(Object.keys(newUnit), ['parsed']);
   t.equal(newUnit.parsed.body[0].type, 'ExpressionStatement');
-  t.end();
 });
 
 test('esm transforms wraps ES module', t => {
@@ -37,7 +35,6 @@ test('esm transforms wraps ES module', t => {
   t.equal(newUnit.sourceMap.file, 'src/file.js');
   t.ok(newUnit.sourceMap.mappings);
   t.ok(newUnit.forceWrap);
-  t.end();
 });
 
 test('esm uses file name in existing sourcemap', t => {
@@ -58,7 +55,6 @@ test('esm uses file name in existing sourcemap', t => {
   t.equal(newUnit.sourceMap.file, 'file.js');
   t.ok(newUnit.sourceMap.mappings);
   t.ok(newUnit.forceWrap);
-  t.end();
 });
 
 test('esm supports dynamic import() in ES module', t => {
@@ -74,7 +70,6 @@ test('esm supports dynamic import() in ES module', t => {
   t.equal(newUnit.sourceMap.file, 'src/file.js');
   t.ok(newUnit.sourceMap.mappings);
   t.ok(newUnit.forceWrap);
-  t.end();
 });
 
 test('esm does not transpile latest es syntax', t => {
@@ -89,5 +84,4 @@ test('esm does not transpile latest es syntax', t => {
   t.equal(newUnit.sourceMap.file, 'src/file.js');
   t.ok(newUnit.sourceMap.mappings);
   t.ok(newUnit.forceWrap);
-  t.end();
 })

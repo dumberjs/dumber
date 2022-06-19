@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const test = require('tape');
+const {test} = require('zora');
 const {getSourceMap} = require('../lib/shared');
 
 // no test in browser
@@ -14,7 +14,6 @@ test('getSourceMap gets referenced sourceMap file content', t => {
   t.equal(sourceMap.sourcesContent.length, 1);
   t.equal(typeof sourceMap.sourcesContent[0], 'string');
   t.ok(sourceMap.sourcesContent[0].includes('_.trim'));
-  t.end();
 });
 
 test('getSourceMap ignores missing sourceMap file', t => {
@@ -22,5 +21,4 @@ test('getSourceMap ignores missing sourceMap file', t => {
   const contents = fs.readFileSync(filePath, 'utf8');
   const sourceMap = getSourceMap(contents, filePath);
   t.notOk(sourceMap);
-  t.end();
 });

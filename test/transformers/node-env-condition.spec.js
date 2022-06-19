@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const nodeEnvCondition = require('../../lib/transformers/node-env-condition');
 
 test('nodeEnvCondition does nothing for irrelevant code', t => {
@@ -16,7 +16,6 @@ foo(function() {
 
   const result = nodeEnvCondition({contents, path: 'src/main.js'}, 'production');
   t.notOk(result);
-  t.end();
 });
 
 test('nodeEnvCondition eliminates dead code in if condition', t => {
@@ -38,7 +37,6 @@ ${'  ' /* leading space is retained */}
 
   const result = nodeEnvCondition({contents, path: 'src/main.js'}, 'production');
   t.equal(result.contents, expected);
-  t.end();
 });
 
 test('nodeEnvCondition replaces condition in if condition', t => {
@@ -62,7 +60,6 @@ foo(function() {
 
   const result = nodeEnvCondition({contents, path: 'src/main.js'}, 'development');
   t.equal(result.contents, expected);
-  t.end();
 });
 
 test('nodeEnvCondition retains consequent branch in if-else condition', t => {
@@ -88,7 +85,6 @@ foo(function() {
 
   const result = nodeEnvCondition({contents, path: 'src/main.js'}, 'development');
   t.equal(result.contents, expected);
-  t.end();
 });
 
 test('nodeEnvCondition retains alternate branch in if-else condition', t => {
@@ -114,5 +110,4 @@ foo(function() {
 
   const result = nodeEnvCondition({contents, path: 'src/main.js'}, 'production');
   t.equal(result.contents, expected);
-  t.end();
 });

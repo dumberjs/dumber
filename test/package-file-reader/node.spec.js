@@ -1,12 +1,12 @@
-const test = require('tape');
+const {test} = require('zora');
 const path = require('path');
 const fs = require('fs');
 const {buildReadFile, mockPackageFileReader} = require('../mock');
 const _defaultFileReader = require('../../lib/package-file-reader/node');
 
-test('defaultNpmPackageFileReader falls back to main:index when package.json is missing', t => {
+test('defaultNpmPackageFileReader falls back to main:index when package.json is missing', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile());
-  defaultFileReader({name: 'foo'})
+  return defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       t.equal(fileRead.packageConfig.name, 'foo');
@@ -20,18 +20,15 @@ test('defaultNpmPackageFileReader falls back to main:index when package.json is 
       );
     },
     err => t.fail(err.stack)
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func for existing package', t => {
+test('defaultNpmPackageFileReader returns fileRead func for existing package', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/package.json': '{"name":"foo"}'
   }));
 
-  defaultFileReader({name: 'foo'})
+  return defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -44,18 +41,15 @@ test('defaultNpmPackageFileReader returns fileRead func for existing package', t
       );
     },
     err => t.fail(err.stack)
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func for package with hard coded main', t => {
+test('defaultNpmPackageFileReader returns fileRead func for package with hard coded main', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/package.json': '{"name":"foo","main":"index.js","version":"2.1.0"}'
   }));
 
-  defaultFileReader({name: 'foo', main: 'lib/main'})
+  return defaultFileReader({name: 'foo', main: 'lib/main'})
   .then(
     fileRead => {
       t.equal(fileRead.packageConfig.name, 'foo');
@@ -70,18 +64,15 @@ test('defaultNpmPackageFileReader returns fileRead func for package with hard co
       );
     },
     () => t.fail('should not fail')
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func for package with custom path', t => {
+test('defaultNpmPackageFileReader returns fileRead func for package with custom path', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'packages/foo/package.json': '{"name":"foo"}'
   }));
 
-  defaultFileReader({name: 'foo', location: 'packages/foo'})
+  return defaultFileReader({name: 'foo', location: 'packages/foo'})
   .then(
     fileRead => {
       t.equal(fileRead.packageConfig.name, 'foo');
@@ -96,18 +87,15 @@ test('defaultNpmPackageFileReader returns fileRead func for package with custom 
       );
     },
     () => t.fail('should not fail')
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func for package with custom path and hard coded main', t => {
+test('defaultNpmPackageFileReader returns fileRead func for package with custom path and hard coded main', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'packages/bar/package.json': '{"name":"bar","main":"index.js","version":"1.2.0"}'
   }));
 
-  defaultFileReader({name: 'foo', location: 'packages/bar', main: 'lib/main'})
+  return defaultFileReader({name: 'foo', location: 'packages/bar', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -120,16 +108,13 @@ test('defaultNpmPackageFileReader returns fileRead func for package with custom 
       );
     },
     () => t.fail('should not fail')
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func for package with custom path and hard coded main, with missing real package.json', t => {
+test('defaultNpmPackageFileReader returns fileRead func for package with custom path and hard coded main, with missing real package.json', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile());
 
-  defaultFileReader({name: 'foo', location: 'packages/foo', main: 'lib/main'})
+  return defaultFileReader({name: 'foo', location: 'packages/foo', main: 'lib/main'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -142,14 +127,11 @@ test('defaultNpmPackageFileReader returns fileRead func for package with custom 
       );
     },
     () => t.fail('should not fail')
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader can read parent node_modules folder', t => {
-  _defaultFileReader({name: 'foo'}, {
+test('defaultNpmPackageFileReader can read parent node_modules folder', async t => {
+  return _defaultFileReader({name: 'foo'}, {
     resolve: function(path) { return '../node_modules/' + path; },
     readFile: buildReadFile({
       '../node_modules/foo/package.json': '{"name":"foo"}'
@@ -168,39 +150,33 @@ test('defaultNpmPackageFileReader can read parent node_modules folder', t => {
       );
     },
     err => t.fail(err.message)
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func rejects missing file for existing package', t => {
+test('defaultNpmPackageFileReader returns fileRead func rejects missing file for existing package', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/package.json': '{"name":"foo"}'
   }));
 
-  defaultFileReader({name: 'foo'})
+  return defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('nope')
       .then(
         () => t.fail('should not read non-existing file'),
-        () => t.pass('rejects missing file')
+        () => t.ok(true, 'rejects missing file')
       );
     },
     () => t.fail('should not fail')
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func for existing scoped package', t => {
+test('defaultNpmPackageFileReader returns fileRead func for existing scoped package', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/@bar/foo/package.json': '{"name":"@bar/foo"}'
   }));
 
-  defaultFileReader({name: '@bar/foo'})
+  return defaultFileReader({name: '@bar/foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -213,39 +189,33 @@ test('defaultNpmPackageFileReader returns fileRead func for existing scoped pack
       );
     },
     () => t.fail('should not fail')
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func rejects missing file for existing scoped package', t => {
+test('defaultNpmPackageFileReader returns fileRead func rejects missing file for existing scoped package', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/@bar/foo/package.json': '{"name":"@bar/foo"}'
   }));
 
-  defaultFileReader({name: '@bar/foo'})
+  return defaultFileReader({name: '@bar/foo'})
   .then(
     fileRead => {
       return fileRead('nope')
       .then(
         () => t.fail('should not read non-existing file'),
-        () => t.pass('rejects missing file')
+        () => t.ok(true, 'rejects missing file')
       );
     },
     () => t.fail('should not fail')
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader can read .wasm file into base64 string', t => {
+test('defaultNpmPackageFileReader can read .wasm file into base64 string', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/fib.wasm': fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'fib.wasm'))
   }));
 
-  defaultFileReader({name: 'foo'})
+  return defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       return fileRead('fib.wasm')
@@ -258,18 +228,15 @@ test('defaultNpmPackageFileReader can read .wasm file into base64 string', t => 
       );
     },
     err => t.fail(err.stack)
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead func for package alias', t => {
+test('defaultNpmPackageFileReader returns fileRead func for package alias', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/package.json': '{"name":"foo","main":"index"}'
   }));
 
-  defaultFileReader({name: 'bar', location: 'node_modules/foo'})
+  return defaultFileReader({name: 'bar', location: 'node_modules/foo'})
   .then(
     fileRead => {
       return fileRead('package.json')
@@ -282,19 +249,16 @@ test('defaultNpmPackageFileReader returns fileRead func for package alias', t =>
       );
     },
     () => t.fail('should not fail')
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });
 
-test('defaultNpmPackageFileReader returns fileRead.exists func', t => {
+test('defaultNpmPackageFileReader returns fileRead.exists func', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
     'node_modules/foo/package.json': '{"name":"foo","version":"1.0.0","main":"index.js"}',
     'node_modules/foo/index.js': 'lorem'
   }));
 
-  defaultFileReader({name: 'foo'})
+  return defaultFileReader({name: 'foo'})
   .then(
     fileRead => {
       return Promise.all([
@@ -320,8 +284,5 @@ test('defaultNpmPackageFileReader returns fileRead.exists func', t => {
       );
     },
     err => t.fail(err.stack)
-  )
-  .then(() => {
-    t.end();
-  });
+  );
 });

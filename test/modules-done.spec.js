@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const ModulesDone = require('../lib/modules-done');
 
 test('ModulesDone adds user space module id', t => {
@@ -14,7 +14,6 @@ test('ModulesDone adds user space module id', t => {
   t.notOk(md.has('b', true, false));
   t.notOk(md.has('b', true, true));
   t.notOk(md.has('b', false, true));
-  t.end();
 });
 
 test('ModulesDone adds package space module id', t => {
@@ -30,7 +29,6 @@ test('ModulesDone adds package space module id', t => {
   t.notOk(md.has('b', true, false));
   t.notOk(md.has('b', true, true));
   t.notOk(md.has('b', false, true));
-  t.end();
 });
 
 test('ModulesDone adds traced unit moduleId and defined', t => {
@@ -51,7 +49,6 @@ test('ModulesDone adds traced unit moduleId and defined', t => {
 
   t.deepEqual(Array.from(md.userIds).sort(), ['bar', 'foo']);
   t.deepEqual(Array.from(md.packageIds).sort(), ['moment', 'moment/index']);
-  t.end();
 });
 
 test('ModulesDone checks existence of nodejs module id', t => {
@@ -83,5 +80,4 @@ test('ModulesDone checks existence of nodejs module id', t => {
   t.ok(md.has('bar/lo.js', false, true));
   t.ok(md.has('bar/lo.js', true, true));
   t.notOk(md.has('bar/lo.js', true, false));
-  t.end();
 });

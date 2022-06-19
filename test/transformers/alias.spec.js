@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const alias = require('../../lib/transformers/alias');
 
 test('alias creates aliases for js module', t => {
@@ -42,7 +42,6 @@ test('alias creates aliases for js module', t => {
     defined: ['from/id.js'],
     contents: "lorem\n;define.alias('from/id.js','to/id.js');"
   });
-  t.end();
 });
 
 test('alias creates aliases for other modules', t => {
@@ -76,7 +75,6 @@ test('alias creates aliases for other modules', t => {
     defined: ['raw!from/id.wasm', 'from/id.wasm'],
     contents: "lorem\n;define.alias('raw!from/id.wasm','raw!to/id.wasm');\n;define.alias('from/id.wasm','to/id.wasm');"
   });
-  t.end();
 });
 
 test('alias ignores same alias', t => {
@@ -88,7 +86,6 @@ test('alias ignores same alias', t => {
   }), {
     alias: null
   });
-  t.end();
 });
 
 test('multiple alias', t => {
@@ -102,5 +99,4 @@ test('multiple alias', t => {
     contents: "lorem\n;define.alias('from/id','to/id');\n;define.alias('from/id2','to/id');",
     alias: null
   });
-  t.end();
 });

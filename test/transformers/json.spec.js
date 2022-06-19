@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const json = require('../../lib/transformers/json');
 
 test('json wraps json into amd module', t => {
@@ -22,7 +22,6 @@ test('json wraps json into amd module', t => {
       sourcesContent: [source]
     }
   });
-  t.end();
 });
 
 test('json skips identity source map when there is existing map', t => {
@@ -46,5 +45,4 @@ test('json skips identity source map when there is existing map', t => {
     deps: [],
     contents: target
   });
-  t.end();
 });

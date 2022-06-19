@@ -22,8 +22,8 @@
     "version": "standard-changelog && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && npm publish",
     "pretest": "npm run lint",
-    "test:node": "tape test/hide-log.js \"test/**/*.spec.js\"",
-    "coverage": "nyc --reporter=lcov tape test/hide-log.js \"test/**/*.spec.js\"",
+    "test:node": "pta test/hide-log.js \"test/**/*.spec.js\"",
+    "coverage": "c8 pta test/hide-log.js \"test/**/*.spec.js\"",
     "pretest:browser": "gulp",
     "test:browser": "browser-do --tap < dist/entry-bundle.js",
     "test": "npm run test:node && npm run test:browser"
@@ -62,7 +62,7 @@
     "fs-browser-stub": "^1.0.1",
     "https-browserify": "^1.0.0",
     "meriyah": "^4.2.1",
-    "modify-code": "^2.1.0",
+    "modify-code": "^2.1.1",
     "node-fetch": "^2.6.7",
     "os-browserify": "^0.3.0",
     "path-browserify": "1.0.1",
@@ -76,20 +76,21 @@
     "timers-browserify": "^2.0.12",
     "tslib": "^2.4.0",
     "tty-browserify": "0.0.1",
-    "typescript": "^4.6.4",
+    "typescript": "^4.7.4",
     "url": "^0.11.0",
     "util": "^0.12.4",
     "vm-browserify": "^1.1.2"
   },
   "devDependencies": {
     "browser-do": "^4.1.0",
-    "eslint": "^8.16.0",
+    "c8": "^7.11.3",
+    "eslint": "^8.18.0",
     "gulp": "^4.0.2",
     "gulp-dumber": "^2.0.0",
-    "nyc": "^15.1.0",
+    "pta": "^1.1.0",
     "semver": "^7.3.7",
     "sourcemap-codec": "^1.4.8",
     "standard-changelog": "^2.0.27",
-    "tape": "^5.5.3"
+    "zora": "^5.0.3"
   }
 }

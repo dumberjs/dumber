@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const {parseUnit} = require('../../lib/transformers/parse-unit');
 
 test('parseUnit reuses parsed', t => {
@@ -7,7 +7,6 @@ test('parseUnit reuses parsed', t => {
     contents: 'var a = 1;'
   });
   t.deepEqual(parsed, {lorem: 1});
-  t.end();
 });
 
 test('parseUnit parses unit contents', t => {
@@ -15,5 +14,4 @@ test('parseUnit parses unit contents', t => {
     contents: 'var a = 1;'
   });
   t.equal(parsed.body[0].type, 'VariableDeclaration');
-  t.end();
 });

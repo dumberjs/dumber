@@ -6,7 +6,7 @@ const fs = require('fs');
 const dr = dumber({
   src: 'lib',
   append: ["requirejs(['../test/all-browser-spec.js'], function() { console.log('# tests loaded')});"],
-  // append: ["requirejs(['../test/trace.spec.js'], function() { console.log('# tests loaded')});"],
+  // append: ["requirejs(['../test/transform.spec.js'], function() { console.log('# tests loaded')});"],
   onRequire(moduleId) {
     if (moduleId === '@parcel/source-map/parcel_sourcemap_wasm/dist-web/parcel_sourcemap_wasm.js') {
       const content = fs.readFileSync(require.resolve(moduleId), 'utf8');
@@ -17,7 +17,7 @@ const dr = dumber({
 });
 
 exports.default = function build() {
-  return gulp.src(['test/**/*.js', 'lib/**/*.js', 'package.json'])
+  return gulp.src(['test/**/*.js', 'lib/**/*.js', 'package.json'], { sourcemaps: true})
     .pipe(dr())
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('dist', { sourcemaps: true }));
 };

@@ -1,4 +1,4 @@
-const test = require('tape');
+const {test} = require('zora');
 const PackageReader = require('../lib/package-reader');
 const Package = require('../lib/package');
 const {mockPackageFileReader, buildReadFile} = require('./mock');
@@ -8,11 +8,11 @@ function getReader(name, fakeFs) {
   return mockPackageFileReader(fakeReader)(new Package(name)).then(fileReader => new PackageReader(fileReader));
 }
 
-test('packageReader falls back to main:index when package.json is missing', t => {
-  getReader('foo', {
+test('packageReader falls back to main:index when package.json is missing', async t => {
+  return getReader('foo', {
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -32,32 +32,32 @@ test('packageReader falls back to main:index when package.json is missing', t =>
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader rejects missing main', t => {
-  getReader('foo', {
+test('packageReader rejects missing main', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index", "version": "1.0.0"}'
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       () => {
         t.fail('should not pass');
       },
       () => {
         t.equal(r.version, '1.0.0');
-        t.pass('it throws');
+        t.ok(true, 'it throws');
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader can still read resource when main is missing', t => {
-  getReader('foo', {
+test('packageReader can still read resource when main is missing', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index", "version": "1.0.0"}',
     'node_modules/foo/bar.js': 'lorem'
   }).then(r => {
-    r.readResource('bar').then(
+    return r.readResource('bar').then(
       unit => {
         t.equal(r.version, '1.0.0');
         t.deepEqual(unit, {
@@ -76,16 +76,16 @@ test('packageReader can still read resource when main is missing', t => {
       err => {
         t.fail(err.message);
       },
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses default index.js as main path if main file is missing but not required', t => {
-  getReader('foo', {
+test('packageReader uses default index.js as main path if main file is missing but not required', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "foo", "version": "1.0.0"}',
     'node_modules/foo/bar.js': 'lorem'
   }).then(r => {
-    r.readResource('bar').then(
+    return r.readResource('bar').then(
       unit => {
         t.equal(r.version, '1.0.0');
         t.deepEqual(unit, {
@@ -104,16 +104,16 @@ test('packageReader uses default index.js as main path if main file is missing b
       err => {
         t.fail(err.message);
       },
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads main file', t => {
-  getReader('foo', {
+test('packageReader reads main file', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -133,16 +133,16 @@ test('packageReader reads main file', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads resource file which is actually main', t => {
-  getReader('foo', {
+test('packageReader reads resource file which is actually main', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readResource('index').then(
+    return r.readResource('index').then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -162,16 +162,16 @@ test('packageReader reads resource file which is actually main', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader tolerate invalid package.json', t => {
-  getReader('foo', {
+test('packageReader tolerate invalid package.json', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"',
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readResource('index').then(
+    return r.readResource('index').then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -191,16 +191,16 @@ test('packageReader tolerate invalid package.json', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader use default main index.js', t => {
-  getReader('foo', {
+test('packageReader use default main index.js', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo"}',
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
@@ -219,17 +219,17 @@ test('packageReader use default main index.js', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads module over main field', t => {
-  getReader('foo', {
+test('packageReader reads module over main field', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "module": "es", "main": "index"}',
     'node_modules/foo/index.js': "lorem",
     'node_modules/foo/es.js': 'es',
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/es.js',
@@ -248,18 +248,18 @@ test('packageReader reads module over main field', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads browser over module/main field', t => {
-  getReader('foo', {
+test('packageReader reads browser over module/main field', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "browser": "br", "module": "es", "main": "index"}',
     'node_modules/foo/index.js': "lorem",
     'node_modules/foo/es.js': 'es',
     'node_modules/foo/br.js': 'br'
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/br.js',
@@ -278,18 +278,18 @@ test('packageReader reads browser over module/main field', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads browser "." mapping over module/main field', t => {
-  getReader('foo', {
+test('packageReader reads browser "." mapping over module/main field', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "browser": {".": "br"}, "module": "es", "main": "index"}',
     'node_modules/foo/index.js': "lorem",
     'node_modules/foo/es.js': 'es',
     'node_modules/foo/br.js': 'br'
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/br.js',
@@ -308,19 +308,19 @@ test('packageReader reads browser "." mapping over module/main field', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads dumberForcedMain over browser/module/main field', t => {
-  getReader('foo', {
+test('packageReader reads dumberForcedMain over browser/module/main field', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "browser": "br", "module": "es", "main": "index", "dumberForcedMain": "hc"}',
     'node_modules/foo/index.js': "lorem",
     'node_modules/foo/es.js': 'es',
     'node_modules/foo/br.js': 'br',
     'node_modules/foo/hc.js': 'hc',
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/hc.js',
@@ -339,35 +339,35 @@ test('packageReader reads dumberForcedMain over browser/module/main field', t =>
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader fails broken dumberForcedMain without fallback', t => {
-  getReader('foo', {
+test('packageReader fails broken dumberForcedMain without fallback', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "version": "1.0.0", "browser": "br", "module": "es", "main": "index", "dumberForcedMain": "hc"}',
     'node_modules/foo/index.js': "lorem",
     'node_modules/foo/es.js': 'es',
     'node_modules/foo/br.js': 'br'
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       () => {
         t.fail('should not pass');
       },
       () => {
         t.equal(r.version, '1.0.0');
-        t.pass('it throws');
+        t.ok(true, 'it throws');
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads main file with explicit ext', t => {
-  getReader('foo.js', {
+test('packageReader reads main file with explicit ext', async t => {
+  return getReader('foo.js', {
     'node_modules/foo.js/package.json': '{"name":"foo.js", "main": "./main.js"}',
     'node_modules/foo.js/main.js': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo.js/main.js',
@@ -386,16 +386,16 @@ test('packageReader reads main file with explicit ext', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads main file with non-js file', t => {
-  getReader('foo', {
+test('packageReader reads main file with non-js file', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "./main.css"}',
     'node_modules/foo/main.css': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/main.css',
@@ -413,12 +413,12 @@ test('packageReader reads main file with non-js file', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads implicit main file', t => {
-  getReader('foo', {
+test('packageReader reads implicit main file', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "./lib"}',
     'node_modules/foo/lib/index.js': "lorem"
   }).then(r => {
@@ -440,33 +440,33 @@ test('packageReader reads implicit main file', t => {
       },
       err => t.fail(err.message)
     );
-  }).then(t.end);
+  });
 });
 
-test('packageReader rejects missing resource', t => {
-  getReader('foo', {
+test('packageReader rejects missing resource', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "lib/main"}',
     'node_modules/foo/lib/main.js': 'lorem',
     'node_modules/foo/lib/bar.js': 'lorem2'
   }).then(r => {
-    r.readResource('dist/bar').then(
+    return r.readResource('dist/bar').then(
       err => {
         t.fail(err.message);
       },
       () => {
-        t.pass('it throws');
+        t.ok(true, 'it throws');
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads resource', t => {
-  getReader('foo', {
+test('packageReader reads resource', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "lib/main"}',
     'node_modules/foo/lib/main.js': 'lorem',
     'node_modules/foo/lib/bar.js': 'lorem2'
   }).then(r => {
-    r.readResource('lib/bar').then(
+    return r.readResource('lib/bar').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/bar.js',
@@ -484,17 +484,17 @@ test('packageReader reads resource', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads relative resource', t => {
-  getReader('foo', {
+test('packageReader reads relative resource', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "lib/main"}',
     'node_modules/foo/lib/main.js': 'lorem',
     'node_modules/foo/lib/bar.js': 'lorem2'
   }).then(r => {
-    r.readResource('bar').then(
+    return r.readResource('bar').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/bar.js',
@@ -513,17 +513,17 @@ test('packageReader reads relative resource', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads deep relative resource', t => {
-  getReader('foo', {
+test('packageReader reads deep relative resource', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "dist/cjs/main"}',
     'node_modules/foo/dist/cjs/main.js': 'lorem',
     'node_modules/foo/dist/cjs/foo/bar.js': 'lorem2'
   }).then(r => {
-    r.readResource('foo/bar').then(
+    return r.readResource('foo/bar').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/dist/cjs/foo/bar.js',
@@ -542,16 +542,16 @@ test('packageReader reads deep relative resource', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads deep relative resource which is actually main', t => {
-  getReader('foo', {
+test('packageReader reads deep relative resource which is actually main', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "dist/cjs/main"}',
     'node_modules/foo/dist/cjs/main.js': 'lorem',
   }).then(r => {
-    r.readResource('main').then(
+    return r.readResource('main').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/dist/cjs/main.js',
@@ -570,17 +570,17 @@ test('packageReader reads deep relative resource which is actually main', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads json resouce', t => {
-  getReader('foo', {
+test('packageReader reads json resouce', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "dist/cjs/main"}',
     'node_modules/foo/dist/cjs/main.js': 'lorem',
     'node_modules/foo/dist/cjs/foo/bar.json': '{"a":1}'
   }).then(r => {
-    r.readResource('foo/bar').then(
+    return r.readResource('foo/bar').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/dist/cjs/foo/bar.json',
@@ -599,17 +599,17 @@ test('packageReader reads json resouce', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads directory index.js', t => {
-  getReader('foo', {
+test('packageReader reads directory index.js', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
     'node_modules/foo/index.js': 'lorem',
     'node_modules/foo/lib/index.js': 'lorem2'
   }).then(r => {
-    r.readResource('lib').then(
+    return r.readResource('lib').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/index.js',
@@ -627,17 +627,17 @@ test('packageReader reads directory index.js', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads directory index.json', t => {
-  getReader('foo', {
+test('packageReader reads directory index.json', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
     'node_modules/foo/index.js': 'lorem',
     'node_modules/foo/lib/index.json': '{"a":1}'
   }).then(r => {
-    r.readResource('lib').then(
+    return r.readResource('lib').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/index.json',
@@ -655,19 +655,19 @@ test('packageReader reads directory index.json', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads directory package.json', t => {
-  getReader('foo', {
+test('packageReader reads directory package.json', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
     'node_modules/foo/index.js': 'lorem',
     'node_modules/foo/lib/package.json': '{"module":"es", "main":"index.js"}',
     'node_modules/foo/lib/es/index.js': 'es',
     'node_modules/foo/lib/index.js': 'index'
   }).then(r => {
-    r.readResource('lib').then(
+    return r.readResource('lib').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/es/index.js',
@@ -686,31 +686,31 @@ test('packageReader reads directory package.json', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader complains broken directory package.json', t => {
-  getReader('foo', {
+test('packageReader complains broken directory package.json', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
     'node_modules/foo/index.js': 'lorem',
     'node_modules/foo/lib/package.json': 'broken',
     'node_modules/foo/lib/es/index.js': 'es',
     'node_modules/foo/lib/index.js': 'index'
   }).then(r => {
-    r.readResource('lib').then(
+    return r.readResource('lib').then(
       () => {
         t.fail('should not load');
       },
       err => {
-        t.pass(err.message);
+        t.ok(true, err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads browser replacement in package.json', t => {
-  getReader('foo', {
+test('packageReader reads browser replacement in package.json', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -722,7 +722,7 @@ test('packageReader reads browser replacement in package.json', t => {
     }`,
     'node_modules/foo/index.js': 'lorem'
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
@@ -750,12 +750,12 @@ test('packageReader reads browser replacement in package.json', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses browser replacement in package.json to normalize replacement', t => {
-  getReader('foo', {
+test('packageReader uses browser replacement in package.json to normalize replacement', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -768,7 +768,7 @@ test('packageReader uses browser replacement in package.json to normalize replac
     'node_modules/foo/index.js': '',
     'node_modules/foo/shims/client-only.js': "require('module-a');require('module-b.js');require('module-c');"
   }).then(r => {
-    r.readResource('server/only.js').then(
+    return r.readResource('server/only.js').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/shims/client-only.js',
@@ -791,12 +791,12 @@ test('packageReader uses browser replacement in package.json to normalize replac
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses browser replacement in package.json to normalize replacement, case 2', t => {
-  getReader('foo', {
+test('packageReader uses browser replacement in package.json to normalize replacement, case 2', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -808,7 +808,7 @@ test('packageReader uses browser replacement in package.json to normalize replac
     }`,
     'node_modules/foo/shims/client-only.js': "require('module-a');require('module-b.js');require('module-c');"
   }).then(r => {
-    r.readResource('server/only').then(
+    return r.readResource('server/only').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/shims/client-only.js',
@@ -831,12 +831,12 @@ test('packageReader uses browser replacement in package.json to normalize replac
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses browser replacement in package.json to normalize main read', t => {
-  getReader('foo', {
+test('packageReader uses browser replacement in package.json to normalize main read', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -847,7 +847,7 @@ test('packageReader uses browser replacement in package.json to normalize main r
     'node_modules/foo/index.js': "index",
     'node_modules/foo/browser.js': "browser"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/browser.js',
@@ -866,12 +866,12 @@ test('packageReader uses browser replacement in package.json to normalize main r
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses browser replacement in package.json to normalize resource read which is actually main', t => {
-  getReader('foo', {
+test('packageReader uses browser replacement in package.json to normalize resource read which is actually main', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -882,7 +882,7 @@ test('packageReader uses browser replacement in package.json to normalize resour
     'node_modules/foo/index.js': "index",
     'node_modules/foo/browser.js': "browser"
   }).then(r => {
-    r.readResource('browser').then(
+    return r.readResource('browser').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/browser.js',
@@ -901,12 +901,12 @@ test('packageReader uses browser replacement in package.json to normalize resour
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses browser replacement in package.json to normalize main replacement', t => {
-  getReader('foo', {
+test('packageReader uses browser replacement in package.json to normalize main replacement', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -918,7 +918,7 @@ test('packageReader uses browser replacement in package.json to normalize main r
     }`,
     'node_modules/foo/index.js': "require('module-a');require('module-b.js');require('module-c');require('./server/only.js');"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/index.js',
@@ -941,12 +941,12 @@ test('packageReader uses browser replacement in package.json to normalize main r
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses browser replacement in package.json to normalize replacement in sub-folder', t => {
-  getReader('foo', {
+test('packageReader uses browser replacement in package.json to normalize replacement in sub-folder', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -959,7 +959,7 @@ test('packageReader uses browser replacement in package.json to normalize replac
     'node_modules/foo/index.js': 'lorem',
     'node_modules/foo/server/bar.js': "require('module-a');require('module-b.js');require('module-c');require('./only.js');"
   }).then(r => {
-    r.readResource('server/bar').then(
+    return r.readResource('server/bar').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/server/bar.js',
@@ -981,12 +981,12 @@ test('packageReader uses browser replacement in package.json to normalize replac
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses browser replacement in package.json to normalize replacement in sub-folder, case2', t => {
-  getReader('foo', {
+test('packageReader uses browser replacement in package.json to normalize replacement in sub-folder, case2', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -999,7 +999,7 @@ test('packageReader uses browser replacement in package.json to normalize replac
     'node_modules/foo/index.js': 'lorem',
     'node_modules/foo/lib/bar.js': "require('module-a');require('module-b.js');require('module-c');require('../server/only.js');"
   }).then(r => {
-    r.readResource('lib/bar').then(
+    return r.readResource('lib/bar').then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/lib/bar.js',
@@ -1021,12 +1021,12 @@ test('packageReader uses browser replacement in package.json to normalize replac
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader uses browser "." replacement in package.json to normalize main read', t => {
-  getReader('foo', {
+test('packageReader uses browser "." replacement in package.json to normalize main read', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "main": "index",
@@ -1038,7 +1038,7 @@ test('packageReader uses browser "." replacement in package.json to normalize ma
     'node_modules/foo/index.js': "index",
     'node_modules/foo/browser.js': "browser"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.deepEqual(unit, {
           path: 'node_modules/foo/browser.js',
@@ -1057,16 +1057,16 @@ test('packageReader uses browser "." replacement in package.json to normalize ma
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads main file for package alias', t => {
-  getReader({name: 'bar', location: 'node_modules/foo'}, {
+test('packageReader reads main file for package alias', async t => {
+  return getReader({name: 'bar', location: 'node_modules/foo'}, {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1086,17 +1086,17 @@ test('packageReader reads main file for package alias', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads resource file for package alias', t => {
-  getReader({name: 'bar', location: 'node_modules/foo'}, {
+test('packageReader reads resource file for package alias', async t => {
+  return getReader({name: 'bar', location: 'node_modules/foo'}, {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index"}',
     'node_modules/foo/index.js': "lorem",
     'node_modules/foo/lo.js': "lorem2"
   }).then(r => {
-    r.readResource('lo').then(
+    return r.readResource('lo').then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1115,11 +1115,11 @@ test('packageReader reads resource file for package alias', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads traced file', t => {
+test('packageReader reads traced file', async t => {
   function _fileReader(filePath) {
     if (filePath === 'index.js') {
       return Promise.resolve({
@@ -1147,7 +1147,7 @@ test('packageReader reads traced file', t => {
   _fileReader.exists = _exists;
   _fileReader.packageConfig = new Package('foo');
   const r = new PackageReader(_fileReader)
-  r.readMain().then(
+  return r.readMain().then(
     unit => {
       t.equal(r.version, '1.0.0');
       t.deepEqual(unit, {
@@ -1167,15 +1167,15 @@ test('packageReader reads traced file', t => {
     err => {
       t.fail(err.message);
     }
-  ).then(t.end);
+  );
 });
 
-test('packageReader reads main file with troublesome name', t => {
-  getReader('foo', {
+test('packageReader reads main file with troublesome name', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index.cjs.js"}',
     'node_modules/foo/index.cjs.js': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1195,16 +1195,16 @@ test('packageReader reads main file with troublesome name', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads mjs main file', t => {
-  getReader('foo', {
+test('packageReader reads mjs main file', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index.mjs"}',
     'node_modules/foo/index.mjs': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1224,17 +1224,17 @@ test('packageReader reads mjs main file', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads mjs resource file', t => {
-  getReader('foo', {
+test('packageReader reads mjs resource file', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index.mjs"}',
     'node_modules/foo/index.mjs': "index",
     'node_modules/foo/bar.mjs': "lorem"
   }).then(r => {
-    r.readResource('bar.mjs').then(
+    return r.readResource('bar.mjs').then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1253,16 +1253,16 @@ test('packageReader reads mjs resource file', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads cjs main file', t => {
-  getReader('foo', {
+test('packageReader reads cjs main file', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index.cjs"}',
     'node_modules/foo/index.cjs': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1282,17 +1282,17 @@ test('packageReader reads cjs main file', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads cjs resource file', t => {
-  getReader('foo', {
+test('packageReader reads cjs resource file', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index.cjs"}',
     'node_modules/foo/index.cjs': "index",
     'node_modules/foo/bar.cjs': "lorem"
   }).then(r => {
-    r.readResource('bar.cjs').then(
+    return r.readResource('bar.cjs').then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1311,17 +1311,17 @@ test('packageReader reads cjs resource file', t => {
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads module field main file when browser field is broken', t => {
-  getReader('foo', {
+test('packageReader reads module field main file when browser field is broken', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index", "module": "esm.js", "browser": "br.js"}',
     'node_modules/foo/index.js': "lorem",
     'node_modules/foo/esm.js': "lorem2"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1341,16 +1341,16 @@ test('packageReader reads module field main file when browser field is broken', 
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads main field main file when browser field is broken', t => {
-  getReader('foo', {
+test('packageReader reads main field main file when browser field is broken', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index", "browser": "br.js"}',
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1370,16 +1370,16 @@ test('packageReader reads main field main file when browser field is broken', t 
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
 
-test('packageReader reads main field main file when module field is broken', t => {
-  getReader('foo', {
+test('packageReader reads main field main file when module field is broken', async t => {
+  return getReader('foo', {
     'node_modules/foo/package.json': '{"name":"foo", "main": "index", "module": "esm.js"}',
     'node_modules/foo/index.js': "lorem"
   }).then(r => {
-    r.readMain().then(
+    return r.readMain().then(
       unit => {
         t.equal(r.version, 'N/A');
         t.deepEqual(unit, {
@@ -1399,6 +1399,6 @@ test('packageReader reads main field main file when module field is broken', t =
       err => {
         t.fail(err.message);
       }
-    ).then(t.end);
+    );
   });
 });
