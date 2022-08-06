@@ -1,3 +1,13 @@
+## [2.1.1](https://github.com/dumberjs/dumber/compare/v2.1.0...v2.1.1) (2022-08-06)
+
+
+### Bug Fixes
+
+* clearCache should return resolved promise ([a828f48](https://github.com/dumberjs/dumber/commit/a828f481ec704860a0289ec976eee84bf4b8db7d))
+* need to init parcel source-map for using in browser ([9538e6e](https://github.com/dumberjs/dumber/commit/9538e6e512859b5890a5585546ec6e0f128c7b0a))
+
+
+
 # [2.1.0](https://github.com/dumberjs/dumber/compare/v2.0.1...v2.1.0) (2022-05-21)
 
 
