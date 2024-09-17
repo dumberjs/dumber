@@ -1369,7 +1369,7 @@ test('Bundler allows same modules in both user and package space', async t => {
             },
             {
               "path": "src/util.js",
-              "contents": 'define(\'util.js\',[\'require\',\'exports\',\'module\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nfunction default_1() { }\nexports.default = default_1;\n\n});\n'
+              "contents": 'define(\'util.js\',[\'require\',\'exports\',\'module\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nexports.default = default_1;\nfunction default_1() { }\n\n});\n'
             },
             {
               "contents": "define.switchToPackageSpace();"

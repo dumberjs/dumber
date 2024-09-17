@@ -610,7 +610,7 @@ test('trace traces npm main in cjs', async t => {
 test('trace traces npm main in mjs', async t => {
   const unit = {
     path: 'node_modules/foo/dist/bar.mjs',
-    contents: "import a from 'a';",
+    contents: "import {a} from 'a';a();",
     moduleId: 'foo/dist/bar',
     packageName: 'foo',
     packageMainPath: 'dist/bar.mjs',
@@ -620,10 +620,10 @@ test('trace traces npm main in mjs', async t => {
   return trace(unit).then(traced => {
     t.deepEqual(traced, {
       path: 'node_modules/foo/dist/bar.mjs',
-      contents: 'define(\'foo/dist/bar\',[\'require\',\'exports\',\'module\',\'tslib\',\'a\'],function (require, exports, module) {\n"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nconst tslib_1 = require("tslib");\nconst a_1 = tslib_1.__importDefault(require("a"));\n\n});\n\n;define.alias(\'foo\',\'foo/dist/bar\');',
+      contents: "define('foo/dist/bar',['require','exports','module','a'],function (require, exports, module) {\n\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst a_1 = require(\"a\");\n(0, a_1.a)();\n\n});\n\n;define.alias('foo','foo/dist/bar');",
       moduleId: 'foo/dist/bar',
       defined: ['foo/dist/bar', 'foo'],
-      deps: ['tslib', 'a'],
+      deps: ['a'],
       packageName: 'foo',
       packageMainPath: 'dist/bar.mjs',
       alias: null,

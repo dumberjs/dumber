@@ -212,7 +212,7 @@ test('defaultNpmPackageFileReader returns fileRead func rejects missing file for
 
 test('defaultNpmPackageFileReader can read .wasm file into base64 string', async t => {
   const defaultFileReader = mockPackageFileReader(buildReadFile({
-    'node_modules/foo/fib.wasm': fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'fib.wasm'))
+    'node_modules/foo/fib.wasm': fs.readFileSync(path.join(__dirname, '..', '..', 'fixtures', 'fib.wasm'))
   }));
 
   return defaultFileReader({name: 'foo'})
