@@ -1,3 +1,17 @@
+# [3.0.0](https://github.com/dumberjs/dumber/compare/v2.1.2...v3.0.0) (2024-09-17)
+
+
+### chore
+
+* upgrade deps ([c723de6](https://github.com/dumberjs/dumber/commit/c723de68c2b14899aecc01a33cbb520789f52816))
+
+
+### BREAKING CHANGES
+
+* drop support of Node.js < v18
+
+
+
 ## [2.1.2](https://github.com/dumberjs/dumber/compare/v2.1.1...v2.1.2) (2024-05-11)
 
 

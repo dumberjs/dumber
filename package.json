@@ -1,6 +1,6 @@
 {
   "name": "dumber",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "A dumb JavasScript bundler for Single Page Application, dumber than you and me",
   "main": "index.js",
   "files": [
