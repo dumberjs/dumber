@@ -312,9 +312,321 @@ test('packageReader reads browser "." mapping over module/main field', async t =
   });
 });
 
+test('packageReader reads exports mapping over module/main field', async t => {
+  return getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "exports": "./br", "browser": {".": "index"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    return r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    );
+  });
+});
+
+test('packageReader reads exports "." mapping over module/main field', async t => {
+  return getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "exports": {".": "./br"}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    return r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    );
+  });
+});
+
+test('packageReader reads exports "import" mapping over module/main field', async t => {
+  return getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "exports": {"import": "./br.js", "module": "./index", "browser": "./index", "require": "./index.js", "default": "./index"}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    return r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    );
+  });
+});
+
+test('packageReader reads exports "module" mapping', async t => {
+  return getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "exports": {"module": "./br.js", "browser": "./index", "require": "./index.js", "default": "./index"}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    return r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    );
+  });
+});
+
+test('packageReader reads exports "browser" mapping', async t => {
+  return getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "exports": {"browser": "./br.js", "require": "./index.js", "default": "./index"}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    return r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    );
+  });
+});
+
+test('packageReader reads exports "require" mapping', async t => {
+  return getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "exports": {"require": "./br.js", "default": "./index"}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    return r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    );
+  });
+});
+
+test('packageReader reads exports based on NODE_ENV', async t => {
+  await t.test('packageReader reads exports "development" mapping in development env', async t => {
+    const oldNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+
+    return getReader('foo', {
+      'node_modules/foo/package.json': '{"name":"foo", "exports": {"development": "./br.js", "production": "./index"}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+      'node_modules/foo/index.js': "lorem",
+      'node_modules/foo/es.js': 'es',
+      'node_modules/foo/br.js': 'br'
+    }).then(r => {
+      return r.readMain().then(
+        unit => {
+          process.env.NODE_ENV = oldNodeEnv;
+          t.deepEqual(unit, {
+            path: 'node_modules/foo/br.js',
+            contents: 'br',
+            moduleId: 'foo/br.js',
+            packageName: 'foo',
+            packageMainPath: 'br.js',
+            alias: 'foo',
+            sourceMap: undefined
+          });
+
+          t.equal(r.name, 'foo');
+          t.equal(r.mainPath, 'br.js');
+          t.deepEqual(r.browserReplacement, {});
+        },
+        err => {
+          process.env.NODE_ENV = oldNodeEnv;
+          t.fail(err.message);
+        }
+      );
+    });
+  });
+
+  await t.test('packageReader reads exports "production" mapping in development env', async t => {
+    const oldNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+
+    return getReader('foo', {
+      'node_modules/foo/package.json': '{"name":"foo", "exports": {"development": "./index.js", "production": "./br.js"}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+      'node_modules/foo/index.js': "lorem",
+      'node_modules/foo/es.js': 'es',
+      'node_modules/foo/br.js': 'br'
+    }).then(r => {
+      return r.readMain().then(
+        unit => {
+          process.env.NODE_ENV = oldNodeEnv;
+          t.deepEqual(unit, {
+            path: 'node_modules/foo/br.js',
+            contents: 'br',
+            moduleId: 'foo/br.js',
+            packageName: 'foo',
+            packageMainPath: 'br.js',
+            alias: 'foo',
+            sourceMap: undefined
+          });
+
+          t.equal(r.name, 'foo');
+          t.equal(r.mainPath, 'br.js');
+          t.deepEqual(r.browserReplacement, {});
+        },
+        err => {
+          process.env.NODE_ENV = oldNodeEnv;
+          t.fail(err.message);
+        }
+      );
+    });
+  });
+});
+
+test('packageReader reads exports "default" mapping', async t => {
+  return getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "exports": {"default": "./br.js"}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    return r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    );
+  });
+});
+
+test('packageReader reads exports nested condition mapping', async t => {
+  return getReader('foo', {
+    'node_modules/foo/package.json': '{"name":"foo", "exports": {"default": {"module": "./br.js"}}, "browser": {".": "index"}, "module": "es", "main": "index"}',
+    'node_modules/foo/index.js': "lorem",
+    'node_modules/foo/es.js': 'es',
+    'node_modules/foo/br.js': 'br'
+  }).then(r => {
+    return r.readMain().then(
+      unit => {
+        t.deepEqual(unit, {
+          path: 'node_modules/foo/br.js',
+          contents: 'br',
+          moduleId: 'foo/br.js',
+          packageName: 'foo',
+          packageMainPath: 'br.js',
+          alias: 'foo',
+          sourceMap: undefined
+        });
+
+        t.equal(r.name, 'foo');
+        t.equal(r.mainPath, 'br.js');
+        t.deepEqual(r.browserReplacement, {});
+      },
+      err => {
+        t.fail(err.message);
+      }
+    );
+  });
+});
+
 test('packageReader reads dumberForcedMain over browser/module/main field', async t => {
   return getReader('foo', {
-    'node_modules/foo/package.json': '{"name":"foo", "browser": "br", "module": "es", "main": "index", "dumberForcedMain": "hc"}',
+    'node_modules/foo/package.json': '{"name":"foo", "exports": "./br", "browser": "br", "module": "es", "main": "index", "dumberForcedMain": "hc"}',
     'node_modules/foo/index.js': "lorem",
     'node_modules/foo/es.js': 'es',
     'node_modules/foo/br.js': 'br',
@@ -1401,4 +1713,129 @@ test('packageReader reads main field main file when module field is broken', asy
       }
     );
   });
+});
+
+test('packageReader reads exports subpaths in package.json', async t => {
+  const r = await getReader('foo', {
+    'node_modules/foo/package.json': `{
+      "name": "foo",
+      "exports": {
+        ".": "./index.js",
+        "./package.json": "./package.json",
+        "./a": "./a.js",
+        "./b": "./be.js",
+        "./c": {"import": "./lib/c.js"},
+        "./d/*": "./lib/d/*.js",
+        "./e": null
+      }
+    }`,
+    'node_modules/foo/index.js': 'lorem',
+    'node_modules/foo/a.js': 'a',
+    'node_modules/foo/b.js': 'b',
+    'node_modules/foo/be.js': 'be',
+    'node_modules/foo/lib/c.js': 'c',
+    'node_modules/foo/lib/d/x.js': 'x',
+    'node_modules/foo/lib/d/y/z.js': 'yz',
+    'node_modules/foo/e.js': 'e',
+  });
+
+
+  let unit = await r.readMain();
+  t.equal(r.name, 'foo');
+  t.equal(r.mainPath, 'index.js');
+  t.deepEqual(r.exportsReplacement, {
+    './b': './be.js',
+    './c': './lib/c.js',
+    './d/*': './lib/d/*.js',
+    './e': null
+  });
+
+  t.deepEqual(unit, {
+    path: 'node_modules/foo/index.js',
+    contents: 'lorem',
+    moduleId: 'foo/index.js',
+    packageName: 'foo',
+    packageMainPath: 'index.js',
+    alias: 'foo',
+    sourceMap: undefined
+  });
+
+  unit = await r.readResource('a', true);
+
+  t.deepEqual(unit, {
+    path: 'node_modules/foo/a.js',
+    contents: 'a',
+    moduleId: 'foo/a.js',
+    packageName: 'foo',
+    packageMainPath: 'index.js',
+    sourceMap: undefined
+  });
+
+  unit = await r.readResource('b');
+
+  t.deepEqual(unit, {
+    path: 'node_modules/foo/be.js',
+    contents: 'be',
+    moduleId: 'foo/be.js',
+    packageName: 'foo',
+    packageMainPath: 'index.js',
+    alias: 'foo/b',
+    sourceMap: undefined
+  });
+
+  // FIXME local require on b uses module id foo/b
+  // that conflicts with global require('foo/b') from user code
+  unit = await r.readResource('b', true);
+
+  t.deepEqual(unit, {
+    path: 'node_modules/foo/b.js',
+    contents: 'b',
+    moduleId: 'foo/b.js',
+    packageName: 'foo',
+    packageMainPath: 'index.js',
+    sourceMap: undefined
+  });
+
+  unit = await r.readResource('c');
+
+  t.deepEqual(unit, {
+    path: 'node_modules/foo/lib/c.js',
+    contents: 'c',
+    moduleId: 'foo/lib/c.js',
+    packageName: 'foo',
+    packageMainPath: 'index.js',
+    alias: 'foo/c',
+    sourceMap: undefined
+  });
+
+  unit = await r.readResource('d/x');
+
+  t.deepEqual(unit, {
+    path: 'node_modules/foo/lib/d/x.js',
+    contents: 'x',
+    moduleId: 'foo/lib/d/x.js',
+    packageName: 'foo',
+    packageMainPath: 'index.js',
+    alias: 'foo/d/x',
+    sourceMap: undefined
+  });
+
+  unit = await r.readResource('d/y/z');
+
+  t.deepEqual(unit, {
+    path: 'node_modules/foo/lib/d/y/z.js',
+    contents: 'yz',
+    moduleId: 'foo/lib/d/y/z.js',
+    packageName: 'foo',
+    packageMainPath: 'index.js',
+    alias: 'foo/d/y/z',
+    sourceMap: undefined
+  });
+
+  try {
+    await r.readResource('e');
+    t.fail('should not readResource "e"');
+  } catch (err) {
+    t.equal(err.message, "Resource foo/e is not allowed to be imported (foo package.json exports definition {\"./b\":\"./be.js\",\"./c\":\"./lib/c.js\",\"./d/*\":\"./lib/d/*.js\",\"./e\":null}).");
+  }
 });
