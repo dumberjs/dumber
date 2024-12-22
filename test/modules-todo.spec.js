@@ -14,11 +14,11 @@ test('ModulesTodo process traced unit', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:text!foo.html': ['foo'],
-    '2:some-plugin': ['foo'],
-    '0:some-plugin!readme.md': ['foo'],
-    '2:bar': ['foo'],
-    '1:bar/lo': ['bar/index']
+    '0:text!foo.html:1': ['foo'],
+    '2:some-plugin:0': ['foo'],
+    '0:some-plugin!readme.md:1': ['foo'],
+    '2:bar:0': ['foo'],
+    '1:bar/lo:1': ['bar/index']
   });
   t.notOk(md.needCssInjection);
   t.ok(md.hasTodo());
@@ -50,9 +50,9 @@ test('ModulesTodo sequentially calls acquire callback', async t => {
   return md.acquire(cb).then(
     () => {
       t.deepEqual(log, [
-        {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo']},
-        {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index']},
-        {id: 'bar', user: true, package: true, requiredBy: ['foo']}
+        {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo'], isRelative: true},
+        {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index'], isRelative: true},
+        {id: 'bar', user: true, package: true, requiredBy: ['foo'], isRelative: false}
       ]);
       t.notOk(md.needCssInjection);
       t.notOk(md.hasTodo());
@@ -103,40 +103,40 @@ test('ModulesTodo handles additional todos, set needCssInjection', async t => {
 
   return md.acquire(cb).then(() => {
     t.deepEqual(log, [
-      {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo']},
-      {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index']},
-      {id: 'bar', user: true, package: true, requiredBy: ['foo']}
+      {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo'], isRelative: true},
+      {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index'], isRelative: true},
+      {id: 'bar', user: true, package: true, requiredBy: ['foo'], isRelative: false}
     ]);
     t.notOk(md.needCssInjection);
     t.deepEqual(Object.assign({}, md.todos), {
-      '1:bar/lor': ['bar/lo'],
+      '1:bar/lor:1': ['bar/lo'],
     });
     t.ok(md.hasTodo());
 
     return md.acquire(cb);
   }).then(() => {
     t.deepEqual(log, [
-      {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo']},
-      {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index']},
-      {id: 'bar', user: true, package: true, requiredBy: ['foo']},
-      {id: 'bar/lor', user: false, package: true, requiredBy: ['bar/lo']}
+      {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo'], isRelative: true},
+      {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index'], isRelative: true},
+      {id: 'bar', user: true, package: true, requiredBy: ['foo'], isRelative: false},
+      {id: 'bar/lor', user: false, package: true, requiredBy: ['bar/lo'], isRelative: true},
     ]);
     t.ok(md.needCssInjection);
     t.deepEqual(Object.assign({}, md.todos), {
-      '1:bar/lor/tool.css': ['bar/lor/index'],
-      '1:bar/lor/tool2': ['bar/lor/index']
+      '1:bar/lor/tool.css:1': ['bar/lor/index'],
+      '1:bar/lor/tool2:1': ['bar/lor/index']
     });
     t.ok(md.hasTodo());
 
     return md.acquire(cb);
   }).then(() => {
     t.deepEqual(log, [
-      {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo']},
-      {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index']},
-      {id: 'bar', user: true, package: true, requiredBy: ['foo']},
-      {id: 'bar/lor', user: false, package: true, requiredBy: ['bar/lo']},
-      {id: 'bar/lor/tool.css', user: false, package: true, requiredBy: ['bar/lor/index']},
-      {id: 'bar/lor/tool2', user: false, package: true, requiredBy: ['bar/lor/index']},
+      {id: 'text!foo.html', user: true, package: false, requiredBy: ['foo'], isRelative: true},
+      {id: 'bar/lo', user: false, package: true, requiredBy: ['bar/index'], isRelative: true},
+      {id: 'bar', user: true, package: true, requiredBy: ['foo'], isRelative: false},
+      {id: 'bar/lor', user: false, package: true, requiredBy: ['bar/lo'], isRelative: true},
+      {id: 'bar/lor/tool.css', user: false, package: true, requiredBy: ['bar/lor/index'], isRelative: true},
+      {id: 'bar/lor/tool2', user: false, package: true, requiredBy: ['bar/lor/index'], isRelative: true},
     ]);
     t.ok(md.needCssInjection);
     t.deepEqual(Object.assign({}, md.todos), {});
@@ -154,7 +154,7 @@ test('ModulesTodo sets needCssInjection for less module', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:foo.less': ['foo']
+    '0:foo.less:1': ['foo']
   });
   t.ok(md.needCssInjection);
   t.ok(md.hasTodo());
@@ -168,7 +168,7 @@ test('ModulesTodo sets needCssInjection for scss module', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:foo.scss': ['foo']
+    '0:foo.scss:1': ['foo']
   });
   t.ok(md.needCssInjection);
   t.ok(md.hasTodo());
@@ -182,7 +182,7 @@ test('ModulesTodo sets needCssInjection for sass module', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:foo.sass': ['foo']
+    '0:foo.sass:1': ['foo']
   });
   t.ok(md.needCssInjection);
   t.ok(md.hasTodo());
@@ -196,7 +196,7 @@ test('ModulesTodo sets needCssInjection for styl module', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:foo.styl': ['foo']
+    '0:foo.styl:1': ['foo']
   });
   t.ok(md.needCssInjection);
   t.ok(md.hasTodo());
