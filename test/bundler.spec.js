@@ -1958,3 +1958,72 @@ test("Bundler ignores runtime modules", async (t) => {
       (err) => t.fail(err.stack)
     );
 });
+
+test("Bundler traces node:fs/promises", async (t) => {
+  const fakeFs = {
+    "node_modules/dumber-module-loader/dist/index.debug.js":
+      "dumber-module-loader",
+
+    "node_modules/fs-browser-stub/package.json": JSON.stringify({
+      name: "fs-browser-stub",
+      main: "index.js",
+      exports: {
+        ".": "./index.js",
+        "./promises": "./promises.js"
+      }
+    }),
+    "node_modules/fs-browser-stub/index.js": "module.exports = { promises: {}}",
+    "node_modules/fs-browser-stub/promises.js": "module.exports = {}",
+  };
+  const bundler = mockBundler(fakeFs);
+
+  return Promise.resolve()
+    .then(() =>
+      bundler.capture({
+        path: "src/app.js",
+        contents: "require('node:fs/promises');",
+        moduleId: "app.js",
+      })
+    )
+    .then(() => bundler.resolve())
+    .then(() => bundler.bundle())
+    .then(
+      (bundleMap) => {
+        t.deepEqual(bundleMap, {
+          "entry-bundle": {
+            files: [
+              {
+                path: "node_modules/dumber-module-loader/dist/index.debug.js",
+                contents: "dumber-module-loader;",
+              },
+              {
+                contents: "define.switchToUserSpace();",
+              },
+              {
+                path: "src/app.js",
+                contents:
+                  "define('app.js',['require','exports','module','fs/promises'],function (require, exports, module) {\nrequire('fs/promises');\n});\n",
+              },
+              {
+                contents: "define.switchToPackageSpace();",
+              },
+              {
+                path: "node_modules/fs-browser-stub/promises.js",
+                contents:
+                  "define('fs/promises.js',['require','exports','module'],function (require, exports, module) {\nmodule.exports = {}\n});\n",
+              },
+              {
+                contents: "define.switchToUserSpace();",
+              },
+            ],
+            config: {
+              baseUrl: "/dist",
+              paths: {},
+              bundles: {},
+            },
+          },
+        });
+      },
+      (err) => t.fail(err.stack)
+    );
+});
