@@ -1,3 +1,18 @@
+# [3.1.0](https://github.com/dumberjs/dumber/compare/v3.0.0...v3.1.0) (2024-12-24)
+
+
+### Bug Fixes
+
+* fix local require check in npm package ([fba127f](https://github.com/dumberjs/dumber/commit/fba127f5d6df2e7c367153659c97313a23ea2fbc))
+
+
+### Features
+
+* support node: import like require('node:fs/promises') ([8d0544c](https://github.com/dumberjs/dumber/commit/8d0544c8ba0b84bb98ee80889916b59d9eb5c5a8)), closes [#17](https://github.com/dumberjs/dumber/issues/17)
+* support package.json exports field ([a800eb8](https://github.com/dumberjs/dumber/commit/a800eb876e2f0c34a4b95e7452a023a1b5834a8f)), closes [#17](https://github.com/dumberjs/dumber/issues/17)
+
+
+
 # [3.0.0](https://github.com/dumberjs/dumber/compare/v2.1.2...v3.0.0) (2024-09-17)
 
 
