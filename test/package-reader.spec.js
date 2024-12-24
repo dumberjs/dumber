@@ -1839,3 +1839,49 @@ test('packageReader reads exports subpaths in package.json', async t => {
     t.equal(err.message, "Resource foo/e is not allowed to be imported (foo package.json exports definition {\"./b\":\"./be.js\",\"./c\":\"./lib/c.js\",\"./d/*\":\"./lib/d/*.js\",\"./e\":null}).");
   }
 });
+
+test('packageReader reads exports subpaths in package.json', async t => {
+  const r = await getReader('foo', {
+    'node_modules/foo/package.json': `{
+      "name": "foo",
+      "exports": {
+        ".": {
+          "types": "./types/index.d.ts",
+          "worker": "./src/index-server.js",
+          "browser": "./src/index-client.js",
+          "default": "./src/index-server.js"
+        },
+        "./package.json": "./package.json",
+        "./action": {
+          "types": "./types/index.d.ts"
+        },
+        "./compiler": {
+          "types": "./types/index.d.ts",
+          "require": "./src/compiler/index.js",
+          "default": "./src/compiler/index.js"
+        }
+      }
+    }`,
+    'node_modules/foo/src/index-client.js': 'lorem',
+    'node_modules/foo/src/compiler/index.js': 'a',
+  });
+
+
+  const unit = await r.readMain();
+  t.equal(r.name, 'foo');
+  t.equal(r.mainPath, 'src/index-client.js');
+  t.deepEqual(r.exportsReplacement, {
+    './action': null,
+    './compiler': './src/compiler/index.js'
+  });
+
+  t.deepEqual(unit, {
+    path: 'node_modules/foo/src/index-client.js',
+    contents: 'lorem',
+    moduleId: 'foo/src/index-client.js',
+    packageName: 'foo',
+    packageMainPath: 'src/index-client.js',
+    alias: 'foo',
+    sourceMap: undefined
+  });
+});
