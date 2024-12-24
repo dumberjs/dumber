@@ -14,11 +14,11 @@ test('ModulesTodo process traced unit', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:text!foo.html:1': ['foo'],
-    '2:some-plugin:0': ['foo'],
-    '0:some-plugin!readme.md:1': ['foo'],
-    '2:bar:0': ['foo'],
-    '1:bar/lo:1': ['bar/index']
+    '0 text!foo.html 1': ['foo'],
+    '2 some-plugin 0': ['foo'],
+    '0 some-plugin!readme.md 1': ['foo'],
+    '2 bar 0': ['foo'],
+    '1 bar/lo 1': ['bar/index']
   });
   t.notOk(md.needCssInjection);
   t.ok(md.hasTodo());
@@ -109,7 +109,7 @@ test('ModulesTodo handles additional todos, set needCssInjection', async t => {
     ]);
     t.notOk(md.needCssInjection);
     t.deepEqual(Object.assign({}, md.todos), {
-      '1:bar/lor:1': ['bar/lo'],
+      '1 bar/lor 1': ['bar/lo'],
     });
     t.ok(md.hasTodo());
 
@@ -123,8 +123,8 @@ test('ModulesTodo handles additional todos, set needCssInjection', async t => {
     ]);
     t.ok(md.needCssInjection);
     t.deepEqual(Object.assign({}, md.todos), {
-      '1:bar/lor/tool.css:1': ['bar/lor/index'],
-      '1:bar/lor/tool2:1': ['bar/lor/index']
+      '1 bar/lor/tool.css 1': ['bar/lor/index'],
+      '1 bar/lor/tool2 1': ['bar/lor/index']
     });
     t.ok(md.hasTodo());
 
@@ -154,7 +154,7 @@ test('ModulesTodo sets needCssInjection for less module', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:foo.less:1': ['foo']
+    '0 foo.less 1': ['foo']
   });
   t.ok(md.needCssInjection);
   t.ok(md.hasTodo());
@@ -168,7 +168,7 @@ test('ModulesTodo sets needCssInjection for scss module', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:foo.scss:1': ['foo']
+    '0 foo.scss 1': ['foo']
   });
   t.ok(md.needCssInjection);
   t.ok(md.hasTodo());
@@ -182,7 +182,7 @@ test('ModulesTodo sets needCssInjection for sass module', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:foo.sass:1': ['foo']
+    '0 foo.sass 1': ['foo']
   });
   t.ok(md.needCssInjection);
   t.ok(md.hasTodo());
@@ -196,7 +196,7 @@ test('ModulesTodo sets needCssInjection for styl module', t => {
   });
 
   t.deepEqual(Object.assign({}, md.todos), {
-    '0:foo.styl:1': ['foo']
+    '0 foo.styl 1': ['foo']
   });
   t.ok(md.needCssInjection);
   t.ok(md.hasTodo());

@@ -18,12 +18,16 @@ test('replace transform ignores empty replacement', t => {
 test('replace transform cleanup dep, even with empty replacement', t => {
   const source = `define('foo', ['require', 'module-a.js', './bar/', 'o/a.js'], function (require) {
     require('module-a.js');
+    const {rm} = require('node:fs');
+    const {rmdir} = require('node:fs/promises');
     require('./bar/');
     require('o/a.js');
   })`;
 
   const result = `define('foo', ['require', 'module-a.js', './bar', 'o/a.js'], function (require) {
     require('module-a.js');
+    const {rm} = require('fs');
+    const {rmdir} = require('fs/promises');
     require('./bar');
     require('o/a.js');
   })`;
