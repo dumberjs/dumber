@@ -1723,7 +1723,7 @@ test('packageReader reads exports subpaths in package.json', async t => {
         ".": "./index.js",
         "./package.json": "./package.json",
         "./a": "./a.js",
-        "./b": "./be.js",
+        "./b": ["./be.js"],
         "./c": {"import": "./lib/c.js"},
         "./d/*": "./lib/d/*.js",
         "./e": null
