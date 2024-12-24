@@ -1,3 +1,12 @@
+## [3.1.1](https://github.com/dumberjs/dumber/compare/v3.1.0...v3.1.1) (2024-12-24)
+
+
+### Bug Fixes
+
+* some npm package uses array in package.json exports condition ([2fe50e6](https://github.com/dumberjs/dumber/commit/2fe50e6a8319b6a7d3f98bbaef003d0d7605d8d6))
+
+
+
 # [3.1.0](https://github.com/dumberjs/dumber/compare/v3.0.0...v3.1.0) (2024-12-24)
 
 
