@@ -1,3 +1,12 @@
+## [3.1.2](https://github.com/dumberjs/dumber/compare/v3.1.1...v3.1.2) (2024-12-24)
+
+
+### Bug Fixes
+
+* package.json exports condition could be only for d.ts types import ([7e8041b](https://github.com/dumberjs/dumber/commit/7e8041bf6ecfe4cd5e0c387e411ca83890f7548b))
+
+
+
 ## [3.1.1](https://github.com/dumberjs/dumber/compare/v3.1.0...v3.1.1) (2024-12-24)
 
 
