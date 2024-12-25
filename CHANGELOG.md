@@ -1,3 +1,12 @@
+## [3.1.3](https://github.com/dumberjs/dumber/compare/v3.1.2...v3.1.3) (2024-12-25)
+
+
+### Bug Fixes
+
+* fix package.json exports subpath on "." ([1b3e5d8](https://github.com/dumberjs/dumber/commit/1b3e5d8d1b2b7feab0de6bf34fc7eb5981f61874))
+
+
+
 ## [3.1.2](https://github.com/dumberjs/dumber/compare/v3.1.1...v3.1.2) (2024-12-24)
 
 
