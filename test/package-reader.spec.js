@@ -1845,13 +1845,13 @@ test('packageReader reads exports subpaths in package.json', async t => {
     'node_modules/foo/package.json': `{
       "name": "foo",
       "exports": {
+        "./package.json": "./package.json",
         ".": {
           "types": "./types/index.d.ts",
           "worker": "./src/index-server.js",
           "browser": "./src/index-client.js",
           "default": "./src/index-server.js"
         },
-        "./package.json": "./package.json",
         "./action": {
           "types": "./types/index.d.ts"
         },
